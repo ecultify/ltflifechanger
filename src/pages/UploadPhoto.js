@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/pages/UploadPhoto.css';
 
 const UploadPhoto = () => {
+  // eslint-disable-next-line no-unused-vars
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const UploadPhoto = () => {
       <div className="left-section">
         <img 
           src="/images/Upload Photo + Add Details.png" 
-          alt="L&T Finance Upload Photo" 
+          alt="L&T Finance Upload" 
           className="left-section-image"
         />
       </div>

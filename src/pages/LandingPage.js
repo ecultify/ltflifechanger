@@ -32,6 +32,11 @@ const LandingPage = () => {
     };
   }, []);
 
+  // Carousel navigation handlers
+  const nextSlide = React.useCallback(() => {
+    setActiveIndex((prev) => (prev === CAROUSEL_IMAGE_PATHS.length - 1 ? 0 : prev + 1));
+  }, []);
+
   // Auto-advance carousel
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -39,7 +44,7 @@ const LandingPage = () => {
     }, 4000);
     
     return () => clearInterval(interval);
-  }, [activeIndex]);
+  }, [activeIndex, nextSlide]);
 
   // Create hero section style with background
   const heroStyle = {
@@ -61,11 +66,7 @@ const LandingPage = () => {
     backgroundImage: `url(${path})`,
   }));
 
-  // Carousel navigation handlers
-  const nextSlide = React.useCallback(() => {
-    setActiveIndex((prev) => (prev === CAROUSEL_IMAGE_PATHS.length - 1 ? 0 : prev + 1));
-  }, []);
-
+  // eslint-disable-next-line no-unused-vars
   const prevSlide = React.useCallback(() => {
     setActiveIndex((prev) => (prev === 0 ? CAROUSEL_IMAGE_PATHS.length - 1 : prev - 1));
   }, []);

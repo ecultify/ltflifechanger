@@ -185,6 +185,7 @@ label {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .keyword-tag {
@@ -195,6 +196,7 @@ label {
   font-size: 14px;
   display: inline-flex;
   align-items: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .remove-tag {
@@ -206,6 +208,12 @@ label {
   cursor: pointer;
   line-height: 1;
   padding: 0 0 0 5px;
+  transition: all 0.2s;
+}
+
+.remove-tag:hover {
+  color: #005a7f;
+  transform: scale(1.1);
 }
 
 .keywords-input {
@@ -232,6 +240,13 @@ label {
   padding: 5px 10px;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggested-keyword:hover {
+  background-color: #e9f5fb;
+  color: #0083B5;
+  border-color: #0083B5;
 }
 
 /* Set Poppins font for all input placeholders */
@@ -249,9 +264,34 @@ select {
 }
 
 .tagline-input-container .form-input {
-  padding-right: 115px; /* Increase space for the button */
-  width: 100%;
-  box-sizing: border-box;
+  padding-right: 45px;
+}
+
+.tagline-options {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tagline-option {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tagline-option:hover {
+  background-color: #e9f5fb;
+  border-color: #0083B5;
+}
+
+.tagline-option.selected {
+  background-color: #e9f5fb;
+  border-color: #0083B5;
+  box-shadow: 0 2px 4px rgba(0,131,181,0.1);
 }
 
 .generate-btn {

@@ -20,6 +20,20 @@ npm install
 npm install express cors axios body-parser
 ```
 
+### Environment Variables
+
+1. Create a `.env` file in the root directory using the `.env.example` as a template:
+```bash
+cp .env.example .env
+```
+
+2. Update the `.env` file with your actual API keys:
+```
+REACT_APP_OPENAI_API_KEY=your_actual_openai_api_key
+```
+
+3. When deploying to Netlify, add these environment variables in the Netlify dashboard under Site settings > Environment variables.
+
 ## Running the Application
 
 ### Start the Backend Server

@@ -1,0 +1,26 @@
+.header {
+  background-color: #FFCB03;
+  padding: 15px 0;
+  border-bottom: none;
+  position: relative;
+  z-index: 100;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  object-fit: contain;
+} 

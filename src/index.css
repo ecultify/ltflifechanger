@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -10,4 +10,19 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Neo-brutalism style variables */
+:root {
+  --primary-yellow: #FFCB03;
+  --primary-blue: #3B82F6; 
+  --primary-teal: #0083B5;
+  --teal-shadow: #264E72;
+  --dark-blue: #0D2E4D;
+  --text-black: #000000;
+  --text-dark-blue: #0D2E4D;
+  --text-white: #FFFFFF;
+  --shadow-offset: 4px;
+  --border-width: 2px;
+  --border-radius: 0px;
 }

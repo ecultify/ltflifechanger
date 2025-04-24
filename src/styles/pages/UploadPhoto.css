@@ -1,0 +1,397 @@
+/* Upload Photo Page Styles */
+.upload-page {
+  display: flex;
+  min-height: calc(100vh - 120px); /* Adjust for header and footer */
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Left side - empty for now but keeping the structure */
+.left-section {
+  flex: 1;
+  background-color: #0a1a34;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.left-section-image {
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Right side - Form section */
+.right-section {
+  flex: 1;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box; /* Include padding in width calculation */
+  width: 100%; /* Ensure full width */
+}
+
+.right-content {
+  max-width: 500px;
+  width: 100%;
+  box-sizing: border-box; /* Include any padding in width calculation */
+}
+
+/* Progress tracker */
+.progress-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+  position: relative;
+  width: 100%; /* Ensure full width */
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9e9e9;
+  color: #999;
+  font-weight: 600;
+}
+
+.progress-step.active .step-circle {
+  background-color: #0a1a34;
+  color: white;
+}
+
+.progress-step.completed .step-circle {
+  background-color: #0a1a34;
+  color: white;
+}
+
+.step-label {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #666;
+}
+
+.progress-step.active .step-label,
+.progress-step.completed .step-label {
+  color: #0a1a34;
+  font-weight: 600;
+}
+
+.progress-line {
+  height: 2px;
+  background-color: #e9e9e9;
+  width: 80px;
+  margin: 0 10px;
+  position: relative;
+  top: -15px; /* Align with the middle of circles */
+  z-index: 1;
+}
+
+.progress-line.active {
+  background-color: #0a1a34;
+}
+
+/* Upload container styles */
+.upload-container {
+  width: 100%;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.upload-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 30px 0;
+  color: #0a1a34;
+  width: 100%; /* Ensure title doesn't overflow */
+}
+
+.upload-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #333;
+  width: 100%; /* Ensure subtitle doesn't overflow */
+}
+
+.upload-area-container {
+  margin-bottom: 30px;
+  width: 100%; /* Ensure container doesn't overflow */
+}
+
+.upload-area {
+  border: 2px dashed #0083B5;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #f9fbfe;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box; /* Include padding in width calculation */
+  width: 100%; /* Ensure area doesn't overflow */
+}
+
+.drag-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.upload-divider {
+  width: 100%;
+  text-align: center;
+  margin: 15px 0;
+  position: relative;
+}
+
+.upload-divider:before,
+.upload-divider:after {
+  content: '';
+  display: inline-block;
+  width: 40%;
+  height: 1px;
+  background: #ddd;
+  position: relative;
+  vertical-align: middle;
+}
+
+.upload-divider span {
+  display: inline-block;
+  padding: 0 10px;
+  color: #999;
+  font-size: 12px;
+}
+
+.browse-btn {
+  background-color: #0083B5;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+}
+
+.browse-btn:hover {
+  background-color: #006a92;
+}
+
+/* Preview container */
+.preview-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  object-fit: contain; /* Ensure image is properly contained */
+}
+
+.remove-image-btn {
+  background-color: #ff3b30;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Photo guidelines */
+.photo-guidelines {
+  background-color: #f5f8ff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-sizing: border-box; /* Include padding in width calculation */
+  width: 100%; /* Ensure guidelines don't overflow */
+}
+
+.photo-guidelines h3 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #0a1a34;
+}
+
+.photo-guidelines ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.photo-guidelines li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Next button */
+.next-btn {
+  background-color: #0083B5;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.next-btn:hover {
+  background-color: #006a92;
+}
+
+.next-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Improved responsive styles for UploadPhoto page */
+@media (max-width: 992px) {
+  .upload-page {
+    flex-direction: column;
+  }
+  
+  .left-section, .right-section {
+    flex: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .left-section {
+    display: none; /* Hide the left section on mobile */
+  }
+  
+  .right-section {
+    min-height: 100vh;
+    padding: 30px 20px;
+  }
+  
+  .right-content {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 0 5px; /* Add a little padding */
+  }
+}
+
+@media (max-width: 768px) {
+  .right-section {
+    padding: 20px 15px;
+    overflow-x: hidden; /* Additional prevention for horizontal scrolling */
+  }
+  
+  .upload-title {
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .upload-subtitle {
+    text-align: center;
+  }
+  
+  .progress-tracker {
+    margin-bottom: 30px;
+  }
+  
+  .progress-line {
+    width: 60px;
+  }
+  
+  .upload-area {
+    padding: 30px 15px;
+  }
+  
+  .drag-text {
+    font-size: 13px;
+  }
+  
+  .upload-divider:before,
+  .upload-divider:after {
+    width: 35%;
+  }
+  
+  .browse-btn {
+    padding: 10px 20px;
+  }
+  
+  .preview-image {
+    max-height: 250px;
+  }
+  
+  .next-btn {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .right-section {
+    padding: 15px 10px;
+  }
+  
+  .upload-title {
+    font-size: 24px;
+  }
+  
+  .progress-line {
+    width: 50px;
+  }
+  
+  .upload-area {
+    min-height: 180px;
+    padding: 20px 10px;
+  }
+  
+  /* Make guidelines more compact */
+  .photo-guidelines {
+    padding: 15px;
+  }
+  
+  .photo-guidelines h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .photo-guidelines li {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  /* Ensure content is well-centered */
+  .right-content {
+    max-width: 100%;
+    padding: 0;
+  }
+} 

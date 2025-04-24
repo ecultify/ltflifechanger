@@ -1,5 +1,8 @@
 .App {
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Poppins', sans-serif;
 }
 
 .App-logo {
@@ -34,5 +37,80 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Neo-brutalism button styles */
+.btn-neo {
+  background-color: var(--primary-yellow);
+  color: var(--primary-blue);
+  font-weight: 700;
+  padding: 12px 24px;
+  border: var(--border-width) solid var(--text-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-black);
+  border-radius: var(--border-radius);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+}
+
+.btn-neo:hover {
+  transform: translateY(0);
+  box-shadow: 2px 2px 0 var(--text-black);
+}
+
+/* Neo-brutalism text container styles */
+.text-container-neo {
+  background-color: var(--primary-yellow);
+  border: var(--border-width) solid var(--text-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-black);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  display: inline-block;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  /* General mobile optimizations */
+  html, body {
+    overflow-x: hidden;
+  }
+  
+  .container {
+    width: 95% !important;
+    padding: 0 10px;
+  }
+  
+  h1, h2, h3 {
+    word-wrap: break-word;
+  }
+  
+  button {
+    max-width: 100%;
+  }
+  
+  /* Allow users to zoom if needed */
+  meta[name="viewport"] {
+    content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0";
+  }
+  
+  /* Better tap targets */
+  button, a, input, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve readability on mobile */
+  p, span, div {
+    font-size: 16px !important;
   }
 }

@@ -5,6 +5,9 @@
   width: 100%;
   font-family: 'Poppins', sans-serif;
   background-color: #0a1a34;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 40px;
   align-items: center;
   justify-content: center;
@@ -345,4 +348,113 @@
     font-size: 14px;
     padding: 10px;
   }
+}
+
+/* User image container */
+.user-image-container {
+  margin-top: 15px;
+  margin-bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.user-image {
+  max-width: 70%;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+  padding: 30px;
+}
+
+.loading-overlay .loading-spinner {
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #FFC107;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Error container */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+  padding: 30px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error-container .error-message {
+  font-size: 18px;
+  color: #FFC107;
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Generated poster image */
+.generated-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0; /* Ensure no rounded corners */
+}
+
+.poster-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.poster-placeholder p {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Remove unneeded styles that were for the old poster layout */
+.user-image-container,
+.user-image,
+.text-section,
+.user-info-section,
+.user-row,
+.user-icon,
+.user-details,
+.contact-info,
+.business-tag,
+.game-changer-text {
+  /* These styles are no longer needed as the poster is now generated as a single image */
+  display: none;
 } 

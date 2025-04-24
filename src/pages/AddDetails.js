@@ -212,18 +212,18 @@ const AddDetails = () => {
       
       const requestData = {
         model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a world-class marketing expert specializing in creating memorable, impactful business taglines. Your task is to create a short, catchy, and powerful tagline in first person that captures the essence of the business and incorporates their keywords. The tagline should be 5-8 words maximum, memorable, and have a strong emotional impact. It should sound natural, not generic, and convey the unique value proposition of the business."
-          },
-          {
-            role: "user",
-            content: `I need a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline should incorporate these keywords: ${keywords.join(", ")}. Make it engaging, memorable, and under 8 words. It should sound like a confident statement that resonates with customers and stands out from competitors. Please provide just the tagline itself with no explanations or quotation marks.`
-          }
-        ],
-        temperature: 0.8,
-        max_tokens: 50
+          messages: [
+            {
+              role: "system",
+            content: "You are a world-class marketing expert specializing in creating memorable, impactful business taglines. Create powerful taglines that are exactly 10-12 words long, in first person, and incorporate all provided keywords naturally. The taglines should be aspirational, emotionally resonant, and capture the core value proposition of the business. Avoid clichés and create something truly distinctive that would stand out in the market. Do not use quotation marks in your response."
+            },
+            {
+              role: "user",
+            content: `Create a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline must be EXACTLY 10-12 words long and must incorporate these keywords: ${keywords.join(", ")}. The tagline should be bold, memorable, and convey confidence. It should have a natural flow and rhythm when spoken aloud. Do not include quotation marks, explanations, or variations - provide only the final tagline itself.`
+            }
+          ],
+        temperature: 0.9,
+        max_tokens: 75
       };
       
       console.log("Request headers:", headers);
@@ -236,12 +236,12 @@ const AddDetails = () => {
       );
 
       console.log("API response received:", response);
-      
+
       // Extract the generated tagline from the response
       let generatedTagline = response.data.choices[0].message.content.trim();
       
-      // Remove any quotation marks that might be in the response
-      generatedTagline = generatedTagline.replace(/["']/g, '');
+      // Remove any quotation marks, periods, or other unwanted characters
+      generatedTagline = generatedTagline.replace(/["""'''.]/g, '');
       
       console.log("Generated tagline:", generatedTagline);
       setTagline(generatedTagline);
@@ -266,43 +266,47 @@ const AddDetails = () => {
   // Fallback tagline generation in case API doesn't work
   const generateFallbackTagline = () => {
     const industryTaglines = {
-      manufacturing: "I craft perfection with precision and reliability.",
-      retail: "I deliver trusted value and quality every day.",
-      services: "I provide seamless solutions with professional expertise.",
-      food: "I serve fresh, authentic flavors that nourish souls.",
-      construction: "I build durable spaces with vision and reliability.",
-      healthcare: "I care for your health with compassion and expertise.",
-      agriculture: "I grow sustainable harvests from nature's bounty.",
-      education: "I inspire lifelong learning and empower bright futures.",
-      transport: "I connect journeys efficiently, on-time, every time.",
-      technology: "I transform businesses with innovative digital solutions.",
-      tourism: "I create memorable journeys and luxurious experiences.",
-      fashion: "I design your unique style with trend-setting pieces.",
-      events: "I create magical moments worth remembering forever.",
-      ecommerce: "I deliver digital convenience and trusted online value.",
-      printing: "I bring your designs to life with vibrant precision.",
-      beauty: "I revitalize your natural glow with pure care.",
-      automotive: "I keep your engines running with reliable service.",
-      media: "I amplify your message with creative, bold campaigns.",
-      cleaning: "I restore spotless spaces with safe, green methods.",
-      handicrafts: "I preserve cultural heritage through handmade treasures.",
-      other: "I deliver excellence through passion and dedication."
+      manufacturing: "I craft precision with innovation and reliability setting new industry standards.",
+      retail: "I deliver trusted value and exceptional quality to customers every single day.",
+      services: "I provide seamless solutions with professional expertise and client-focused dedication.",
+      food: "I serve fresh authentic flavors that nourish souls with passion and care.",
+      construction: "I build durable spaces with vision, reliability and attention to every detail.",
+      healthcare: "I care for your health with compassion expertise and advanced medical solutions.",
+      agriculture: "I grow sustainable harvests from nature's bounty with organic farming methods.",
+      education: "I inspire lifelong learning and empower bright futures through knowledge and guidance.",
+      transport: "I connect journeys efficiently on-time with safety and reliability every time.",
+      technology: "I transform businesses with innovative digital solutions and cutting-edge technological expertise.",
+      tourism: "I create memorable journeys and luxurious experiences that last beyond the vacation.",
+      fashion: "I design your unique style with trend-setting pieces that express your personality.",
+      events: "I create magical moments worth remembering forever with attention to every detail.",
+      ecommerce: "I deliver digital convenience and trusted online value with secure shopping experiences.",
+      printing: "I bring your designs to life with vibrant precision and outstanding craftsmanship.",
+      beauty: "I revitalize your natural glow with pure care products and expert treatments.",
+      automotive: "I keep your engines running with reliable service and expert mechanical knowledge.",
+      media: "I amplify your message with creative bold campaigns that reach your target audience.",
+      cleaning: "I restore spotless spaces with safe green methods that protect your environment.",
+      handicrafts: "I preserve cultural heritage through handmade treasures created with traditional techniques.",
+      other: "I deliver excellence through passion, dedication and commitment to outstanding service quality."
     };
 
     // Get a generic tagline based on industry or use the default
-    const generatedTagline = industryTaglines[industry] || "I deliver excellence with passion and quality service.";
+    const generatedTagline = industryTaglines[industry] || "I deliver excellence with passion and quality service that exceeds your expectations.";
     
-    // Add one of the keywords if available
-    const finalTagline = keywords.length > 0 
-      ? `${generatedTagline} ${keywords[0]} is my priority.`
-      : generatedTagline;
-    
-    setTagline(finalTagline);
+    setTagline(generatedTagline);
     setIsTaglineGenerated(true);
   };
 
   // Handle next button click
   const handleNext = () => {
+    // Store form data in sessionStorage instead of localStorage
+    sessionStorage.setItem('userName', name);
+    sessionStorage.setItem('companyName', companyName);
+    sessionStorage.setItem('industry', industry);
+    sessionStorage.setItem('tagline', tagline);
+    
+    // Store keywords as JSON string
+    sessionStorage.setItem('keywords', JSON.stringify(keywords));
+    
     // Move to the upload photo page
     navigate('/upload-photo');
   };
@@ -459,38 +463,40 @@ const AddDetails = () => {
             <div className="form-group">
               <label htmlFor="tagline">Generate Tagline</label>
               <div className="tagline-input-container">
-                <input 
-                  type="text" 
-                  id="tagline"
-                  placeholder="Your company tagline..." 
-                  value={tagline}
-                  onChange={(e) => setTagline(e.target.value)}
-                  className="form-input border-blue"
-                  style={inputStyle}
-                />
-                <button 
-                  type="button" 
-                  className="generate-btn"
-                  onClick={handleGenerateTagline}
-                  disabled={isGeneratingTagline || keywords.length === 0}
-                >
-                  {isGeneratingTagline ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i>
-                      Generating...
-                    </>
-                  ) : isTaglineGenerated ? (
-                    <>
-                      <i className="fas fa-redo-alt"></i>
-                      Regenerate
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-magic sparkle-icon"></i>
-                      Generate
-                    </>
-                  )}
-                </button>
+                <div className="input-and-button">
+                  <input 
+                    type="text" 
+                    id="tagline"
+                    placeholder="Your company tagline..." 
+                    value={tagline}
+                    readOnly={true}
+                    className="form-input border-blue"
+                    style={inputStyle}
+                  />
+                  <button 
+                    type="button" 
+                    className="generate-btn"
+                    onClick={handleGenerateTagline}
+                    disabled={isGeneratingTagline || keywords.length === 0}
+                  >
+                    {isGeneratingTagline ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i>
+                        Generating...
+                      </>
+                    ) : isTaglineGenerated ? (
+                      <>
+                        <i className="fas fa-redo-alt"></i>
+                        Regenerate
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-magic sparkle-icon"></i>
+                        Generate
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
               
               {/* Add test button for debugging */}
@@ -523,5 +529,5 @@ const AddDetails = () => {
   );
 };
 
-export default AddDetails;
+export default AddDetails; 
 

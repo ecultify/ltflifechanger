@@ -80,8 +80,8 @@ const OtpVerification = () => {
   // Handle get OTP button click - MODIFIED FOR TESTING
   const handleGetOtp = async () => {
     // For testing, just show OTP input without actual API call
-    setShowOtpInput(true);
-    startCountdown();
+        setShowOtpInput(true);
+        startCountdown();
     // Pre-fill OTP with "123456" for easy testing
     setOtp(['1', '2', '3', '4', '5', '6']);
     setError('OTP verification bypassed for testing. Click "Verify" to proceed.');
@@ -92,13 +92,16 @@ const OtpVerification = () => {
     e.preventDefault();
     
     // For testing, just restart countdown
-    startCountdown();
+        startCountdown();
     setOtp(['1', '2', '3', '4', '5', '6']);
     setError('OTP verification bypassed for testing. Click "Verify" to proceed.');
   };
 
   // Handle verify button click - MODIFIED FOR TESTING
   const handleVerify = async () => {
+    // Store phone number in sessionStorage instead of localStorage
+    sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
+    
     // For testing, navigate directly to the next page
     navigate('/add-details');
   };

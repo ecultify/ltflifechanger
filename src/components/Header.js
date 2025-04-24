@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/components/Header.css';
 
 // Image path
@@ -9,11 +10,13 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="logo-container">
-          <img 
-            src={LOGO_IMAGE_PATH} 
-            alt="L&T Finance Logo" 
-            className="logo" 
-          />
+          <Link to="/">
+            <img 
+              src={LOGO_IMAGE_PATH} 
+              alt="L&T Finance Logo" 
+              className="logo" 
+            />
+          </Link>
         </div>
       </div>
     </header>

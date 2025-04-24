@@ -422,6 +422,10 @@
   position: relative;
   transition: transform 0.3s ease;
   animation: scaleIn 0.8s ease-out;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
 }
 
 @keyframes scaleIn {
@@ -443,7 +447,7 @@
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--teal-shadow);
   display: inline-block;
   border-radius: var(--border-radius);
-  width: 100%;
+  text-align: center;
   transition: all 0.3s ease;
   position: relative;
 }

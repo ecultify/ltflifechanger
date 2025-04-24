@@ -3,6 +3,58 @@ import '../styles/pages/AddDetails.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Add this at the top level to provide an alternative for testing
+const testOpenAIAPI = async () => {
+  try {
+    console.log("Testing OpenAI API connection...");
+    console.log("API Key available:", process.env.REACT_APP_OPENAI_API_KEY ? "Yes (length: " + process.env.REACT_APP_OPENAI_API_KEY.length + ")" : "No");
+    
+    // For debugging only, don't include in production
+    console.log("API Key first 10 chars:", process.env.REACT_APP_OPENAI_API_KEY.substring(0, 10) + "...");
+    
+    // Create headers with more detailed configuration for project API keys
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+    };
+    
+    // If this is a project API key (starts with sk-proj-), you might need additional configuration
+    if (process.env.REACT_APP_OPENAI_API_KEY.startsWith('sk-proj-')) {
+      console.log("Using project API key format");
+      // Some implementations might require organization ID for project keys
+      if (process.env.REACT_APP_OPENAI_ORG_ID) {
+        headers['OpenAI-Organization'] = process.env.REACT_APP_OPENAI_ORG_ID;
+      }
+    }
+    
+    console.log("Request headers:", headers);
+    
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model: "gpt-4o",
+        messages: [
+          { role: "user", content: "Generate a quick test response in 5 words or less." }
+        ],
+        temperature: 0.7,
+        max_tokens: 20
+      },
+      { headers }
+    );
+    console.log("Test response:", response.data);
+    return "Test successful! API is working correctly.";
+  } catch (error) {
+    console.error("Test failed:", error);
+    console.error("Error details:", error.response ? error.response.data : "No response data");
+    
+    if (error.response && error.response.status === 401) {
+      return `Authentication failed: The API key appears to be invalid or expired. Status: ${error.response.status}`;
+    }
+    
+    return `Test failed: ${error.message}`;
+  }
+};
+
 const AddDetails = () => {
   const [name, setName] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -112,6 +164,12 @@ const AddDetails = () => {
     }
   };
 
+  // Add a button to test the API
+  const handleTestAPI = async () => {
+    const result = await testOpenAIAPI();
+    alert(result);
+  };
+
   // Generate tagline using OpenAI API
   const handleGenerateTagline = async () => {
     if (keywords.length === 0) {
@@ -119,50 +177,128 @@ const AddDetails = () => {
       return;
     }
 
+    console.log("Starting tagline generation...");
+    console.log("API Key available:", process.env.REACT_APP_OPENAI_API_KEY ? "Yes (length: " + process.env.REACT_APP_OPENAI_API_KEY.length + ")" : "No");
+    
     if (!process.env.REACT_APP_OPENAI_API_KEY) {
       console.error("OpenAI API key is not set in environment variables");
-      alert("OpenAI API key is not configured. Please contact the administrator.");
+      alert("OpenAI API key is not configured. Using fallback tagline generation instead.");
+      generateFallbackTagline();
       return;
     }
 
     setIsGeneratingTagline(true);
 
+    // For debugging only, don't include in production
+    console.log("API Key first 10 chars:", process.env.REACT_APP_OPENAI_API_KEY.substring(0, 10) + "...");
+
     try {
+      console.log("Making API request to OpenAI...");
+      
+      // Create headers with more detailed configuration for project API keys
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+      };
+      
+      // If this is a project API key (starts with sk-proj-), you might need additional configuration
+      if (process.env.REACT_APP_OPENAI_API_KEY.startsWith('sk-proj-')) {
+        console.log("Using project API key format");
+        // Some implementations might require organization ID for project keys
+        if (process.env.REACT_APP_OPENAI_ORG_ID) {
+          headers['OpenAI-Organization'] = process.env.REACT_APP_OPENAI_ORG_ID;
+        }
+      }
+      
+      const requestData = {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are a world-class marketing expert specializing in creating memorable, impactful business taglines. Your task is to create a short, catchy, and powerful tagline in first person that captures the essence of the business and incorporates their keywords. The tagline should be 5-8 words maximum, memorable, and have a strong emotional impact. It should sound natural, not generic, and convey the unique value proposition of the business."
+          },
+          {
+            role: "user",
+            content: `I need a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline should incorporate these keywords: ${keywords.join(", ")}. Make it engaging, memorable, and under 8 words. It should sound like a confident statement that resonates with customers and stands out from competitors. Please provide just the tagline itself with no explanations or quotation marks.`
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 50
+      };
+      
+      console.log("Request headers:", headers);
+      console.log("Request data:", requestData);
+      
       const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
-        {
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content: "You are a business tagline generator. Create a short, catchy tagline (8-10 words max) in first person that includes the provided keywords and represents the given industry and company name. Make it memorable and impactful."
-            },
-            {
-              role: "user",
-              content: `Create a tagline for my ${industry || "business"} company${companyName ? ` named "${companyName}"` : ""}. Use these keywords: ${keywords.join(", ")}. Make it in first person (using "I" or implied first person), under 10 words, and impactful.`
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 50
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
-          }
-        }
+        requestData,
+        { headers }
       );
 
+      console.log("API response received:", response);
+      
       // Extract the generated tagline from the response
-      const generatedTagline = response.data.choices[0].message.content.trim();
+      let generatedTagline = response.data.choices[0].message.content.trim();
+      
+      // Remove any quotation marks that might be in the response
+      generatedTagline = generatedTagline.replace(/["']/g, '');
+      
+      console.log("Generated tagline:", generatedTagline);
       setTagline(generatedTagline);
       setIsTaglineGenerated(true);
     } catch (error) {
       console.error("Error generating tagline:", error);
-      alert("Failed to generate tagline. Please try again.");
+      console.error("Error details:", error.response ? error.response.data : "No response data");
+      
+      // If the error is an authentication error (401), show a more specific message
+      if (error.response && error.response.status === 401) {
+        alert("Authentication failed with OpenAI: The API key appears to be invalid or expired. Using fallback tagline generation.");
+      } else {
+        alert(`Failed to generate tagline: ${error.message}. Using fallback tagline generation.`);
+      }
+      
+      generateFallbackTagline();
     } finally {
       setIsGeneratingTagline(false);
     }
+  };
+
+  // Fallback tagline generation in case API doesn't work
+  const generateFallbackTagline = () => {
+    const industryTaglines = {
+      manufacturing: "I craft perfection with precision and reliability.",
+      retail: "I deliver trusted value and quality every day.",
+      services: "I provide seamless solutions with professional expertise.",
+      food: "I serve fresh, authentic flavors that nourish souls.",
+      construction: "I build durable spaces with vision and reliability.",
+      healthcare: "I care for your health with compassion and expertise.",
+      agriculture: "I grow sustainable harvests from nature's bounty.",
+      education: "I inspire lifelong learning and empower bright futures.",
+      transport: "I connect journeys efficiently, on-time, every time.",
+      technology: "I transform businesses with innovative digital solutions.",
+      tourism: "I create memorable journeys and luxurious experiences.",
+      fashion: "I design your unique style with trend-setting pieces.",
+      events: "I create magical moments worth remembering forever.",
+      ecommerce: "I deliver digital convenience and trusted online value.",
+      printing: "I bring your designs to life with vibrant precision.",
+      beauty: "I revitalize your natural glow with pure care.",
+      automotive: "I keep your engines running with reliable service.",
+      media: "I amplify your message with creative, bold campaigns.",
+      cleaning: "I restore spotless spaces with safe, green methods.",
+      handicrafts: "I preserve cultural heritage through handmade treasures.",
+      other: "I deliver excellence through passion and dedication."
+    };
+
+    // Get a generic tagline based on industry or use the default
+    const generatedTagline = industryTaglines[industry] || "I deliver excellence with passion and quality service.";
+    
+    // Add one of the keywords if available
+    const finalTagline = keywords.length > 0 
+      ? `${generatedTagline} ${keywords[0]} is my priority.`
+      : generatedTagline;
+    
+    setTagline(finalTagline);
+    setIsTaglineGenerated(true);
   };
 
   // Handle next button click
@@ -354,6 +490,25 @@ const AddDetails = () => {
                       Generate
                     </>
                   )}
+                </button>
+              </div>
+              
+              {/* Add test button for debugging */}
+              <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                <button 
+                  type="button" 
+                  onClick={handleTestAPI}
+                  style={{ 
+                    backgroundColor: '#ddd', 
+                    color: '#333', 
+                    border: 'none', 
+                    padding: '5px 10px', 
+                    borderRadius: '4px', 
+                    fontSize: '12px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Test API Connection
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/pages/OtpVerification.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,8 +11,14 @@ const OtpVerification = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [consentChecked, setConsentChecked] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(true); // Auto-checked for testing
   const navigate = useNavigate();
+
+  // Add useEffect to pre-fill mobile number for testing
+  useEffect(() => {
+    // Pre-fill with testing number
+    setPhoneNumber('9876543210');
+  }, []);
 
   // Removed API headers as they're now handled by the backend proxy
   
@@ -71,136 +77,30 @@ const OtpVerification = () => {
     }, 1000);
   };
 
-  // Send OTP via backend proxy server
+  // Handle get OTP button click - MODIFIED FOR TESTING
   const handleGetOtp = async () => {
-    if (!phoneNumber || phoneNumber.length < 10) {
-      setError('Please enter a valid 10-digit mobile number');
-      return;
-    }
-    
-    if (!consentChecked) {
-      setError('Please provide your consent to proceed');
-      return;
-    }
-    
-    setError('');
-    setIsLoading(true);
-    
-    // Full phone number with country code
-    const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-    
-    try {
-      console.log(`Sending OTP to ${fullPhoneNumber}`);
-      
-      // Call our backend proxy server to send OTP
-      const response = await axios.post('http://localhost:5000/api/send-otp', {
-        phoneNumber: fullPhoneNumber
-      });
-      
-      if (response.data.success) {
-        // For testing purposes, show the note from the backend in the UI
-        if (response.data.note) {
-          setError(`NOTE: ${response.data.note}`);
-        }
-        
-        setShowOtpInput(true);
-        startCountdown();
-      } else {
-        setError(response.data.message || 'Failed to send OTP. Please try again.');
-      }
-      
-      setIsLoading(false);
-      
-    } catch (error) {
-      console.error('Error sending OTP:', error);
-      setError(error.response?.data?.message || 'Failed to send OTP. Please check your network connection and try again.');
-      setIsLoading(false);
-    }
+    // For testing, just show OTP input without actual API call
+    setShowOtpInput(true);
+    startCountdown();
+    // Pre-fill OTP with "123456" for easy testing
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    setError('OTP verification bypassed for testing. Click "Verify" to proceed.');
   };
 
-  // Handle resend OTP
+  // Handle resend OTP - MODIFIED FOR TESTING
   const handleResendOtp = async (e) => {
     e.preventDefault();
     
-    if (remainingTime > 0) return;
-    
-    setError('');
-    setIsLoading(true);
-    
-    // Full phone number with country code
-    const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-    
-    try {
-      // Call our backend proxy server to resend OTP
-      const response = await axios.post('http://localhost:5000/api/send-otp', {
-        phoneNumber: fullPhoneNumber
-      });
-      
-      if (response.data.success) {
-        // For testing purposes, show the note from the backend in the UI
-        if (response.data.note) {
-          setError(`NOTE: ${response.data.note}`);
-        }
-        
-        startCountdown();
-      } else {
-        setError(response.data.message || 'Failed to resend OTP. Please try again.');
-      }
-      
-      setIsLoading(false);
-      
-    } catch (error) {
-      console.error('Error resending OTP:', error);
-      setError(error.response?.data?.message || 'Failed to resend OTP. Please check your network connection and try again.');
-      setIsLoading(false);
-    }
+    // For testing, just restart countdown
+    startCountdown();
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    setError('OTP verification bypassed for testing. Click "Verify" to proceed.');
   };
 
-  // Handle verify button click
+  // Handle verify button click - MODIFIED FOR TESTING
   const handleVerify = async () => {
-    const enteredOtp = otp.join('');
-    
-    if (enteredOtp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
-      return;
-    }
-    
-    setError('');
-    setIsLoading(true);
-    
-    try {
-      console.log(`Verifying OTP: ${enteredOtp}`);
-      
-      // Call our backend proxy server to verify OTP
-      const response = await axios.post('http://localhost:5000/api/verify-otp', {
-        phoneNumber: `${countryCode}${phoneNumber}`,
-        otp: enteredOtp
-      });
-      
-      // For testing demonstration, always allow moving forward
-      if (response.data.success) {
-        // Display note before navigating (for testing environment)
-        if (response.data.note) {
-          setError(`NOTE: ${response.data.note}`);
-          // Give user a moment to read the note before navigating
-          setTimeout(() => {
-            navigate('/add-details');
-          }, 3000);
-        } else {
-          // Navigate to next page on successful verification
-          navigate('/add-details');
-        }
-      } else {
-        setError(response.data.message || 'Failed to verify OTP. Please try again.');
-      }
-      
-      setIsLoading(false);
-      
-    } catch (error) {
-      console.error('Error verifying OTP:', error);
-      setError(error.response?.data?.message || 'Failed to verify OTP. Please check your network connection and try again.');
-      setIsLoading(false);
-    }
+    // For testing, navigate directly to the next page
+    navigate('/add-details');
   };
 
   return (

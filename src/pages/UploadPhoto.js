@@ -34,6 +34,7 @@ const UploadPhoto = () => {
           // Load required models
           await Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
             faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
           ]);
           

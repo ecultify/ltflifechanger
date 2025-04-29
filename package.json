@@ -12,7 +12,6 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "express": "^4.18.2",
-    "face-api.js": "^0.22.2",
     "html2canvas": "^1.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -24,7 +23,9 @@
     "start": "react-scripts start",
     "build": "CI=false react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test-otp": "node src/utils/runApiTest.js",
+    "log-otp-test": "./src/utils/logApiTest.sh"
   },
   "eslintConfig": {
     "extends": [

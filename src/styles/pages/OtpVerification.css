@@ -5,6 +5,9 @@
   width: 100%;
   font-family: 'Poppins', sans-serif;
   overflow-x: hidden; /* Prevent horizontal scrolling */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Left side - empty for now but keeping the structure */
@@ -37,9 +40,44 @@
   box-sizing: border-box; /* Include padding in width calculation */
 }
 
+.right-section.mobile-view {
+  background-color: transparent;
+  padding: 20px;
+  margin-top: auto;
+  margin-bottom: 0;
+  align-items: flex-end;
+}
+
 .right-content {
   max-width: 500px;
   width: 100%;
+}
+
+/* Logo container - only for mobile */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  max-width: 180px;
+  height: auto;
+}
+
+/* Bumrah image container - only for mobile */
+.bumrah-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.bumrah-image {
+  max-width: 200px;
+  height: auto;
+  margin-bottom: -20px; /* Overlap with form container */
 }
 
 /* Progress tracker */
@@ -47,7 +85,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 40px; /* Original spacing for desktop */
   position: relative;
   width: 100%; /* Ensure it takes full width */
 }
@@ -99,6 +137,22 @@
 }
 
 /* Form styles */
+.form-container {
+  width: 100%;
+  background-color: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Only set position relative and z-index for mobile */
+@media (max-width: 768px) {
+  .form-container {
+    position: relative;
+    z-index: 1;
+  }
+}
+
 .form-title {
   font-size: 32px;
   font-weight: 700;
@@ -132,8 +186,10 @@
   width: 100%; /* Ensure full width */
 }
 
-.country-code-select-container {
-  min-width: 110px;
+/* Country code and phone input container */
+.country-phone-container {
+  display: flex;
+  flex: 1;
 }
 
 .country-code-select {
@@ -142,8 +198,7 @@
   border: 1px solid #ddd;
   border-radius: 4px 0 0 4px;
   font-size: 16px;
-  width: 100%;
-  height: 100%;
+  width: 110px;
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
@@ -162,10 +217,9 @@
   flex: 1;
   padding: 12px 15px;
   border: 1px solid #ddd;
-  border-radius: 0;
+  border-radius: 0 4px 4px 0;
   font-size: 16px;
   box-sizing: border-box; /* Include padding in width calculation */
-  border-left: none;
 }
 
 /* Border blue class for blue borders */
@@ -179,9 +233,11 @@
   color: #0a1a34;
   font-weight: 600;
   padding: 0 15px;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px;
   cursor: pointer;
   white-space: nowrap; /* Prevent text from wrapping */
+  margin-left: 10px;
+  height: 46px; /* Match height with inputs */
 }
 
 .get-otp-btn:disabled {
@@ -190,22 +246,83 @@
   cursor: not-allowed;
 }
 
+/* Common OTP styles (used in both desktop and mobile) */
 .otp-container {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
   justify-content: space-between;
   width: 100%; /* Ensure full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+  padding: 0 2px; /* Add small padding to prevent edge touching */
 }
 
 .otp-input {
   width: 40px;
   height: 45px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   text-align: center;
   font-size: 18px;
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box; /* Include padding and border in the width */
+}
+
+/* Adjust OTP input sizes for different screen sizes */
+@media (max-width: 480px) {
+  .otp-container {
+    gap: 6px;
+  }
+  
+  .otp-input {
+    width: 40px; /* Slightly larger for better touch targets */
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  /* Ensure modal content has enough padding */
+  .otp-modal-content {
+    padding: 20px 15px;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+}
+
+@media (max-width: 400px) {
+  .otp-container {
+    gap: 5px;
+  }
+  
+  .otp-input {
+    width: 32px; /* Reduced size */
+    height: 38px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 375px) {
+  .otp-container {
+    gap: 4px;
+  }
+  
+  .otp-input {
+    width: 28px;
+    height: 35px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  .otp-container {
+    gap: 3px;
+  }
+  
+  .otp-input {
+    width: 22px;
+    height: 32px;
+    font-size: 14px;
+    padding: 0;
+  }
 }
 
 .otp-info {
@@ -233,6 +350,7 @@
   cursor: pointer;
   padding: 0;
   font-size: 12px;
+  margin-left: 5px;
 }
 
 .resend-btn:disabled {
@@ -240,43 +358,196 @@
   cursor: not-allowed;
 }
 
-.error-message {
-  color: #e74c3c;
+/* Desktop OTP Container (inline) */
+.desktop-otp-container {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0 25px;
+  border: 1px solid #e5e5e5;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.desktop-otp-container .otp-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #0a1a34;
+}
+
+.desktop-otp-container .otp-instruction {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.desktop-otp-container .otp-container {
+  justify-content: center;
+  padding: 0 10px; /* Add padding to center inputs better */
+}
+
+/* OTP Modal Styles - Only for Mobile */
+.otp-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+
+.otp-modal-content {
+  background: white;
+  border-radius: 20px 20px 0 0;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease-out;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Specific styling for OTP container in modal */
+.otp-modal .otp-container {
+  max-width: 100%;
+  justify-content: center;
+  padding: 0 10px; /* Add padding for breathing room */
+}
+
+/* Adjust modal content for different screen sizes */
+@media (max-width: 768px) {
+  .otp-modal-content {
+    margin: 0 10px;
+    width: calc(100% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .otp-modal-content {
+    padding: 20px 15px;
+  }
+  
+  .otp-modal-title {
+    font-size: 18px;
+  }
+  
+  .otp-modal-instruction {
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 375px) {
+  .otp-modal-content {
+    padding: 15px 10px; /* Reduce horizontal padding */
+  }
+  
+  .otp-modal .otp-container {
+    padding: 0 5px; /* Reduce container padding */
+  }
+  
+  .otp-modal-title {
+    font-size: 16px; /* Reduce font size */
+  }
+  
+  .otp-modal-instruction {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 320px) {
+  .otp-modal-content {
+    padding: 12px 8px; /* Minimal padding for smallest screens */
+  }
+  
+  .otp-modal .otp-container {
+    padding: 0 2px; /* Minimal padding */
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.otp-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #0a1a34;
+  text-align: center;
+}
+
+.otp-modal-instruction {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.message-box {
   font-size: 14px;
   margin-bottom: 15px;
   padding: 8px 12px;
-  background-color: rgba(231, 76, 60, 0.1);
   border-radius: 4px;
+}
+
+.error-message {
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
   border-left: 3px solid #e74c3c;
+}
+
+.info-message {
+  color: #3498db;
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left: 3px solid #3498db;
 }
 
 .consent-container {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
   margin-bottom: 20px;
-  width: 100%; /* Ensure full width */
+  gap: 10px;
 }
 
 .consent-container label {
   font-size: 12px;
   color: #666;
   line-height: 1.4;
-  flex: 1; /* Allow label to take remaining space */
+  flex: 1;
 }
 
 .verify-btn {
-  width: 100%;
-  padding: 12px;
-  background-color: #FFCB03;
-  color: #0a1a34;
+  background-color: #0083B5;
+  color: white;
   border: none;
-  border-radius: 4px;
-  font-weight: 600;
+  border-radius: 30px;
+  padding: 12px 24px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
-  transition: background-color 0.2s ease;
+  width: 100%;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.verify-btn:hover {
+  background-color: #006d96;
 }
 
 .verify-btn:disabled {
@@ -285,7 +556,15 @@
   cursor: not-allowed;
 }
 
-/* Responsive Styles */
+.initial-verify-btn {
+  background-color: #FFCB03;
+  color: #0a1a34;
+}
+
+.initial-verify-btn:hover {
+  background-color: #edb900;
+}
+
 @media (max-width: 992px) {
   .otp-page {
     flex-direction: column;
@@ -294,56 +573,93 @@
   .left-section, .right-section {
     flex: none;
     width: 100%;
-    box-sizing: border-box;
   }
   
   .left-section {
-    display: none; /* Hide the left section on mobile */
+    display: none;
   }
   
   .right-section {
-    min-height: 100vh;
-    padding: 30px 20px;
+    padding: 20px;
   }
   
   .right-content {
-    max-width: 450px;
-    margin: 0 auto;
-    padding: 0 5px; /* Add a little padding */
+    max-width: 100%;
+    padding: 0;
   }
 }
 
 @media (max-width: 768px) {
+  .otp-page {
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  
   .right-section {
-    padding: 20px 15px;
-    overflow-x: hidden; /* Additional prevention for horizontal scrolling */
+    padding: 20px;
+    background-color: transparent;
+  }
+  
+  .right-section.mobile-view {
+    padding: 15px;
+    margin-bottom: 0;
+  }
+  
+  .form-container {
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    background-color: rgba(255, 255, 255, 0.95);
   }
   
   .form-title {
-    font-size: 26px;
-    text-align: center; /* Center title on mobile */
+    font-size: 28px;
+    text-align: center;
   }
   
   .form-subtitle {
     font-size: 20px;
-    text-align: center; /* Center subtitle on mobile */
+    text-align: center;
   }
   
-  .phone-input-group {
-    flex-direction: row;
+  .logo-container {
+    margin-bottom: 15px;
   }
   
-  .country-code-select-container {
-    min-width: 90px;
+  .logo {
+    width: 150px;
   }
   
-  .country-code-select {
-    font-size: 14px;
-    padding: 8px 12px;
+  .bumrah-image {
+    max-width: 180px;
+    margin-bottom: -30px;
+  }
+  
+  /* For mobile, reduce progress tracker margin */
+  .progress-tracker {
+    margin-bottom: 25px;
+  }
+  
+  .step-circle {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+  
+  .step-label {
+    font-size: 10px;
+  }
+  
+  .progress-line {
+    width: 40px;
   }
   
   .otp-container {
-    gap: 5px;
+    gap: 8px;
   }
   
   .otp-input {
@@ -351,60 +667,56 @@
     height: 40px;
     font-size: 16px;
   }
-
-  .progress-line {
-    width: 50px;
+  
+  .otp-modal-content {
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
   }
   
   .get-otp-btn {
-    padding: 0 10px;
     font-size: 14px;
+    padding: 0 10px;
   }
 }
 
 @media (max-width: 480px) {
+  .input-group {
+    flex-direction: column;
+  }
+  
+  .country-phone-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+  
+  .country-code-select {
+    width: 100px;
+  }
+  
+  .get-otp-btn {
+    width: 100%;
+    margin-top: 10px;
+    margin-left: 0;
+    border-radius: 8px;
+    padding: 12px;
+    height: auto;
+  }
+  
   .otp-input {
     width: 30px;
     height: 35px;
     font-size: 14px;
   }
   
-  .country-code-select-container {
-    min-width: 80px;
-  }
-  
-  .country-code-select {
-    font-size: 13px;
-    padding: 8px;
-    background-position: right 5px center;
-  }
-  
-  .phone-input {
-    padding: 8px;
-  }
-  
-  .progress-line {
-    width: 40px;
-  }
-  
-  .form-title {
-    font-size: 22px;
-  }
-  
-  .form-subtitle {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .get-otp-btn {
-    padding: 0 8px;
-    font-size: 12px;
+  .bumrah-image {
+    max-width: 150px;
+    margin-bottom: -25px;
   }
 }
 
-/* Set Poppins font for all input placeholders */
 input::placeholder, 
-textarea::placeholder,
-select {
-  font-family: 'Poppins', sans-serif;
+select::placeholder {
+  font-size: 14px;
+  color: #999;
 } 

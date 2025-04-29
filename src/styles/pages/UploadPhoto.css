@@ -768,4 +768,110 @@
   .gender-btn {
     width: 80%;
   }
+}
+
+/* Processing Modal Styles */
+.processing-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85); /* Translucent white overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px); /* Slight blur effect for modern browsers */
+}
+
+.processing-modal {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 420px;
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.processing-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.processing-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin: 25px 0 20px;
+  text-align: center;
+}
+
+/* Enhance loading spinner for the processing modal */
+.processing-modal .loading-spinner {
+  border: 5px solid rgba(0, 131, 181, 0.2);
+  border-radius: 50%;
+  border-top: 5px solid #0083B5;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+/* Enhance progress bar for the processing modal */
+.processing-modal .progress-bar {
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  height: 12px;
+  width: 100%;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.processing-modal .progress-fill {
+  height: 100%;
+  background-color: #0083B5;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .processing-modal {
+    width: 95%;
+    padding: 30px 20px;
+  }
+  
+  .processing-text {
+    font-size: 16px;
+    margin: 20px 0 15px;
+  }
 } 

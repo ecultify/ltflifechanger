@@ -59,7 +59,7 @@ const SharePoster = ({ userData, userImage, containerRef }) => {
     posterElement.style.position = 'relative';
     posterElement.style.backgroundColor = '#ffffff';
     posterElement.style.color = '#000000';
-    posterElement.style.fontFamily = 'Arial, sans-serif';
+    posterElement.style.fontFamily = '"Poppins", sans-serif';
     
     // Set the poster content
     posterElement.innerHTML = `

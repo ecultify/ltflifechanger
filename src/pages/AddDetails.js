@@ -326,7 +326,7 @@ const AddDetails = () => {
     <div className="details-page">
       <div className="left-section">
         <img 
-          src="/images/Upload Photo + Add Details.png" 
+          src="/images/adddetails pageimage.jpg" 
           alt="L&T Finance Add Details" 
           className="left-section-image"
         />
@@ -432,16 +432,9 @@ const AddDetails = () => {
                       >×</button>
                     </div>
                   ))}
-                  <input 
-                    type="text" 
-                    id="keywords"
-                    placeholder="Add keywords..." 
-                    value={keywordInput}
-                    onChange={(e) => setKeywordInput(e.target.value)}
-                    onKeyDown={handleKeywordKeyPress}
-                    className="keywords-input"
-                    style={inputStyle}
-                  />
+                  <div className="keywords-input" style={{ ...inputStyle, fontStyle: 'italic', color: '#999' }}>
+                    Select keywords from below
+                  </div>
                 </div>
               </div>
               <div className="suggested-keywords">
@@ -452,6 +445,8 @@ const AddDetails = () => {
                       type="button" 
                       className="suggested-keyword"
                       onClick={() => handleAddKeyword(keyword)}
+                      disabled={keywords.includes(keyword)}
+                      style={keywords.includes(keyword) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                     >{keyword}</button>
                   ))
                 ) : (

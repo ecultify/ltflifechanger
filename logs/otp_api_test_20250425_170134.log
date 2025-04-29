@@ -1,0 +1,44 @@
+
+=====================================================
+STARTING OTP API TEST WITH PHONE NUMBER: 5432109876
+=====================================================
+
+TESTING ENCRYPTION/DECRYPTION FUNCTIONS:
+Original: {"mobile":"5432109876","countryCode":"91","otpType":"MOBILE"}
+Encrypted: VZELi1D3kXDuCcxDQkIF0lU4fhxuW6WHDR4XUiFmi1j2vUf3sPsbWCYGzfi4iE+GJgCOhM++wY/QBJ8eVN7KWA==
+Decrypted: {"mobile":"5432109876","countryCode":"91","otpType":"MOBILE"}
+Success: true
+
+=====================================================
+STARTING API TESTS
+=====================================================
+
+INFO: Testing with original working payload...
+INFO: Working payload response: 200
+INFO: Response body: {"body":"rZTY2F7BrelS2XfOI55m6RgvGkFVwRtq09yTEfA1C4zn2jdmOiqt+rMIP06osry/"}
+INFO: Encrypted response: rZTY2F7BrelS2XfOI55m6RgvGkFVwRtq09yTEfA1C4zn2jdmOiqt+rMIP06osry/
+INFO: Decrypted response: 
+INFO: 
+---------------- Test #1 ----------------
+INFO: Testing with payload: {"mobile":"5432109876"}
+INFO: Encrypted payload: VZELi1D3kXDuCcxDQkIF0vuv83w2qY6J53NtfuBp0SA=
+INFO: 
+---------------- Test #2 ----------------
+INFO: Testing with payload: {"mobile":5432109876}
+INFO: Encrypted payload: UgyCHEz/LZ/4gliQogDbaR4L3Hj60ntkjbZxfAEknxE=
+INFO: 
+---------------- Test #3 ----------------
+INFO: Testing with payload: {"mobile":"5432109876","otpType":"MOBILE"}
+INFO: Encrypted payload: VZELi1D3kXDuCcxDQkIF0jWvfwG/+yIdxIO37eAImTl6VrHyFJKMna4N+c/XTGQr
+INFO: 
+---------------- Test #4 ----------------
+INFO: Testing with payload: {"mobile":"5432109876","countryCode":"91"}
+INFO: Encrypted payload: VZELi1D3kXDuCcxDQkIF0lU4fhxuW6WHDR4XUiFmi1g7kbI4TvKk2p+2lYg7HeMe
+INFO: 
+---------------- Test #5 ----------------
+INFO: Testing with payload: {"mobile":"5432109876","countryCode":"91","otpType":"MOBILE"}
+INFO: Encrypted payload: VZELi1D3kXDuCcxDQkIF0lU4fhxuW6WHDR4XUiFmi1j2vUf3sPsbWCYGzfi4iE+GJgCOhM++wY/QBJ8eVN7KWA==
+INFO: 
+---------------- Testing Complete ----------------
+
+API testing completed.

@@ -1,0 +1,44 @@
+
+=====================================================
+STARTING OTP API TEST WITH PHONE NUMBER: 9876543210
+=====================================================
+
+TESTING ENCRYPTION/DECRYPTION FUNCTIONS:
+Original: {"mobile":"9876543210","countryCode":"91","otpType":"MOBILE"}
+Encrypted: i24oBfx2ACpbJC9wikYFuU5OFlGgF5DWFLhIX/sB2Knqc9yfNnhFW2/i9F0v7rWSnEo9KZ996AXRksAf8THuJQ==
+Decrypted: {"mobile":"9876543210","countryCode":"91","otpType":"MOBILE"}
+Success: true
+
+=====================================================
+STARTING API TESTS
+=====================================================
+
+INFO: Testing with original working payload...
+INFO: Working payload response: 200
+INFO: Response body: {"body":"rZTY2F7BrelS2XfOI55m6RgvGkFVwRtq09yTEfA1C4zn2jdmOiqt+rMIP06osry/"}
+INFO: Encrypted response: rZTY2F7BrelS2XfOI55m6RgvGkFVwRtq09yTEfA1C4zn2jdmOiqt+rMIP06osry/
+INFO: Decrypted response: 
+INFO: 
+---------------- Test #1 ----------------
+INFO: Testing with payload: {"mobile":"9876543210"}
+INFO: Encrypted payload: i24oBfx2ACpbJC9wikYFuSAqYQBeRi1hn6LxLXy+EvA=
+INFO: 
+---------------- Test #2 ----------------
+INFO: Testing with payload: {"mobile":9876543210}
+INFO: Encrypted payload: Jo3kZ7y2DAKuOZgJ/szIPxPTMMa0goxyKQli08h4Y8I=
+INFO: 
+---------------- Test #3 ----------------
+INFO: Testing with payload: {"mobile":"9876543210","otpType":"MOBILE"}
+INFO: Encrypted payload: i24oBfx2ACpbJC9wikYFudUXy/LTSOCFOojVRwk8h8SjFbFq7YYFUvo0PYeXgDc7
+INFO: 
+---------------- Test #4 ----------------
+INFO: Testing with payload: {"mobile":"9876543210","countryCode":"91"}
+INFO: Encrypted payload: i24oBfx2ACpbJC9wikYFuU5OFlGgF5DWFLhIX/sB2KlQ0MmRz/rgc34S+Unp4587
+INFO: 
+---------------- Test #5 ----------------
+INFO: Testing with payload: {"mobile":"9876543210","countryCode":"91","otpType":"MOBILE"}
+INFO: Encrypted payload: i24oBfx2ACpbJC9wikYFuU5OFlGgF5DWFLhIX/sB2Knqc9yfNnhFW2/i9F0v7rWSnEo9KZ996AXRksAf8THuJQ==
+INFO: 
+---------------- Testing Complete ----------------
+
+API testing completed.

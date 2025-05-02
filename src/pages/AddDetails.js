@@ -226,11 +226,11 @@ const AddDetails = () => {
           messages: [
             {
               role: "system",
-            content: "You are a world-class marketing expert specializing in creating memorable, impactful business taglines. Create powerful taglines that are exactly 10-12 words long, in first person, and incorporate all provided keywords naturally. The taglines should be aspirational, emotionally resonant, and capture the core value proposition of the business. Avoid clichés and create something truly distinctive that would stand out in the market. Do not use quotation marks in your response."
+            content: `You are a world-class marketing expert specializing in creating memorable, impactful business taglines for the ${industry || "business"} industry. Create powerful taglines that are exactly 10-12 words long, in first person, and incorporate all provided keywords naturally. The taglines should be aspirational, emotionally resonant, and capture the core value proposition of the business. Avoid clichés and create something truly distinctive that would stand out in the ${industry || "business"} market. Do not use quotation marks in your response.`
             },
             {
               role: "user",
-            content: `Create a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline must be EXACTLY 10-12 words long and must incorporate these keywords: ${keywords.join(", ")}. The tagline should be bold, memorable, and convey confidence. It should have a natural flow and rhythm when spoken aloud. Do not include quotation marks, explanations, or variations - provide only the final tagline itself.`
+            content: `Create a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline must be EXACTLY 10-12 words long and must incorporate these keywords: ${keywords.join(", ")}. The tagline should be bold, memorable, and convey confidence specific to the ${industry || "business"} industry. It should have a natural flow and rhythm when spoken aloud. Do not include quotation marks, explanations, or variations - provide only the final tagline itself.`
             }
           ],
         temperature: 0.9,
@@ -301,7 +301,22 @@ const AddDetails = () => {
     };
 
     // Get a generic tagline based on industry or use the default
-    const generatedTagline = industryTaglines[industry] || "I deliver excellence with passion and quality service that exceeds your expectations.";
+    let generatedTagline = industryTaglines[industry] || "I deliver excellence with passion and quality service that exceeds your expectations.";
+    
+    // Try to incorporate at least one of the user's keywords if available
+    if (keywords.length > 0) {
+      // Get a random keyword from the user's selection
+      const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
+      
+      // Check if the keyword is already in the tagline
+      if (!generatedTagline.toLowerCase().includes(randomKeyword.toLowerCase())) {
+        // Try to insert the keyword at a natural position
+        const words = generatedTagline.split(' ');
+        const insertPosition = Math.floor(words.length / 2);
+        words.splice(insertPosition, 0, randomKeyword.toLowerCase());
+        generatedTagline = words.join(' ');
+      }
+    }
     
     setTagline(generatedTagline);
     setIsTaglineGenerated(true);
@@ -317,6 +332,15 @@ const AddDetails = () => {
     
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
     sessionStorage.setItem('selectedKeywords', JSON.stringify(keywords));
+    
+    // Find which keywords are actually used in the tagline for highlighting in the poster
+    const highlightedKeywords = keywords.filter(keyword => {
+      // Check if this keyword appears in the tagline (case insensitive)
+      return tagline.toLowerCase().includes(keyword.toLowerCase());
+    });
+    
+    // Store the highlighted keywords separately for the poster generation
+    sessionStorage.setItem('highlightedKeywords', JSON.stringify(highlightedKeywords));
     
     // Move to the upload photo page
     navigate('/upload-photo');
@@ -487,15 +511,55 @@ const AddDetails = () => {
               <label htmlFor="tagline">Generate Tagline</label>
               <div className="tagline-input-container">
                 <div className="input-and-button">
-                  <input 
-                    type="text" 
-                    id="tagline"
-                    placeholder="Your company tagline..." 
-                    value={tagline}
-                    readOnly={true}
-                    className="form-input border-blue"
-                    style={inputStyle}
-                  />
+                  {tagline ? (
+                    <div 
+                      className="tagline-display border-blue"
+                      style={{
+                        ...inputStyle,
+                        padding: '12px 15px',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        minHeight: '46px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '2px',
+                        backgroundColor: 'white'
+                      }}
+                    >
+                      {tagline.split(' ').map((word, index) => {
+                        // Check if this word (without punctuation) matches any keyword
+                        const cleanWord = word.replace(/[.,!?;:()\[\]{}'"-]/g, '').toLowerCase();
+                        const isKeyword = keywords.some(keyword => 
+                          cleanWord === keyword.toLowerCase() || 
+                          cleanWord.includes(keyword.toLowerCase())
+                        );
+                        
+                        return (
+                          <span 
+                            key={index} 
+                            style={{
+                              fontWeight: isKeyword ? 'bold' : 'normal',
+                              color: isKeyword ? '#0083B5' : 'inherit',
+                              display: 'inline-block'
+                            }}
+                          >
+                            {word}{index < tagline.split(' ').length - 1 ? ' ' : ''}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      id="tagline"
+                      placeholder="Your company tagline..." 
+                      value={tagline}
+                      readOnly={true}
+                      className="form-input border-blue"
+                      style={inputStyle}
+                    />
+                  )}
                   <button 
                     type="button" 
                     className="generate-btn"
@@ -519,6 +583,31 @@ const AddDetails = () => {
                       </>
                     )}
                   </button>
+                  {isTaglineGenerated && (
+                    <button 
+                      type="button" 
+                      className="delete-btn"
+                      onClick={() => {
+                        setTagline('');
+                        setIsTaglineGenerated(false);
+                      }}
+                      style={{
+                        backgroundColor: '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '8px 12px',
+                        marginLeft: '10px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      <i className="fas fa-trash"></i>
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
               

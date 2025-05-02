@@ -1,3 +1,13 @@
+/* Fix for overscrolling issue */
+html, body {
+  overscroll-behavior: none; /* Prevents bouncing/overscrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 /* Hero Section Styles */
 .hero-section {
   position: relative;
@@ -58,7 +68,7 @@
   font-size: 28px;
   margin-bottom: -15px;
   font-weight: 600;
-  transform: rotate(-8deg);
+  transform: rotate(-5deg);
   margin-left: 50px;
   display: inline-block;
   position: relative;
@@ -75,7 +85,7 @@
   display: inline-block;
   font-weight: 800;
   margin: 5px 0;
-  transform: rotate(-8deg);
+  transform: rotate(-5deg);
   width: fit-content;
   position: relative;
   z-index: 2;
@@ -91,7 +101,7 @@
 }
 
 .poster-text:nth-child(3) {
-  transform: rotate(-8deg) translateX(40px);
+  transform: rotate(-5deg) translateX(40px);
   margin-bottom: 45px;
 }
 
@@ -186,6 +196,7 @@
 
 /* Testimonial container */
 .testimonial-container {
+  position: relative;
   display: flex;
   justify-content: space-between;
   margin-top: 80px;
@@ -212,6 +223,7 @@
   background-size: cover;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   will-change: transform;
+  z-index: 3; /* Higher than Group 30a image */
 }
 
 .testimonial-card:hover {
@@ -255,7 +267,7 @@
     top: 0;
     left: 0;
     width: 120px;
-    margin-bottom: 20px;
+    margin-bottom: 80px; /* Further increased spacing below logo */
     transform: rotate(0deg);
   }
   
@@ -264,30 +276,44 @@
     transform: none;
     text-align: center;
     width: 100%;
+    margin-bottom: 30px;
   }
   
   .hero-subtitle {
-    display: none;
+    display: block; /* Changed from none to show the "Get Your" text */
+    font-size: 20px;
+    margin-bottom: 5px; /* Reduced to bring closer to Free Personalised line */
+    text-align: left;
+    margin-top: 0px; /* Adjusted to position the text block lower */
+    transform: rotate(-12deg); /* Match the tilt of other text */
+    transform-origin: bottom left;
+    margin-left: 55px; /* Pushed 55px to the right (increased by 30px) */
   }
   
   .poster-text {
     margin-left: 0;
-    font-size: 28px !important;
+    font-size: 24px !important; /* Reduced from 28px */
     display: inline-block;
-    transform: rotate(0);
-    margin-bottom: 15px;
+    transform: rotate(-12deg); /* Changed to negative rotation */
+    transform-origin: bottom left; /* Changed rotation origin */
+    margin-bottom: 5px; /* Further reduced to bring lines even closer together */
+    margin-top: 0; /* Removed space to bring closer to Get Your line */
   }
   
   .poster-text:nth-child(3) {
-    transform: rotate(0);
+    transform: rotate(-12deg); /* Changed to negative rotation */
+    transform-origin: bottom left; /* Changed rotation origin */
     margin-bottom: 20px;
+    margin-top: -15px; /* Increased negative margin to pull it even closer to first line */
   }
   
   .with-bumrah {
     margin-left: 0;
     justify-content: center;
-    font-size: 22px;
-    transform: rotate(0);
+    font-size: 20px; /* Reduced from 22px */
+    transform: rotate(-12deg); /* Changed to negative rotation */
+    transform-origin: bottom left; /* Changed rotation origin */
+    clear: both; /* Ensure proper placement */
   }
   
   .name-highlight {
@@ -297,17 +323,22 @@
   
   .backed-text {
     margin-left: 0;
-    transform: none;
+    transform: rotate(-12deg); /* Changed to negative rotation */
+    transform-origin: bottom left; /* Changed rotation origin */
     display: block;
     position: static;
     top: 0;
-    font-size: 18px !important;
-    margin-top: 10px;
+    font-size: 16px !important; /* Reduced from 18px */
+    margin-top: 20px;
+    clear: both; /* Ensure proper placement */
   }
   
   .poster-btn {
     margin-left: 0;
     margin-top: 35px;
+    margin-bottom: 15px;
+    font-size: 16px; /* Reduced from default 18px */
+    padding: 10px 20px; /* Reduced padding */
   }
   
   .testimonial-container {
@@ -383,6 +414,69 @@
   .testimonial-card:hover::before {
     opacity: 1;
     transform: translateX(100%);
+  }
+  
+  /* Mobile frame container to position profile and group images */
+  .mobile-frame-container {
+    position: relative;
+    width: 100%;
+    min-height: 320px; /* Increased from 280px to accommodate taller images */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 0;
+    padding: 0;
+    margin-bottom: -10px;
+  }
+  
+  .profile-image-container {
+    position: relative;
+    top: auto;
+    left: 15px; /* Moved further left from 30px */
+    transform: translateY(5px); /* Pushed down by 5px */
+    width: 220px; /* Increased width */
+    height: auto;
+    margin: 0;
+    z-index: 2; /* Reduced from 5 to make it behind the right image */
+    overflow: visible;
+    display: flex;
+    align-items: flex-end;
+  }
+  
+  .profile-carousel-image {
+    width: 100%;
+    max-height: 360px; /* Increased height vertically */
+    object-fit: contain;
+    object-position: bottom;
+    vertical-align: bottom;
+  }
+  
+  /* Hide the frame image in mobile view */
+  .mobile-frame-container .frame-162422-image {
+    display: none;
+  }
+  
+  .group-30a-image {
+    display: block; 
+    position: relative;
+    top: auto;
+    right: 15px; /* Moved further right from 30px */
+    width: 190px; /* Increased width */
+    z-index: 5; /* Increased from 2 to make it in front of the left images */
+    align-self: flex-end;
+    margin-bottom: 0;
+    transform: translateY(5px); /* Pushed down by 5px */
+  }
+  
+  /* Make sure the images are positioned correctly relative to the carousel */
+  .testimonial-container {
+    margin-top: 30px; /* Increased from -10px to move carousel down */
+  }
+  
+  /* Hide desktop-only images in mobile view */
+  .hero-text-container > .profile-image-container,
+  .hero-text-container > .frame-162422-image {
+    display: none;
   }
 }
 
@@ -676,16 +770,28 @@
   }
   
   .section-2-title-container {
-    transform: rotate(0);
-    width: 100%;
+    transform: rotate(-12deg); /* Changed to negative rotation */
+    transform-origin: bottom left; /* Original rotation origin */
+    width: 90%; /* Reduced from 100% */
     margin-bottom: 30px;
-    max-width: 100%;
+    max-width: 90%; /* Reduced from 100% */
     overflow: visible;
+    margin-right: 0; /* Original margin-right */
+    margin-left: auto; /* Keep auto margin on left */
+    margin-top: 10px; /* Push down by 10px */
+    display: flex;
+    justify-content: flex-end; /* Align to the right instead of center */
+    
+  }
+  
+  /* Remove hover effect in mobile view */
+  .section-2-title-container:hover {
+    transform: rotate(-12deg);
   }
   
   .section-2-title {
-    font-size: 28px;
-    padding: 10px 15px;
+    font-size: 24px; /* Reduced from 28px */
+    padding: 8px 12px; /* Reduced from 10px 15px */
     width: 100%;
     box-sizing: border-box;
     word-break: break-word;
@@ -933,14 +1039,17 @@
 }
 
 @media (max-width: 768px) {
+  /* Section 3 adjustments for mobile */
   .section-3 .container {
     flex-direction: column;
+    padding-bottom: 0;
   }
   
   .section-3-content {
     width: 100%;
     padding-left: 0;
     text-align: center;
+    margin-bottom: 0;
   }
   
   .loan-disbursement-container {
@@ -948,7 +1057,210 @@
   }
   
   .section-3-desk-image {
-    width: 90%;
-    margin: 20px auto -1px;
+    width: 105%; /* Make the image bigger (was 90%) */
+    margin: 10px auto -1px;
   }
-} 
+  
+  /* Make text smaller */
+  .section-3 .logo-image {
+    width: 120px;
+    margin-bottom: 5px;
+  }
+  
+  .loan-title {
+    font-size: 30px; /* Smaller title (was 40px) */
+    margin-bottom: 0;
+  }
+  
+  .in-minutes {
+    font-size: 46px; /* Smaller text (was 60px) */
+    margin-bottom: 20px;
+  }
+  
+  /* Smaller button */
+  .section-3 .start-btn {
+    font-size: 15px;
+    padding: 10px 20px;
+  }
+}
+
+/* Group 30a image styling */
+.group-30a-image {
+  position: absolute;
+  top: -420px;
+  right: 22px;
+  width: 230px;
+  z-index: 2;
+}
+
+/* Frame image styling */
+.frame-162422-image {
+  position: absolute;
+  right: -350px;
+  top: 8px;
+  width: 295px;
+  z-index: 4;
+}
+
+/* Profile image carousel */
+.profile-image-container {
+  position: absolute;
+  right: -345px;
+  top: 10px;
+  width: 290px;
+  height: 440px;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.profile-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.5s ease;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  /* Existing mobile styles */
+  
+  .hero-text-container {
+    margin-left: 0;
+    transform: none;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+  
+  .poster-btn {
+    margin-left: 0;
+    margin-top: 35px;
+    margin-bottom: 15px;
+    font-size: 16px; /* Reduced from default 18px */
+    padding: 10px 20px; /* Reduced padding */
+  }
+  
+  /* Mobile frame container to position profile and group images */
+  .mobile-frame-container {
+    position: relative;
+    width: 100%;
+    min-height: 320px; /* Increased from 280px to accommodate taller images */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 0;
+    padding: 0;
+    margin-bottom: -10px;
+  }
+  
+  .profile-image-container {
+    position: relative;
+    top: auto;
+    left: 15px; /* Moved further left from 30px */
+    transform: translateY(5px); /* Pushed down by 5px */
+    width: 220px; /* Increased width */
+    height: auto;
+    margin: 0;
+    z-index: 2; /* Reduced from 5 to make it behind the right image */
+    overflow: visible;
+    display: flex;
+    align-items: flex-end;
+  }
+  
+  .profile-carousel-image {
+    width: 100%;
+    max-height: 360px; /* Increased height vertically */
+    object-fit: contain;
+    object-position: bottom;
+    vertical-align: bottom;
+  }
+  
+  /* Hide the frame image in mobile view */
+  .mobile-frame-container .frame-162422-image {
+    display: none;
+  }
+  
+  .group-30a-image {
+    display: block; 
+    position: relative;
+    top: auto;
+    right: 15px; /* Moved further right from 30px */
+    width: 190px; /* Increased width */
+    z-index: 5; /* Increased from 2 to make it in front of the left images */
+    align-self: flex-end;
+    margin-bottom: 0;
+    transform: translateY(5px); /* Pushed down by 5px */
+  }
+  
+  /* Make sure the images are positioned correctly relative to the carousel */
+  .testimonial-container {
+    margin-top: 30px; /* Increased from -10px to move carousel down */
+  }
+  
+  /* Hide desktop-only images in mobile view */
+  .hero-text-container > .profile-image-container,
+  .hero-text-container > .frame-162422-image {
+    display: none;
+  }
+  
+  /* Updated carousel styles for mobile */
+  .testimonial-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 20px auto;
+    overflow-x: auto;
+    position: relative;
+    height: 280px;
+    padding: 0;
+  }
+  
+  .testimonial-wrapper {
+    display: flex;
+    position: relative;
+    width: auto;
+    gap: 15px;
+    padding: 0 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+  }
+  
+  .testimonial-wrapper::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome/Safari */
+  }
+  
+  .testimonial-card {
+    min-width: 220px; /* Card width */
+    width: 220px;
+    height: 260px;
+    margin: 0;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    opacity: 1;
+  }
+  
+  .testimonial-card:first-child {
+    margin-left: 5px;
+  }
+  
+  .testimonial-card:last-child {
+    margin-right: 5px;
+  }
+  
+  /* Add a hint that content is scrollable */
+  .testimonial-wrapper::after {
+    content: '';
+    min-width: 10px;
+    height: 100%;
+  }
+  
+  /* Apply hover effects */
+  .testimonial-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+}

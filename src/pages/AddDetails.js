@@ -65,6 +65,17 @@ const AddDetails = () => {
   const [isTaglineGenerated, setIsTaglineGenerated] = useState(false);
   const [isGeneratingTagline, setIsGeneratingTagline] = useState(false);
   const [industryKeywords, setIndustryKeywords] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  
+  // Add resize listener to update mobile state
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   const navigate = useNavigate();
 
@@ -304,8 +315,8 @@ const AddDetails = () => {
     sessionStorage.setItem('industry', industry);
     sessionStorage.setItem('tagline', tagline);
     
-    // Store keywords as JSON string
-    sessionStorage.setItem('keywords', JSON.stringify(keywords));
+    // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
+    sessionStorage.setItem('selectedKeywords', JSON.stringify(keywords));
     
     // Move to the upload photo page
     navigate('/upload-photo');
@@ -323,7 +334,7 @@ const AddDetails = () => {
   };
 
   return (
-    <div className="details-page">
+    <div className="details-page" style={isMobile ? { backgroundColor: '#0a1a34' } : {}}>
       <div className="left-section">
         <img 
           src="/images/adddetails pageimage.jpg" 
@@ -333,25 +344,42 @@ const AddDetails = () => {
       </div>
       
       <div className="right-section">
-        <div className="right-content">
-          <div className="progress-tracker">
-            <div className="progress-step active">
-              <div className="step-circle">1</div>
-              <div className="step-label">OTP</div>
-            </div>
-            <div className="progress-line active"></div>
-            <div className="progress-step active">
-              <div className="step-circle">2</div>
-              <div className="step-label">Add Details</div>
-            </div>
-            <div className="progress-line"></div>
-            <div className="progress-step">
-              <div className="step-circle">3</div>
-              <div className="step-label">Upload</div>
-            </div>
-          </div>
-          
+        {isMobile && (
+          <div style={{
+            position: 'absolute',
+            top: '80px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '100%',
+            maxWidth: '700px',
+            height: '600px', // Further increased height to show full image
+            backgroundImage: 'url("/images/Group_15198(1).png")',
+            marginTop: '10px', // Push down by 10px
+            backgroundSize: '100%', // Reduced size to fit better
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat',
+            zIndex: 0
+          }}></div>
+        )}
+        <div className="right-content" style={isMobile ? { marginTop: '600px' } : {}}>
           <div className="form-container">
+            <div className="progress-tracker">
+              <div className="progress-step active">
+                <div className="step-circle">1</div>
+                <div className="step-label">OTP</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step active">
+                <div className="step-circle">2</div>
+                <div className="step-label">Add Details</div>
+              </div>
+              <div className="progress-line"></div>
+              <div className="progress-step">
+                <div className="step-circle">3</div>
+                <div className="step-label">Upload</div>
+              </div>
+            </div>
+            
             <h1 className="form-title">Add your Details</h1>
             
             <div className="form-row">
@@ -524,5 +552,5 @@ const AddDetails = () => {
   );
 };
 
-export default AddDetails; 
+export default AddDetails;
 

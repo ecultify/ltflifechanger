@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/SharePoster.css';
+import Loader from '../components/Loader';
 
 const SharePoster = () => {
   const navigate = useNavigate();
@@ -173,7 +174,7 @@ const SharePoster = () => {
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 32;
+          const maxLineLength = 29; // Reduced slightly to accommodate larger font
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines
@@ -196,17 +197,59 @@ const SharePoster = () => {
             taglineLines = [tagline];
           }
           
-          // Tagline styling
+          // Get selected keywords from session storage (or default to empty array)
+          let selectedKeywords = [];
+          try {
+            const storedKeywords = sessionStorage.getItem('selectedKeywords');
+            if (storedKeywords) {
+              selectedKeywords = JSON.parse(storedKeywords);
+            }
+          } catch (e) {
+            console.error('Error parsing selected keywords:', e);
+          }
+          
+          // Tagline styling - using Poppins font and increased font size by 3.5
           ctx.fillStyle = 'white';
-          ctx.font = 'bold 42px Arial';
+          ctx.font = 'bold 45.5px Poppins, sans-serif'; // Increased from 42px to 45.5px (42 + 3.5)
           ctx.textAlign = 'left';
           
           // Calculate vertical spacing for taglines
           const taglineStartY = canvas.height * 0.15;
           const taglineLineHeight = 55;
           
+          // Function to handle drawing text with certain words in bold
+          const drawTextWithBoldedWords = (line, x, y, keywords) => {
+            // Measure total width for proper spacing calculations
+            const words = line.split(' ');
+            let currentX = x;
+            
+            words.forEach((word, index) => {
+              // Check if this word is a keyword that should be bold
+              const isKeyword = keywords.some(keyword => 
+                word.toLowerCase().includes(keyword.toLowerCase()) ||
+                keyword.toLowerCase().includes(word.toLowerCase())
+              );
+              
+              // Set appropriate font weight
+              if (isKeyword) {
+                ctx.font = 'bold 45.5px Poppins, sans-serif';
+              } else {
+                ctx.font = '45.5px Poppins, sans-serif';
+              }
+              
+              // Draw the word
+              ctx.fillText(word, currentX, y);
+              
+              // Move x position for next word (add space width)
+              const wordWidth = ctx.measureText(word).width;
+              const spaceWidth = ctx.measureText(' ').width;
+              currentX += wordWidth + spaceWidth;
+            });
+          };
+          
+          // Draw each line with keywords bolded
           taglineLines.forEach((line, index) => {
-            ctx.fillText(line, 60, taglineStartY + (index * taglineLineHeight));
+            drawTextWithBoldedWords(line, 60, taglineStartY + (index * taglineLineHeight), selectedKeywords);
           });
           
           // Position for company info circles
@@ -226,22 +269,33 @@ const SharePoster = () => {
           // Draw person icon in the first circle
           ctx.fillStyle = 'black';
           ctx.font = 'bold 24px Arial';
-            ctx.fillText('👤', 68, circleY + 8); // Generic person icon
+          ctx.textAlign = 'center';
+          ctx.fillText('👤', 80, circleY + 8); // Centered the icon
           
           // Draw phone icon in the second circle
-          ctx.fillText('📞', 68, circleY + 93);
+          ctx.fillText('📞', 80, circleY + 93); // Centered the icon
           
-          // Draw company info text
+          // Draw company info text - properly aligned vertically with icons
           ctx.fillStyle = 'white';
           ctx.font = 'bold 28px Arial';
           ctx.textAlign = 'left';
-          ctx.fillText(userData.companyName || 'Your Company Name', 130, circleY - 15);
-          ctx.font = '22px Arial';
-          ctx.fillText(userData.industry || 'Your Business Type', 130, circleY + 15);
           
-          // Phone number
+          // Company name - moved up but still aligned with its icon
+          ctx.fillText(userData.companyName || 'Your Company Name', 130, circleY - 5); // Moved up from circleY + 8
+          
+          // Industry - moved up along with company name
+          ctx.font = '22px Arial';
+          ctx.fillText(userData.industry || 'Your Business Type', 130, circleY + 25); // Moved up from circleY + 40
+          
+          // Phone number - vertically centered with its icon
+          // Format phone number to remove +91 if present
+          let phoneNumber = userData.phoneNumber || 'Your Phone Number';
+          if (phoneNumber.includes('+91')) {
+            phoneNumber = phoneNumber.replace('+91', '').trim();
+          }
+          
           ctx.font = 'bold 28px Arial';
-          ctx.fillText(userData.phoneNumber || 'Your Phone Number', 130, circleY + 95);
+          ctx.fillText(phoneNumber, 130, circleY + 93); // Kept the same position
           
           // Name at bottom removed as requested
         } catch (textError) {
@@ -281,11 +335,17 @@ const SharePoster = () => {
           ctx.font = '24px Arial';
           ctx.fillText(userData.industry || 'Your Industry', canvas.width / 2, 250);
           
-          ctx.font = '24px Arial';
-          ctx.fillText(userData.phoneNumber || 'Your Phone Number', canvas.width / 2, 350);
+          // Format phone number to remove +91 if present
+          let phoneNumber = userData.phoneNumber || 'Your Phone Number';
+          if (phoneNumber.includes('+91')) {
+            phoneNumber = phoneNumber.replace('+91', '').trim();
+          }
           
-          // Add tagline
-          ctx.font = 'italic 28px Arial';
+          ctx.font = '24px Arial';
+          ctx.fillText(phoneNumber, canvas.width / 2, 350);
+          
+          // Add tagline with Poppins font
+          ctx.font = 'italic 31.5px Poppins, sans-serif'; // Increased from 28px to 31.5px (28 + 3.5)
           const tagline = userData.tagline || 'Your Tagline';
           const words = tagline.split(' ');
           let line = '';
@@ -339,6 +399,36 @@ const SharePoster = () => {
     // Load data from sessionStorage when component mounts
     setLoadingStatus('Loading your data...');
     
+    // Ensure Poppins font is loaded
+    const ensurePoppinsFont = () => {
+      // Check if the font is already added to the document
+      const existingLink = document.querySelector('link[href*="fonts.googleapis.com/css2?family=Poppins"]');
+      
+      if (!existingLink) {
+        // Create link element for Poppins font
+        const fontLink = document.createElement('link');
+        fontLink.rel = 'stylesheet';
+        fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
+        document.head.appendChild(fontLink);
+        
+        // Create a span element to trigger font loading
+        const span = document.createElement('span');
+        span.style.fontFamily = 'Poppins, sans-serif';
+        span.style.visibility = 'hidden';
+        span.textContent = 'Font loader';
+        document.body.appendChild(span);
+        
+        // Remove the span after a short delay
+        setTimeout(() => {
+          if (span && document.body.contains(span)) {
+            document.body.removeChild(span);
+          }
+        }, 500);
+      }
+    };
+    
+    ensurePoppinsFont();
+    
     try {
       const storedUserData = sessionStorage.getItem('userData');
       const storedImageData = sessionStorage.getItem('processedImage');
@@ -383,8 +473,7 @@ const SharePoster = () => {
     <div className="share-poster-page" style={{ backgroundImage: 'url("/images/BG.png")' }}>
       {isLoading ? (
         <div className="loading-overlay">
-          <div className="loading-spinner"></div>
-          <p>{loadingStatus}</p>
+          <Loader message={loadingStatus} />
         </div>
       ) : error ? (
         <div className="error-container">

@@ -1,0 +1,114 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #FFC107;
+  border: 3px solid #000;
+  z-index: 9999;
+}
+
+.animated-logo {
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+}
+
+.logo-path {
+  stroke: #000;
+  stroke-width: 1;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: dash 3s linear infinite, colorChange 4s infinite alternate ease-in-out;
+  fill: #FFC107;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  letter-spacing: 1px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 300;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -300;
+  }
+}
+
+@keyframes colorChange {
+  0% {
+    fill: rgba(255, 193, 7, 0.5); /* Semi-transparent yellow */
+    stroke: #000;
+  }
+  50% {
+    fill: rgba(255, 193, 7, 0.8); /* More opaque yellow */
+    stroke: #000;
+  }
+  100% {
+    fill: #FFC107; /* Fully opaque yellow */
+    stroke: transparent;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0.5;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .animated-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .loading-text {
+    font-size: 16px;
+  }
+}
+
+/* Inline loader variant for modals and components */
+.loader-inline {
+  position: static;
+  background-color: transparent;
+  border: none;
+  padding: 20px;
+  height: auto;
+}
+
+.loader-inline .animated-logo {
+  width: 70px;
+  height: 70px;
+}
+
+.loader-inline .loading-text {
+  font-size: 14px;
+  margin-top: 15px;
+} 

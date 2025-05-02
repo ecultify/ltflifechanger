@@ -61,23 +61,18 @@
 }
 
 .logo {
-  max-width: 180px;
+  max-width: 240px; /* Increased size to make it bigger and let it breathe */
   height: auto;
+  margin: 10px 0; /* Added vertical margin to let it breathe */
 }
 
-/* Bumrah image container - only for mobile */
+/* Bumrah image container - removed as requested */
 .bumrah-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
-  position: relative;
-  z-index: 2;
+  display: none; /* Hide the container */
 }
 
 .bumrah-image {
-  max-width: 200px;
-  height: auto;
-  margin-bottom: -20px; /* Overlap with form container */
+  display: none; /* Hide the image */
 }
 
 /* Progress tracker */
@@ -143,13 +138,15 @@
   border-radius: 12px;
   padding: 30px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 /* Only set position relative and z-index for mobile */
 @media (max-width: 768px) {
   .form-container {
     position: relative;
-    z-index: 1;
+    z-index: 3; /* Ensure it's above Bumrah image but below modals */
   }
 }
 
@@ -254,7 +251,7 @@
   justify-content: space-between;
   width: 100%; /* Ensure full width */
   box-sizing: border-box; /* Include padding in width calculation */
-  padding: 0 2px; /* Add small padding to prevent edge touching */
+  padding: 0 15px; /* Increased padding to prevent edge touching and add space on both sides */
 }
 
 .otp-input {
@@ -414,6 +411,8 @@
   animation: slideUp 0.3s ease-out;
   box-sizing: border-box;
   overflow-x: hidden; /* Prevent horizontal scrolling */
+  margin: 0 15px; /* Increased margin to prevent edge touching */
+  width: calc(100% - 30px); /* Account for increased margins */
 }
 
 /* Specific styling for OTP container in modal */
@@ -421,58 +420,6 @@
   max-width: 100%;
   justify-content: center;
   padding: 0 10px; /* Add padding for breathing room */
-}
-
-/* Adjust modal content for different screen sizes */
-@media (max-width: 768px) {
-  .otp-modal-content {
-    margin: 0 10px;
-    width: calc(100% - 20px);
-  }
-}
-
-@media (max-width: 480px) {
-  .otp-modal-content {
-    padding: 20px 15px;
-  }
-  
-  .otp-modal-title {
-    font-size: 18px;
-  }
-  
-  .otp-modal-instruction {
-    font-size: 13px;
-    margin-bottom: 15px;
-  }
-}
-
-@media (max-width: 375px) {
-  .otp-modal-content {
-    padding: 15px 10px; /* Reduce horizontal padding */
-  }
-  
-  .otp-modal .otp-container {
-    padding: 0 5px; /* Reduce container padding */
-  }
-  
-  .otp-modal-title {
-    font-size: 16px; /* Reduce font size */
-  }
-  
-  .otp-modal-instruction {
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
-}
-
-@media (max-width: 320px) {
-  .otp-modal-content {
-    padding: 12px 8px; /* Minimal padding for smallest screens */
-  }
-  
-  .otp-modal .otp-container {
-    padding: 0 2px; /* Minimal padding */
-  }
 }
 
 @keyframes slideUp {
@@ -497,6 +444,90 @@
   color: #666;
   margin-bottom: 20px;
   text-align: center;
+}
+
+/* Consent Modal Styles */
+.consent-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.consent-modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.2s ease-out;
+  box-sizing: border-box;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.consent-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  color: #0a1a34;
+  text-align: center;
+}
+
+.consent-modal-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.consent-modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.decline-btn, .accept-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+.decline-btn {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.accept-btn {
+  background-color: #0083B5;
+  color: white;
 }
 
 .message-box {
@@ -530,6 +561,12 @@
   color: #666;
   line-height: 1.4;
   flex: 1;
+}
+
+.consent-container a {
+  color: #0083B5;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .verify-btn {
@@ -612,8 +649,9 @@
   .form-container {
     padding: 20px;
     border-radius: 15px;
-    margin-bottom: 30px;
+    margin: 0 15px 30px 15px;
     background-color: rgba(255, 255, 255, 0.95);
+    width: calc(100% - 30px);
   }
   
   .form-title {
@@ -630,12 +668,18 @@
     margin-bottom: 15px;
   }
   
-  .logo {
-    width: 150px;
+.logo {
+    width: 240px; /* Increased size to make it bigger and let it breathe */
+    margin: 10px 0; /* Added vertical margin to let it breathe */
+  }
+  
+  .bumrah-container {
+    margin-bottom: 15px;
+    margin-top: 40px; /* Push it down by 40px */
   }
   
   .bumrah-image {
-    max-width: 180px;
+    max-width: 220px; /* Increased size */
     margin-bottom: -30px;
   }
   
@@ -660,6 +704,7 @@
   
   .otp-container {
     gap: 8px;
+    padding: 0 15px; /* Added padding to prevent edge touching */
   }
   
   .otp-input {
@@ -676,6 +721,11 @@
   .get-otp-btn {
     font-size: 14px;
     padding: 0 10px;
+  }
+
+  /* Make consent container more compact on mobile */
+  .consent-container label {
+    font-size: 14px;
   }
 }
 
@@ -710,8 +760,53 @@
   }
   
   .bumrah-image {
-    max-width: 150px;
+    max-width: 400px; /* Doubled the size as requested */
     margin-bottom: -25px;
+  }
+
+  /* Ensure OTP modal doesn't overflow */
+  .otp-modal-content {
+    max-width: calc(100% - 20px);
+    padding: 15px;
+  }
+}
+
+@media (max-width: 375px) {
+  .bumrah-image {
+    max-width: 180px;
+  }
+
+  .logo {
+    width: 150px;
+  }
+}
+
+@media (max-width: 320px) {
+  .form-container {
+    padding: 15px;
+  }
+
+  .progress-tracker {
+    margin-bottom: 15px;
+  }
+
+  .step-circle {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .progress-line {
+    width: 30px;
+  }
+
+  .form-title {
+    font-size: 24px;
+  }
+
+  .form-subtitle {
+    font-size: 18px;
+    margin-bottom: 20px;
   }
 }
 
@@ -719,4 +814,4 @@ input::placeholder,
 select::placeholder {
   font-size: 14px;
   color: #999;
-} 
+}

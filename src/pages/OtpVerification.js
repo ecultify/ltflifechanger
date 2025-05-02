@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/pages/OtpVerification.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../components/Loader';
 
 const OtpVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -15,6 +16,7 @@ const OtpVerification = () => {
   const [consentChecked, setConsentChecked] = useState(true); // Auto-checked for testing
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
 
   // API URLs
   const API_BASE_URL = 'http://localhost:5000/api'; // Replace with your production URL if needed
@@ -59,6 +61,29 @@ const OtpVerification = () => {
   // Handle consent checkbox change
   const handleConsentChange = (e) => {
     setConsentChecked(e.target.checked);
+  };
+
+  // Open consent modal
+  const openConsentModal = (e) => {
+    e.preventDefault();
+    setShowConsentModal(true);
+  };
+
+  // Close consent modal
+  const closeConsentModal = () => {
+    setShowConsentModal(false);
+  };
+
+  // Accept consent from modal
+  const acceptConsent = () => {
+    setConsentChecked(true);
+    setShowConsentModal(false);
+  };
+
+  // Decline consent from modal
+  const declineConsent = () => {
+    setConsentChecked(false);
+    setShowConsentModal(false);
   };
 
   // Handle OTP input change
@@ -233,6 +258,8 @@ const OtpVerification = () => {
 
   return (
     <div className="otp-page" style={{ backgroundImage: `url('/mobile/images/otpverfication/BG (1).png')` }}>
+      {isLoading && !showOtpInput && <Loader />}
+      
       {!isMobile && (
         <div className="left-section">
           <img 
@@ -445,9 +472,35 @@ const OtpVerification = () => {
                 disabled={isLoading || showOtpInput}
               />
               <label htmlFor="consent">
-              I hereby consent to L&T Finance Limited and its affiliates to use, edit, reproduce, and publish the photographs, videos, audio recordings, and any AI-generated or campaign-related content featuring me or submitted by me, for marketing, promotional, and other commercial purposes related to the "LTF Game Changer Poster with Jasprit Bumrah" campaign, across any media platforms including digital, print, outdoor, or broadcast, without any compensation or further approval.
+                {isMobile ? (
+                  <>
+                    I agree to the <a href="#" onClick={openConsentModal}>Terms & Conditions</a>
+                  </>
+                ) : (
+                  <>
+                    I hereby consent to L&T Finance Limited and its affiliates to use, edit, reproduce, and publish the photographs, videos, audio recordings, contact numbers, and any AI-generated or campaign-related content featuring me or submitted by me, for marketing, promotional, and other commercial purposes related to the "Bumrah X You" campaign, across any media platforms including digital, print, outdoor, or broadcast, without any compensation or further approval.
+                  </>
+                )}
               </label>
             </div>
+            
+            {/* Consent Modal for Mobile */}
+            {showConsentModal && (
+              <div className="consent-modal">
+                <div className="consent-modal-content">
+                  <h3 className="consent-modal-title">Terms & Conditions</h3>
+                  <div className="consent-modal-text">
+                    <p>
+                      I hereby consent to L&T Finance Limited and its affiliates to use, edit, reproduce, and publish the photographs, videos, audio recordings, contact numbers, and any AI-generated or campaign-related content featuring me or submitted by me, for marketing, promotional, and other commercial purposes related to the "Bumrah X You" campaign, across any media platforms including digital, print, outdoor, or broadcast, without any compensation or further approval.
+                    </p>
+                  </div>
+                  <div className="consent-modal-buttons">
+                    <button className="decline-btn" onClick={declineConsent}>Decline</button>
+                    <button className="accept-btn" onClick={acceptConsent}>Accept</button>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {!showOtpInput && (
               <button 

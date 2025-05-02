@@ -352,6 +352,11 @@ select {
 @media (max-width: 992px) {
   .details-page {
     flex-direction: column;
+    background-color: #0a1a34; /* Same as OTP page */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
   }
   
   .left-section, .right-section {
@@ -366,11 +371,22 @@ select {
   .right-section {
     min-height: 100vh;
     padding: 30px 20px;
+    background-color: transparent; /* Make background transparent to show the bg image */
+    background-image: url('../../../public/images/section1/hero-bg.png');
+    background-size: cover;
+    background-position: center;
   }
   
   .right-content {
     max-width: 100%;
     margin: 0 auto;
+    position: relative;
+    z-index: 1; /* Ensure content is above the background image */
+  }
+  
+  /* Group image removed as requested */
+  .right-section::before {
+    display: none; /* Remove the image */
   }
 }
 
@@ -379,6 +395,8 @@ select {
     padding: 20px 15px;
     align-items: flex-start;
     overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding-top: 110px; /* Increased by 10px as requested */
+    background-color: transparent; /* Ensure background is transparent to show the image */
   }
   
   .form-title {
@@ -398,6 +416,27 @@ select {
   
   .progress-line {
     width: 60px;
+  }
+  
+  /* Adjust the form container to have a white background */
+  .right-content {
+    position: relative;
+    z-index: 1; /* Ensure it's above the background image */
+  }
+  
+  .form-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  /* Adjust progress tracker inside form container */
+  .form-container .progress-tracker {
+    margin-bottom: 20px;
   }
   
   .keywords-tags {
@@ -477,4 +516,4 @@ select {
   .tagline-input-container .form-input {
     padding-right: 80px; /* Further reduce padding for smallest screens */
   }
-} 
+}

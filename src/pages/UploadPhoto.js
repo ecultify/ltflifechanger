@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/UploadPhoto.css';
 import axios from 'axios';
+import Loader from '../components/Loader';
 
 const UploadPhoto = () => {
   const [file, setFile] = useState(null);
@@ -197,6 +198,24 @@ const UploadPhoto = () => {
     console.error(`=== END ERROR LOG FOR ${context} ===`);
   };
 
+  // Add this function to simulate gradual progress during Segmind processing
+  const simulateProgressDuringProcessing = (startProgress, endProgress, duration, callback) => {
+    const startTime = Date.now();
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = startProgress + ((elapsed / duration) * (endProgress - startProgress));
+      
+      if (elapsed < duration) {
+        callback(Math.min(progress, endProgress));
+        requestAnimationFrame(updateProgress);
+      } else {
+        callback(endProgress);
+      }
+    };
+    
+    updateProgress();
+  };
+
   // Use Segmind Consistent Character with Pose API
   const generateConsistentCharacter = async (imageFile) => {
     try {
@@ -204,7 +223,7 @@ const UploadPhoto = () => {
       console.log('===== Starting Segmind character generation process =====');
       
       setProcessingStep('Preparing your image...');
-      setLoadingProgress(20);
+      setLoadingProgress(10);
       
       // Convert the uploaded image to base64
       const faceImageBase64 = await fileToBase64(imageFile);
@@ -213,6 +232,9 @@ const UploadPhoto = () => {
       // Load the pose image and convert to base64
       const poseImagePath = '/images/freepik__a-confident-young-indian-woman-with-straight-black__53397 (1).jpeg';
       console.log('Loading pose image from path:', poseImagePath);
+      
+      // Start simulating gradual progress from 10% to 30% while loading pose image
+      simulateProgressDuringProcessing(10, 30, 3000, setLoadingProgress);
       
       const response = await fetch(poseImagePath);
       if (!response.ok) {
@@ -230,7 +252,7 @@ const UploadPhoto = () => {
       console.log('Pose image converted to base64, length:', poseImageBase64.length);
       
       setProcessingStep('Creating your consistent character...');
-      setLoadingProgress(40);
+      setLoadingProgress(30);
       
       // Prepare the request to Segmind API
       const apiKey = 'SG_13f9868f102f0d83'; // Segmind API key
@@ -252,8 +274,11 @@ const UploadPhoto = () => {
         samples: 1
       };
       
-      setProcessingStep('Generating your character...');
-      setLoadingProgress(60);
+      setProcessingStep('Generating your character (this may take up to 30 seconds)...');
+      
+      // Start simulating gradual progress during the main Segmind processing
+      // This will gradually increase from 30% to 65% over 30 seconds
+      simulateProgressDuringProcessing(30, 65, 30000, setLoadingProgress);
 
       // Use Fetch API as primary method since it works better with Segmind
       console.log('Making API request to Segmind using Fetch API...');
@@ -287,7 +312,7 @@ const UploadPhoto = () => {
         URL.revokeObjectURL(generatedImageUrl);
         
         setProcessingStep('Removing background...');
-        setLoadingProgress(80);
+        setLoadingProgress(75);
         
         // Convert the blob to a file for background removal
         const generatedFile = new File([responseBlob], "consistent-character.jpg", { type: "image/jpeg" });
@@ -352,7 +377,12 @@ const UploadPhoto = () => {
   const removeImageBackground = async (imageFile) => {
     try {
       setProcessingStep('Removing background...');
-      setLoadingProgress(85);
+      // Start at 75% if coming from character generation, or 85% if called directly
+      const currentProgress = loadingProgress;
+      setLoadingProgress(currentProgress);
+      
+      // Simulate gradual progress during background removal process
+      simulateProgressDuringProcessing(currentProgress, 90, 5000, setLoadingProgress);
       
       // Create FormData to send the image
       const formData = new FormData();
@@ -362,8 +392,6 @@ const UploadPhoto = () => {
       const headers = {
         'X-Api-Key': 'rXjhNaRAqHWtxLaugDbCKHZW', // Remove.bg API key
       };
-      
-      setLoadingProgress(90);
       
       // Make the actual API call to remove.bg
       const response = await axios.post(
@@ -385,6 +413,9 @@ const UploadPhoto = () => {
         reader.readAsDataURL(blob);
       });
       
+      // Final progress step
+      simulateProgressDuringProcessing(95, 100, 1000, setLoadingProgress);
+      
       return bgRemovedImageUrl;
       
     } catch (error) {
@@ -392,6 +423,7 @@ const UploadPhoto = () => {
       
       // If the API call fails, we'll fall back to the original image
       console.log('Using original image as fallback due to background removal failure');
+      setLoadingProgress(100); // Complete the progress bar
       return previewUrl;
     }
   };
@@ -408,7 +440,10 @@ const UploadPhoto = () => {
       setShowPreviewModal(false);
       setShowProcessingModal(true);
       setIsLoading(true);
-      setLoadingProgress(10);
+      setLoadingProgress(0);
+      
+      // Simulate initial loading progress
+      simulateProgressDuringProcessing(0, 10, 1000, setLoadingProgress);
       
       // Generate consistent character with pose
       let processedImageUrl = previewUrl;
@@ -419,21 +454,28 @@ const UploadPhoto = () => {
       } catch (error) {
         console.error('Character generation failed:', error);
         // Fall back to just background removal
+        setProcessingStep('Character generation failed, falling back to background removal...');
+        simulateProgressDuringProcessing(loadingProgress, 85, 2000, setLoadingProgress);
+        
         try {
           processedImageUrl = await removeImageBackground(file);
           console.log('Background removal completed as fallback');
         } catch (bgRemovalError) {
           console.error('Background removal failed:', bgRemovalError);
           // Continue with the original image
+          setLoadingProgress(100);
         }
       }
       
-      // Store the processed image
+      // Store the processed image and ensure progress is complete
       setProcessedImage(processedImageUrl);
       setLoadingProgress(100);
       
-      // Handle successful processing
-      handleContinue(processedImageUrl);
+      // Add a small delay before proceeding to ensure user sees the completed progress
+      setTimeout(() => {
+        // Handle successful processing
+        handleContinue(processedImageUrl);
+      }, 1000);
       
     } catch (error) {
       console.error('Error processing image:', error);
@@ -473,7 +515,7 @@ const UploadPhoto = () => {
     <div className="upload-page">
       <div className="left-section">
         <img 
-          src="/images/Upload Photo + Add Details.png" 
+          src="/images/adddetails pageimage.jpg" 
           alt="L&T Finance Upload" 
           className="left-section-image"
         />
@@ -504,7 +546,6 @@ const UploadPhoto = () => {
             {error && <div className="error-message">{error}</div>}
             
             <div className="upload-area-container">
-              <p className="upload-subtitle">Upload Your Photo</p>
               
               {isCameraActive ? (
                 <div className="camera-container">
@@ -532,10 +573,7 @@ const UploadPhoto = () => {
                 >
                   {isLoading && !showProcessingModal ? (
                     <div className="loading-container">
-                      <div className="loading-spinner"></div>
-                      <div className="loading-text">
-                        Loading...
-                      </div>
+                      <Loader />
                     </div>
                   ) : previewUrl && !showPreviewModal ? (
                     <div className="preview-container">
@@ -633,10 +671,7 @@ const UploadPhoto = () => {
         <div className="processing-modal-overlay">
           <div className="processing-modal">
             <div className="processing-content">
-              <div className="loading-spinner"></div>
-              <div className="processing-text">
-                {processingStep || 'Processing your image...'}
-              </div>
+              <Loader fullScreen={false} message={processingStep || 'Processing your image...'} />
               <div className="progress-bar">
                 <div 
                   className="progress-fill" 

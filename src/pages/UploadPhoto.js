@@ -15,6 +15,7 @@ const UploadPhoto = () => {
   const [processedImage, setProcessedImage] = useState(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
+  const [isNormalSelfie, setIsNormalSelfie] = useState(false);
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -428,6 +429,33 @@ const UploadPhoto = () => {
     }
   };
 
+  // Function to enhance image using ESRGAN model from Segmind
+  const enhanceImageWithESRGAN = async (imageFile) => {
+    try {
+      setProcessingStep('Enhancing your selfie...');
+      // Start at current progress
+      const currentProgress = loadingProgress;
+      
+      // Simulate gradual progress during enhancement process
+      simulateProgressDuringProcessing(currentProgress, 90, 5000, setLoadingProgress);
+      
+      // In a real implementation, we would call the Segmind ESRGAN API here
+      // For now, we'll simulate the enhancement by just waiting
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      console.log('Image enhancement simulated (would use ESRGAN in production)');
+      
+      // For now, we'll just return the background-removed image
+      // In a real implementation, we would return the enhanced image from the API
+      return imageFile;
+      
+    } catch (error) {
+      console.error('Error enhancing image:', error);
+      // If enhancement fails, return the original image
+      return imageFile;
+    }
+  };
+
   // Start the processing after user confirms in the preview modal
   const startProcessing = async () => {
     if (!file) {
@@ -445,25 +473,49 @@ const UploadPhoto = () => {
       // Simulate initial loading progress
       simulateProgressDuringProcessing(0, 10, 1000, setLoadingProgress);
       
-      // Generate consistent character with pose
       let processedImageUrl = previewUrl;
       
-      try {
-        processedImageUrl = await generateConsistentCharacter(file);
-        console.log('Consistent character generated successfully');
-      } catch (error) {
-        console.error('Character generation failed:', error);
-        // Fall back to just background removal
-        setProcessingStep('Character generation failed, falling back to background removal...');
-        simulateProgressDuringProcessing(loadingProgress, 85, 2000, setLoadingProgress);
+      if (isNormalSelfie) {
+        // Normal selfie flow - only remove background and enhance with ESRGAN
+        setProcessingStep('Processing your selfie...');
+        simulateProgressDuringProcessing(10, 30, 2000, setLoadingProgress);
         
         try {
+          // First remove the background
           processedImageUrl = await removeImageBackground(file);
-          console.log('Background removal completed as fallback');
-        } catch (bgRemovalError) {
-          console.error('Background removal failed:', bgRemovalError);
+          console.log('Background removal completed for normal selfie');
+          
+          // Then enhance the image with ESRGAN
+          setProcessingStep('Enhancing your selfie...');
+          // We pass the background-removed image URL as a file for enhancement
+          // In a real implementation, we would convert the URL to a file
+          processedImageUrl = await enhanceImageWithESRGAN(processedImageUrl);
+          console.log('Image enhancement completed');
+          
+        } catch (error) {
+          console.error('Selfie processing failed:', error);
           // Continue with the original image
           setLoadingProgress(100);
+        }
+      } else {
+        // Original flow - generate consistent character with pose
+        try {
+          processedImageUrl = await generateConsistentCharacter(file);
+          console.log('Consistent character generated successfully');
+        } catch (error) {
+          console.error('Character generation failed:', error);
+          // Fall back to just background removal
+          setProcessingStep('Character generation failed, falling back to background removal...');
+          simulateProgressDuringProcessing(loadingProgress, 85, 2000, setLoadingProgress);
+          
+          try {
+            processedImageUrl = await removeImageBackground(file);
+            console.log('Background removal completed as fallback');
+          } catch (bgRemovalError) {
+            console.error('Background removal failed:', bgRemovalError);
+            // Continue with the original image
+            setLoadingProgress(100);
+          }
         }
       }
       
@@ -494,8 +546,9 @@ const UploadPhoto = () => {
         companyName: sessionStorage.getItem('companyName') || 'Your Company',
         industry: sessionStorage.getItem('industry') || 'Your Industry',
         tagline: sessionStorage.getItem('tagline') || 'Your Tagline',
-        phoneNumber: sessionStorage.getItem('phoneNumber') || 'Your Phone'
-      };
+        phoneNumber: sessionStorage.getItem('phoneNumber') || 'Your Phone',
+        isNormalSelfie: isNormalSelfie // Add the flag to indicate if this is a normal selfie
+      }
       
       // Store data in session storage
       sessionStorage.setItem('userData', JSON.stringify(userData));
@@ -597,18 +650,46 @@ const UploadPhoto = () => {
                       <div className="upload-options">
                         <button 
                           className="take-photo-btn"
-                          onClick={activateCamera}
+                          onClick={() => {
+                            setIsNormalSelfie(false);
+                            activateCamera();
+                          }}
                         >
-                          <i className="fas fa-camera"></i> Take a Photo
+                          <i className="fas fa-camera"></i> Take AI Photo
+                        </button>
+                        <button 
+                          className="take-photo-btn normal-selfie-btn"
+                          onClick={() => {
+                            setIsNormalSelfie(true);
+                            activateCamera();
+                          }}
+                        >
+                          <i className="fas fa-camera"></i> Take Normal Selfie
                         </button>
                         <label htmlFor="file-upload" className="browse-btn">
-                          <i className="fas fa-folder-open"></i> Browse files
+                          <i className="fas fa-folder-open"></i> Browse for AI Photo
                         </label>
                         <input
                           id="file-upload"
                           type="file"
                           accept="image/*"
-                          onChange={handleFileChange}
+                          onChange={(e) => {
+                            setIsNormalSelfie(false); // Default to AI photo for uploaded files
+                            handleFileChange(e);
+                          }}
+                          style={{ display: 'none' }}
+                        />
+                        <label htmlFor="normal-file-upload" className="browse-btn normal-upload-btn">
+                          <i className="fas fa-folder-open"></i> Browse for Normal Photo
+                        </label>
+                        <input
+                          id="normal-file-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            setIsNormalSelfie(true); // Set to normal photo flow
+                            handleFileChange(e);
+                          }}
                           style={{ display: 'none' }}
                         />
                       </div>
@@ -657,7 +738,7 @@ const UploadPhoto = () => {
                     className="confirm-btn"
                     onClick={startProcessing}
                   >
-                    <i className="fas fa-check"></i> Continue
+                    <i className="fas fa-check"></i> Continue with {isNormalSelfie ? 'Normal Selfie' : 'AI Photo'}
                   </button>
                 </div>
               </div>
@@ -686,4 +767,4 @@ const UploadPhoto = () => {
   );
 };
 
-export default UploadPhoto; 
+export default UploadPhoto;

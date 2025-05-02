@@ -60,21 +60,26 @@ const PosterGenerator = ({
             const userImgWidth = userImg.width;
             const userImgHeight = userImg.height;
             
-            // Scale user image to appropriate height
-            const scale = Math.min(
-              (canvas.width * 0.55) / userImgWidth,
-              (canvas.height * 0.65) / userImgHeight
-            );
+            // Use fixed dimensions instead of scaling
+            const fixedWidth = 200;  // Fixed width in pixels
+            const fixedHeight = 250; // Fixed height in pixels
             
-            const scaledWidth = userImgWidth * scale;
-            const scaledHeight = userImgHeight * scale;
+            console.log('Original image dimensions:', { width: userImgWidth, height: userImgHeight });
+            console.log('Using fixed dimensions:', { width: fixedWidth, height: fixedHeight });
             
-            // Position image on the left side
-            const x = canvas.width * 0.06 - 40;
-            const y = canvas.height - (scaledHeight * 0.80) - 60;
+            // Fixed position in pixels
+            const x = 100; // Fixed position from left
+            const y = 1100; // Fixed position from top - pushed down by 100px (was 700)
             
-            // Draw the user image
-            ctx.drawImage(userImg, x, y, scaledWidth, scaledHeight);
+            console.log('Positioning at fixed coordinates:', { x, y });
+            
+            // Draw the user image with fixed dimensions
+            ctx.drawImage(userImg, x, y, fixedWidth, fixedHeight);
+            
+            // Draw a border around the image to make it more visible (for debugging)
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, fixedWidth, fixedHeight);
             
             // Add tagline at the top
             const tagline = userData.tagline || 'Believed in myself, took the right steps, and success followed';
@@ -192,4 +197,4 @@ const PosterGenerator = ({
   );
 };
 
-export default PosterGenerator; 
+export default PosterGenerator;

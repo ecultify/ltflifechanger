@@ -146,10 +146,10 @@ const SharePoster = () => {
             const scaledHeight = userImgHeight * scale;
             
             // Position to place user on the left side of Bumrah
-            // Position is adjusted to make the bottom of the image touch the bottom boundary
+            // Position is adjusted to push the image lower on the canvas
             const userX = (canvas.width * 0.08) - 40; // Moved 40px to the left (20px more than before)
-            // Calculate Y position so bottom of image touches the bottom of the canvas with no padding
-            const userY = canvas.height - scaledHeight; // No padding, touch bottom exactly
+            // Add 100px to Y to push the image down
+            const userY = (canvas.height - scaledHeight) + 350; // Push the image down by 100px
             
             // Draw the user's image in position
             ctx.drawImage(

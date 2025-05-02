@@ -1,6 +1,6 @@
 .header {
   background-color: #FFCB03;
-  padding: 15px 0;
+  padding: 10px 0; /* Reduced padding from 15px to 10px */
   border-bottom: none;
   position: relative;
   z-index: 100;
@@ -18,9 +18,12 @@
 .logo-container {
   display: flex;
   align-items: center;
+  line-height: 0; /* Added to remove extra space */
 }
 
 .logo {
   height: 40px;
   object-fit: contain;
-} 
+  display: block; /* Added to remove extra space */
+  vertical-align: middle; /* Added to align properly */
+}

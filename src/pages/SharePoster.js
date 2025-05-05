@@ -149,7 +149,7 @@ const SharePoster = () => {
             // Position is adjusted to push the image lower on the canvas
             const userX = (canvas.width * 0.08) - 40; // Moved 40px to the left (20px more than before)
             // Add 100px to Y to push the image down
-            const userY = (canvas.height - scaledHeight) + 350; // Push the image down by 100px
+            const userY = (canvas.height - scaledHeight) + 250; // Push the image down by 100px
             
             // Draw the user's image in position
             ctx.drawImage(

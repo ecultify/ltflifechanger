@@ -391,7 +391,7 @@ const UploadPhoto = () => {
       
       // Set the headers including the API key
       const headers = {
-        'X-Api-Key': 'rXjhNaRAqHWtxLaugDbCKHZW', // Remove.bg API key
+        'X-Api-Key': 'nqiyHVpjEo7HST37aokUDUVZ', // Remove.bg API key
       };
       
       // Make the actual API call to remove.bg

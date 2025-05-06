@@ -511,7 +511,10 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: #000;
-  aspect-ratio: 3/4; /* Maintain a consistent aspect ratio */
+  aspect-ratio: 4/5; /* Changed from 3/4 to provide more vertical space for face */
+  max-width: 500px; /* Add max-width to prevent too large camera view */
+  margin: 0 auto; /* Center the container */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
 }
 
 /* Person outline overlay styles */
@@ -530,15 +533,17 @@
 }
 
 .outline-image {
-  height: 80%; /* Reduced from 90% to focus more on upper body */
+  height: 60%; /* Reduced from 80% to focus more on face */
   width: auto;
-  max-width: 80%;
+  max-width: 70%;
   object-fit: contain;
-  opacity: 0.7;
+  opacity: 0.9; /* Increased opacity for better visibility */
   position: absolute;
-  top: 50%;
+  top: 40%; /* Move up a bit to center on face area */
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 15; /* Ensure it's above other elements */
+  pointer-events: none; /* Allow interaction with elements below */
 }
 
 .positioning-guide {
@@ -546,13 +551,13 @@
   top: 15px;
   left: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6); /* Darker background for better readability */
   color: white;
-  padding: 8px;
+  padding: 10px; /* Slightly larger padding */
   text-align: center;
-  font-size: 14px;
+  font-size: 16px; /* Larger font size */
   font-weight: 500;
-  z-index: 11;
+  z-index: 16; /* Above outline image */
 }
 
 .camera-video {

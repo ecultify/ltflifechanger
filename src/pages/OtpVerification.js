@@ -3,6 +3,7 @@ import '../styles/pages/OtpVerification.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import { sendOtp, verifyOtp } from '../services/otpService';
 
 const OtpVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -17,9 +18,7 @@ const OtpVerification = () => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
-
-  // API URLs
-  const API_BASE_URL = 'http://localhost:5000/api'; // Replace with your production URL if needed
+  const [customerName, setCustomerName] = useState('Customer'); // Default customer name
 
   // Check if on mobile device
   useEffect(() => {
@@ -37,12 +36,6 @@ const OtpVerification = () => {
     // Clean up
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-
-  // No longer pre-filling phone number for actual implementation
-  // useEffect(() => {
-  //   // Pre-fill with testing number
-  //   setPhoneNumber('9876543210');
-  // }, []);
   
   // Handle phone number input change
   const handlePhoneNumberChange = (e) => {
@@ -122,49 +115,79 @@ const OtpVerification = () => {
     }, 1000);
   };
 
-  // Handle get OTP button click - Now using actual API with fallback
+  // Handle get OTP button click - Using the L&T Finance API
   const handleGetOtp = async () => {
     try {
       setIsLoading(true);
       setError('');
       setUsingTestMode(false);
       
-      // Call the API to send OTP
-      const response = await axios.post(`${API_BASE_URL}/send-otp`, {
-        phoneNumber,
-        countryCode
-      });
+      // Remove any non-digits from phone number
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       
-      if (response.data.success) {
+      // Call our new sendOtp service
+      const response = await sendOtp(cleanPhoneNumber, customerName);
+      
+      if (response.success) {
         setShowOtpInput(true);
         startCountdown();
-        setOtp(['', '', '', '', '', '']); // Clear any previous OTP
         
-        // Check if we're using test mode (fallback)
-        if (response.data.note && response.data.note.includes('fallback')) {
-          setUsingTestMode(true);
-          setError('Note: Using test mode due to API integration issues. For testing purposes, use "123456" as the OTP.');
-          setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP in test mode
+        // If OTP is returned directly in the response (for testing)
+        if (response.otp) {
+          console.log('Auto-detected OTP:', response.otp);
+          // Fill the OTP input fields if needed
+          const otpDigits = response.otp.split('').slice(0, 6);
+          
+          // Only pre-fill for development
+          if (process.env.NODE_ENV === 'development') {
+            setOtp(otpDigits.concat(Array(6 - otpDigits.length).fill('')));
+            
+            // Show a note about auto-filling
+            setError('Note: OTP auto-detected for development purposes.');
+            setUsingTestMode(true);
+          } else {
+            // Clear any previous OTP in production
+            setOtp(['', '', '', '', '', '']);
+          }
+        } else {
+          // Clear any previous OTP
+          setOtp(['', '', '', '', '', '']);
+        }
+        
+        // Show message to check SMS
+        if (!response.otp) {
+          setError('OTP sent successfully. Please check your phone.');
         }
       } else {
-        setError(response.data.message || 'Failed to send OTP. Please try again.');
+        setError(response.message || 'Failed to send OTP. Please try again.');
+        
+        // For demo/development purposes, allow continuing with test OTP if API fails
+        if (process.env.NODE_ENV === 'development') {
+          setShowOtpInput(true);
+          startCountdown();
+          setUsingTestMode(true);
+          setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
+          setError('Using test mode due to API issues. For testing, use "123456" as the OTP.');
+        }
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
-      setError(error.response?.data?.message || 'Unable to send OTP at this time. Please try again later.');
+      setError('Unable to send OTP at this time. Please try again later.');
       
-      // For demo purposes, allow continuing with test OTP
-      setShowOtpInput(true);
-      startCountdown();
-      setUsingTestMode(true);
-      setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
-      setError('Note: Using test mode due to connection issues. For testing purposes, use "123456" as the OTP.');
+      // For demo/development purposes, allow continuing with test OTP
+      if (process.env.NODE_ENV === 'development') {
+        setShowOtpInput(true);
+        startCountdown();
+        setUsingTestMode(true);
+        setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
+        setError('Using test mode due to error. For testing, use "123456" as the OTP.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle resend OTP - Now using actual API with fallback
+  // Handle resend OTP - Using the L&T Finance API
   const handleResendOtp = async (e) => {
     e.preventDefault();
     
@@ -172,42 +195,63 @@ const OtpVerification = () => {
       setIsLoading(true);
       setError('');
       
-      // Call the API to resend OTP
-      const response = await axios.post(`${API_BASE_URL}/send-otp`, {
-        phoneNumber,
-        countryCode
-      });
+      // Remove any non-digits from phone number
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       
-      if (response.data.success) {
+      // Call our new sendOtp service
+      const response = await sendOtp(cleanPhoneNumber, customerName);
+      
+      if (response.success) {
         startCountdown();
         
-        // Check if we're using test mode (fallback)
-        if (response.data.note && response.data.note.includes('fallback')) {
-          setUsingTestMode(true);
-          setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP in test mode
-          setError('Note: Using test mode. For testing purposes, use "123456" as the OTP.');
+        // If OTP is returned directly in the response (for testing)
+        if (response.otp) {
+          console.log('Auto-detected OTP on resend:', response.otp);
+          
+          // Only pre-fill in development
+          if (process.env.NODE_ENV === 'development') {
+            const otpDigits = response.otp.split('').slice(0, 6);
+            setOtp(otpDigits.concat(Array(6 - otpDigits.length).fill('')));
+            setError('Note: OTP auto-detected for development purposes.');
+            setUsingTestMode(true);
+          } else {
+            // Clear any previous OTP in production
+            setOtp(['', '', '', '', '', '']);
+            setError('OTP resent successfully. Please check your phone.');
+          }
         } else {
-          setOtp(['', '', '', '', '', '']); // Clear any previous OTP
+          // Clear any previous OTP
+          setOtp(['', '', '', '', '', '']);
           setError('OTP resent successfully. Please check your phone.');
         }
       } else {
-        setError(response.data.message || 'Failed to resend OTP. Please try again.');
+        setError(response.message || 'Failed to resend OTP. Please try again.');
+        
+        // For demo purposes, continue with test OTP
+        if (process.env.NODE_ENV === 'development') {
+          startCountdown();
+          setUsingTestMode(true);
+          setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
+          setError('Using test mode due to API issues. For testing, use "123456" as the OTP.');
+        }
       }
     } catch (error) {
       console.error('Error resending OTP:', error);
-      setError(error.response?.data?.message || 'Failed to resend OTP. Please try again later.');
+      setError('Failed to resend OTP. Please try again later.');
       
       // For demo purposes, continue with test OTP
-      startCountdown();
-      setUsingTestMode(true);
-      setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
-      setError('Note: Using test mode due to connection issues. For testing purposes, use "123456" as the OTP.');
+      if (process.env.NODE_ENV === 'development') {
+        startCountdown();
+        setUsingTestMode(true);
+        setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
+        setError('Using test mode due to error. For testing, use "123456" as the OTP.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle verify button click - Now using actual API with fallback
+  // Handle verify button click - Using the L&T Finance API
   const handleVerify = async () => {
     try {
       setIsLoading(true);
@@ -223,31 +267,30 @@ const OtpVerification = () => {
         return;
       }
       
+      // Remove any non-digits from phone number
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+      
       // Combine OTP digits into a single string
       const otpString = otp.join('');
       
-      // Call the API to verify OTP
-      const response = await axios.post(`${API_BASE_URL}/verify-otp`, {
-        phoneNumber,
-        countryCode,
-        otp: otpString
-      });
+      // Call our new verifyOtp service
+      const response = await verifyOtp(cleanPhoneNumber, otpString);
       
-      if (response.data.success) {
+      if (response.success) {
         // Store phone number in sessionStorage 
         sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
         
         // Navigate to the next page
         navigate('/add-details');
       } else {
-        setError(response.data.message || 'Failed to verify OTP. Please try again.');
+        setError(response.message || 'Failed to verify OTP. Please try again.');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      setError(error.response?.data?.message || 'Failed to verify OTP. Please check the code and try again.');
+      setError('Failed to verify OTP. Please check the code and try again.');
       
       // For demo purposes, if the OTP is 123456, allow proceeding despite API errors
-      if (otp.join('') === '123456') {
+      if (process.env.NODE_ENV === 'development' && otp.join('') === '123456') {
         sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
         navigate('/add-details');
       }

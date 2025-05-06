@@ -59,9 +59,9 @@ const UploadPhoto = () => {
     try {
       setIsCameraActive(true);
       
-      // Access user's camera (back-facing instead of front-facing)
+      // Use the front-facing camera for selfies (better for face photos)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
+        video: { facingMode: "user" } // "user" for front camera, "environment" for back camera
       });
       
       // Set the video source to the camera stream
@@ -83,9 +83,9 @@ const UploadPhoto = () => {
     const video = videoRef.current;
     
     // Set canvas dimensions to match video dimensions but maintain aspect ratio
-    // Use a 3:4 aspect ratio to match the outline and final poster format
+    // Use a 4:5 aspect ratio to better frame faces and match the outline
     const videoAspect = video.videoWidth / video.videoHeight;
-    const targetAspect = 3/4; // Portrait orientation for the outline
+    const targetAspect = 4/5; // Modified aspect ratio for face photos
     
     let canvasWidth, canvasHeight;
     if (videoAspect > targetAspect) {
@@ -103,8 +103,9 @@ const UploadPhoto = () => {
     canvas.height = canvasHeight;
     
     // Calculate centering offsets to position the image properly
+    // Shift the vertical offset up slightly to better center on face
     const offsetX = (video.videoWidth - canvasWidth) / 2;
-    const offsetY = (video.videoHeight - canvasHeight) / 2;
+    const offsetY = (video.videoHeight - canvasHeight) / 2 - (video.videoHeight * 0.05); // Shift up by 5%
     
     // Draw the current video frame to the canvas with the correct positioning
     const ctx = canvas.getContext('2d');
@@ -117,7 +118,7 @@ const UploadPhoto = () => {
     console.log(`Captured photo with dimensions: ${canvasWidth}x${canvasHeight}`);
     
     // Convert canvas to data URL
-    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9); // High quality JPEG
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
     
     // Set the photo as the preview
     setPreviewUrl(photoDataUrl);
@@ -128,7 +129,7 @@ const UploadPhoto = () => {
       setFile(newFile);
       // Show preview modal immediately after photo is taken
       setShowPreviewModal(true);
-    }, 'image/jpeg', 0.9); // High quality JPEG
+    }, 'image/jpeg', 0.95); // High quality JPEG
     
     // Stop camera stream
     stopCamera();
@@ -712,12 +713,12 @@ const UploadPhoto = () => {
                   ></video>
                   <div className="person-outline-overlay">
                     <img 
-                      src="/images/upper-body-outline.png" 
-                      alt="Upper body outline" 
+                      src="/images/face-outline.svg" 
+                      alt="Face outline" 
                       className="outline-image"
                     />
                     <div className="positioning-guide">
-                      Position your upper body within the outline
+                      Position your face within the outline
                     </div>
                   </div>
                   <div className="camera-controls">

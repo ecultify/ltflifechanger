@@ -8,12 +8,12 @@ import { sendOtp, verifyOtp } from '../services/otpService';
 const OtpVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+91'); // Default to India country code
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(['1', '2', '3', '4', '5', '6']); // Pre-filled with hardcoded OTP
   const [remainingTime, setRemainingTime] = useState(30);
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [usingTestMode, setUsingTestMode] = useState(false);
+  const [error, setError] = useState('TEST MODE: OTP is hardcoded to 123456');
+  const [usingTestMode, setUsingTestMode] = useState(true); // Always in test mode
   const [consentChecked, setConsentChecked] = useState(true); // Auto-checked for testing
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
@@ -115,79 +115,38 @@ const OtpVerification = () => {
     }, 1000);
   };
 
-  // Handle get OTP button click - Using the L&T Finance API
+  // Handle get OTP button click - Using hardcoded approach
   const handleGetOtp = async () => {
     try {
       setIsLoading(true);
       setError('');
-      setUsingTestMode(false);
       
-      // Remove any non-digits from phone number
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+      // Show the OTP input section
+      setShowOtpInput(true);
+      startCountdown();
       
-      // Call our new sendOtp service
-      const response = await sendOtp(cleanPhoneNumber, customerName);
+      // Pre-fill the OTP with 123456
+      setOtp(['1', '2', '3', '4', '5', '6']);
       
-      if (response.success) {
-        setShowOtpInput(true);
-        startCountdown();
-        
-        // If OTP is returned directly in the response (for testing)
-        if (response.otp) {
-          console.log('Auto-detected OTP:', response.otp);
-          // Fill the OTP input fields if needed
-          const otpDigits = response.otp.split('').slice(0, 6);
-          
-          // Only pre-fill for development
-          if (process.env.NODE_ENV === 'development') {
-            setOtp(otpDigits.concat(Array(6 - otpDigits.length).fill('')));
-            
-            // Show a note about auto-filling
-            setError('Note: OTP auto-detected for development purposes.');
-            setUsingTestMode(true);
-          } else {
-            // Clear any previous OTP in production
-            setOtp(['', '', '', '', '', '']);
-          }
-        } else {
-          // Clear any previous OTP
-          setOtp(['', '', '', '', '', '']);
-        }
-        
-        // Show message to check SMS
-        if (!response.otp) {
-          setError('OTP sent successfully. Please check your phone.');
-        }
-      } else {
-        setError(response.message || 'Failed to send OTP. Please try again.');
-        
-        // For demo/development purposes, allow continuing with test OTP if API fails
-        if (process.env.NODE_ENV === 'development') {
-          setShowOtpInput(true);
-          startCountdown();
-          setUsingTestMode(true);
-          setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
-          setError('Using test mode due to API issues. For testing, use "123456" as the OTP.');
-        }
-      }
+      // Display test mode message
+      setError('TEST MODE: Using hardcoded OTP 123456');
+      setUsingTestMode(true);
+      
     } catch (error) {
       console.error('Error sending OTP:', error);
-      setError('Unable to send OTP at this time. Please try again later.');
       
-      // For demo/development purposes, allow continuing with test OTP
-      if (process.env.NODE_ENV === 'development') {
-        setShowOtpInput(true);
-        startCountdown();
-        setUsingTestMode(true);
-        setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
-        setError('Using test mode due to error. For testing, use "123456" as the OTP.');
-      }
+      // Still show the OTP input with pre-filled value
+      setShowOtpInput(true);
+      startCountdown();
+      setUsingTestMode(true);
+      setOtp(['1', '2', '3', '4', '5', '6']);
+      setError('TEST MODE: Using hardcoded OTP 123456');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle resend OTP - Using the L&T Finance API
+  // Handle resend OTP - Using hardcoded approach
   const handleResendOtp = async (e) => {
     e.preventDefault();
     
@@ -195,104 +154,55 @@ const OtpVerification = () => {
       setIsLoading(true);
       setError('');
       
-      // Remove any non-digits from phone number
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+      // Reset and start countdown
+      startCountdown();
       
-      // Call our new sendOtp service
-      const response = await sendOtp(cleanPhoneNumber, customerName);
+      // Pre-fill the OTP with 123456
+      setOtp(['1', '2', '3', '4', '5', '6']);
       
-      if (response.success) {
-        startCountdown();
-        
-        // If OTP is returned directly in the response (for testing)
-        if (response.otp) {
-          console.log('Auto-detected OTP on resend:', response.otp);
-          
-          // Only pre-fill in development
-          if (process.env.NODE_ENV === 'development') {
-            const otpDigits = response.otp.split('').slice(0, 6);
-            setOtp(otpDigits.concat(Array(6 - otpDigits.length).fill('')));
-            setError('Note: OTP auto-detected for development purposes.');
-            setUsingTestMode(true);
-          } else {
-            // Clear any previous OTP in production
-            setOtp(['', '', '', '', '', '']);
-            setError('OTP resent successfully. Please check your phone.');
-          }
-        } else {
-          // Clear any previous OTP
-          setOtp(['', '', '', '', '', '']);
-          setError('OTP resent successfully. Please check your phone.');
-        }
-      } else {
-        setError(response.message || 'Failed to resend OTP. Please try again.');
-        
-        // For demo purposes, continue with test OTP
-        if (process.env.NODE_ENV === 'development') {
-          startCountdown();
-          setUsingTestMode(true);
-          setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
-          setError('Using test mode due to API issues. For testing, use "123456" as the OTP.');
-        }
-      }
+      // Display test mode message
+      setError('TEST MODE: Using hardcoded OTP 123456');
+      setUsingTestMode(true);
+      
     } catch (error) {
       console.error('Error resending OTP:', error);
-      setError('Failed to resend OTP. Please try again later.');
       
-      // For demo purposes, continue with test OTP
-      if (process.env.NODE_ENV === 'development') {
-        startCountdown();
-        setUsingTestMode(true);
-        setOtp(['1', '2', '3', '4', '5', '6']); // Pre-fill OTP for demo
-        setError('Using test mode due to error. For testing, use "123456" as the OTP.');
-      }
+      // Still show the OTP input with pre-filled value
+      startCountdown();
+      setUsingTestMode(true);
+      setOtp(['1', '2', '3', '4', '5', '6']);
+      setError('TEST MODE: Using hardcoded OTP 123456');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle verify button click - Using the L&T Finance API
+  // Handle verify button click - Using hardcoded approach
   const handleVerify = async () => {
     try {
       setIsLoading(true);
       setError('');
       
-      // If in test mode, bypass actual verification
-      if (usingTestMode && otp.join('') === '123456') {
+      // If OTP is 123456, proceed to the next page
+      if (otp.join('') === '123456') {
         // Store phone number in sessionStorage 
         sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
         
         // Navigate to the next page
         navigate('/add-details');
         return;
-      }
-      
-      // Remove any non-digits from phone number
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-      
-      // Combine OTP digits into a single string
-      const otpString = otp.join('');
-      
-      // Call our new verifyOtp service
-      const response = await verifyOtp(cleanPhoneNumber, otpString);
-      
-      if (response.success) {
-        // Store phone number in sessionStorage 
-        sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
-        
-        // Navigate to the next page
-        navigate('/add-details');
       } else {
-        setError(response.message || 'Failed to verify OTP. Please try again.');
+        setError('Invalid OTP. The correct OTP is 123456.');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      setError('Failed to verify OTP. Please check the code and try again.');
       
-      // For demo purposes, if the OTP is 123456, allow proceeding despite API errors
-      if (process.env.NODE_ENV === 'development' && otp.join('') === '123456') {
+      // For consistency, still check the hardcoded OTP
+      if (otp.join('') === '123456') {
         sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
         navigate('/add-details');
+      } else {
+        setError('Invalid OTP. The correct OTP is 123456.');
       }
     } finally {
       setIsLoading(false);

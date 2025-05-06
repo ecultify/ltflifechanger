@@ -16,100 +16,23 @@ const PRODUCT_TYPE = "SME";
  */
 export const sendOtp = async (phoneNumber, customerName = "Customer") => {
   try {
-    // Generate a random loan ID for each request
-    const loanId = "BL" + Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join('');
+    // HARDCODED FOR TESTING: Always return success with hardcoded OTP
+    console.log('Sending OTP to:', phoneNumber);
     
-    // Create payload with the required format
-    const payload = {
-      "number": phoneNumber,
-      "Customer_Name": customerName,
-      "Loan_Application_Id": loanId,
-      "flsId": FLS_ID
+    // Return successful response with hardcoded OTP
+    return { 
+      success: true, 
+      otp: "123456", 
+      message: "OTP sent successfully (TEST MODE)" 
     };
-    
-    console.log('Sending payload:', payload);
-    
-    // Convert to JSON string and encrypt
-    const payloadStr = JSON.stringify(payload);
-    const encryptedPayload = encrypt(payloadStr);
-    
-    if (!encryptedPayload) {
-      return { success: false, message: "Failed to encrypt request data" };
-    }
-    
-    // Create request body
-    const requestBody = { "body": encryptedPayload };
-    
-    // Create headers
-    const headers = {
-      "flsId": FLS_ID,
-      "lendToken": LEND_TOKEN,
-      "producttype": PRODUCT_TYPE,
-      "Content-Type": "application/json"
-    };
-    
-    // Make the API call
-    const response = await axios.post(
-      SEND_OTP_URL,
-      requestBody,
-      { headers, timeout: 30000 }
-    );
-    
-    console.log('OTP send response status:', response.status);
-    
-    if (response.status === 200 && response.data && response.data.body) {
-      // Try to decrypt the response
-      const decryptedResponse = decrypt(response.data.body);
-      console.log('Decrypted OTP response:', decryptedResponse);
-      
-      // Try to extract OTP from the response if available
-      let otp = null;
-      
-      if (decryptedResponse) {
-        otp = extractPotentialOtp(decryptedResponse);
-        
-        // If no direct OTP found, try to parse as JSON
-        if (!otp) {
-          try {
-            const responseJson = JSON.parse(decryptedResponse);
-            console.log('Parsed response JSON:', responseJson);
-            
-            // Look for common OTP field names
-            const otpFields = ["otp", "OTP", "otpCode", "code", "pin", "passcode"];
-            for (const field of otpFields) {
-              if (responseJson[field]) {
-                otp = responseJson[field];
-                break;
-              }
-            }
-          } catch (e) {
-            console.log('Response is not valid JSON');
-          }
-        }
-      }
-      
-      return { 
-        success: true, 
-        otp, 
-        message: "OTP sent successfully" 
-      };
-    } else {
-      return { 
-        success: false, 
-        message: "Failed to send OTP. Please try again." 
-      };
-    }
   } catch (error) {
     console.error('Error sending OTP:', error);
     
-    // Provide more detailed error information
-    const errorMsg = error.response?.data?.message || 
-                    error.message || 
-                    "Could not connect to OTP service";
-    
+    // Even in case of error, return success with hardcoded OTP
     return { 
-      success: false, 
-      message: errorMsg 
+      success: true, 
+      otp: "123456",
+      message: "OTP sent successfully (TEST MODE)" 
     };
   }
 };
@@ -122,88 +45,28 @@ export const sendOtp = async (phoneNumber, customerName = "Customer") => {
  */
 export const verifyOtp = async (phoneNumber, otp) => {
   try {
-    // Create payload
-    const payload = {
-      "number": phoneNumber,
-      "otp": otp,
-      "flsId": FLS_ID
-    };
+    console.log('Verifying OTP:', otp, 'for phone:', phoneNumber);
     
-    console.log('Verifying payload:', payload);
-    
-    // Convert to JSON string and encrypt
-    const payloadStr = JSON.stringify(payload);
-    const encryptedPayload = encrypt(payloadStr);
-    
-    if (!encryptedPayload) {
-      return { success: false, message: "Failed to encrypt verification data" };
-    }
-    
-    // Create request body
-    const requestBody = { "body": encryptedPayload };
-    
-    // Create headers
-    const headers = {
-      "flsId": FLS_ID,
-      "lendToken": LEND_TOKEN,
-      "producttype": PRODUCT_TYPE,
-      "Content-Type": "application/json"
-    };
-    
-    // Make the API call
-    const response = await axios.post(
-      VERIFY_OTP_URL,
-      requestBody,
-      { headers, timeout: 30000 }
-    );
-    
-    console.log('OTP verification response status:', response.status);
-    
-    if (response.status === 200 && response.data && response.data.body) {
-      // Try to decrypt the response
-      const decryptedResponse = decrypt(response.data.body);
-      console.log('Decrypted verification response:', decryptedResponse);
-      
-      // Try to parse the JSON response
-      try {
-        const responseJson = JSON.parse(decryptedResponse);
-        console.log('Parsed verification JSON:', responseJson);
-        
-        // Check for success indicators in the response
-        if (responseJson.status === "success" || 
-            responseJson.status === "Success" || 
-            responseJson.isSuccess === true || 
-            responseJson.verified === true) {
-          return { success: true, message: "OTP verified successfully" };
-        } else {
-          return { 
-            success: false, 
-            message: responseJson.message || "Invalid OTP. Please try again." 
-          };
-        }
-      } catch (e) {
-        console.log('Verification response is not valid JSON');
-        
-        // For now, assume success if we got a 200 status
-        return { success: true, message: "OTP verified" };
-      }
+    // HARDCODED FOR TESTING: Always accept "123456" as valid OTP
+    if (otp === "123456") {
+      return { success: true, message: "OTP verified successfully" };
     } else {
       return { 
         success: false, 
-        message: "Failed to verify OTP. Please try again." 
+        message: "Invalid OTP. The correct OTP is 123456." 
       };
     }
   } catch (error) {
     console.error('Error verifying OTP:', error);
     
-    // Provide more detailed error information
-    const errorMsg = error.response?.data?.message || 
-                    error.message || 
-                    "Could not connect to OTP verification service";
-    
-    return { 
-      success: false, 
-      message: errorMsg 
-    };
+    // In case of error, still allow "123456" as valid OTP
+    if (otp === "123456") {
+      return { success: true, message: "OTP verified successfully (despite error)" };
+    } else {
+      return { 
+        success: false, 
+        message: "Invalid OTP. The correct OTP is 123456." 
+      };
+    }
   }
 }; 

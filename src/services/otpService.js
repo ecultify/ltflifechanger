@@ -2,11 +2,11 @@ import axios from 'axios';
 import { encrypt, decrypt, extractPotentialOtp } from '../utils/cryptoUtils';
 
 // Constants for API calls
-const SEND_OTP_URL = "https://apiclouduat.ltfs.com:1132/LTFSME/api/sendPosterOtp";
-const VERIFY_OTP_URL = "https://apiclouduat.ltfs.com:1132/LTFSME/api/verifyOtps";
-const FLS_ID = "VEN03799";
-const LEND_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MDA2NDA2MyIsImlhdCI6MTcxOTMxMDI1Nywic3ViIjoiSldUIFRlc3QiLCJpc3MiOiJMVCIsImV4cCI6MTcxOTMzOTA1N30.tiz1dlY7KvYf7Y9xxWZ2JqZAWnJCfiOzsSfJqWTNuGw";
-const PRODUCT_TYPE = "SME";
+// const SEND_OTP_URL = "https://apiclouduat.ltfs.com:1132/LTFSME/api/sendPosterOtp";
+// const VERIFY_OTP_URL = "https://apiclouduat.ltfs.com:1132/LTFSME/api/verifyOtps";
+// const FLS_ID = "VEN03799";
+// const LEND_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MDA2NDA2MyIsImlhdCI6MTcxOTMxMDI1Nywic3ViIjoiSldUIFRlc3QiLCJpc3MiOiJMVCIsImV4cCI6MTcxOTMzOTA1N30.tiz1dlY7KvYf7Y9xxWZ2JqZAWnJCfiOzsSfJqWTNuGw";
+// const PRODUCT_TYPE = "SME";
 
 /**
  * Sends an OTP to the provided phone number

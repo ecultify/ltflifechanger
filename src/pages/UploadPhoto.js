@@ -59,9 +59,9 @@ const UploadPhoto = () => {
     try {
       setIsCameraActive(true);
       
-      // Use the front-facing camera for selfies (better for face photos)
+      // Use the back-facing camera for photos
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" } // "user" for front camera, "environment" for back camera
+        video: { facingMode: "environment" } // "user" for front camera, "environment" for back camera
       });
       
       // Set the video source to the camera stream

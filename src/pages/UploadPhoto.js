@@ -59,9 +59,9 @@ const UploadPhoto = () => {
     try {
       setIsCameraActive(true);
       
-      // Access user's camera (front-facing)
+      // Access user's camera (back-facing instead of front-facing)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" }
+        video: { facingMode: "environment" }
       });
       
       // Set the video source to the camera stream
@@ -378,47 +378,36 @@ const UploadPhoto = () => {
   const removeImageBackground = async (imageFile) => {
     try {
       setProcessingStep('Removing background...');
-      // Start at 75% if coming from character generation, or 85% if called directly
-      const currentProgress = loadingProgress;
-      setLoadingProgress(currentProgress);
       
-      // Simulate gradual progress during background removal process
-      simulateProgressDuringProcessing(currentProgress, 90, 5000, setLoadingProgress);
+      // Convert the file to base64
+      const base64Image = await fileToBase64(imageFile);
       
-      // Create FormData to send the image
-      const formData = new FormData();
-      formData.append('image_file', imageFile);
-      
-      // Set the headers including the API key
-      const headers = {
-        'X-Api-Key': 'nqiyHVpjEo7HST37aokUDUVZ', // Remove.bg API key
-      };
-      
-      // Make the actual API call to remove.bg
+      // Call Crop.photo API
       const response = await axios.post(
-        'https://api.remove.bg/v1.0/removebg',
-        formData,
-        { 
-          headers, 
-          responseType: 'arraybuffer' 
+        'https://api.crop.photo/v1/process',
+        {
+          image_url: `data:image/jpeg;base64,${base64Image}`,
+          operations: [
+            {
+              type: 'remove_background'
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer VmEeChTnKgAvW7NVH1bYrQC1`,
+            'Content-Type': 'application/json'
+          }
         }
       );
+
+      // Get the processed image URL from the response
+      const processedImageUrl = response.data.processed_image_url;
       
-      setLoadingProgress(95);
+      // Update progress
+      setLoadingProgress(80);
       
-      // Convert the array buffer to a base64 string
-      const blob = new Blob([response.data], { type: 'image/png' });
-      const bgRemovedImageUrl = await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-      
-      // Final progress step
-      simulateProgressDuringProcessing(95, 100, 1000, setLoadingProgress);
-      
-      return bgRemovedImageUrl;
-      
+      return processedImageUrl;
     } catch (error) {
       console.error('Error removing background:', error);
       
@@ -664,7 +653,7 @@ const UploadPhoto = () => {
                             activateCamera();
                           }}
                         >
-                          <i className="fas fa-camera"></i> Take Normal Selfie
+                          <i className="fas fa-camera"></i> Take a photo
                         </button>
                         <label htmlFor="file-upload" className="browse-btn">
                           <i className="fas fa-folder-open"></i> Browse for AI Photo

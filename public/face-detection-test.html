@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .upload-container {
+      margin: 20px 0;
+      padding: 20px;
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      text-align: center;
+      width: 100%;
+    }
+    .result-container {
+      margin-top: 20px;
+      width: 100%;
+      display: none;
+    }
+    .image-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    #sourceImage, #canvas {
+      max-width: 100%;
+      max-height: 500px;
+      display: block;
+      margin: 0 auto;
+    }
+    .info-box {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+    .loading {
+      display: none;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .loading-spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Face Detection Test</h1>
+    <p>This page tests the face detection functionality for dynamic image placement in the poster generator.</p>
+    
+    <div class="upload-container">
+      <h2>Upload an Image</h2>
+      <input type="file" id="imageUpload" accept="image/*">
+      <p>Upload a photo to test face detection. Try different types: selfies, upper body shots, full body shots, etc.</p>
+    </div>
+    
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p id="loadingText">Loading models...</p>
+    </div>
+    
+    <div class="result-container" id="resultContainer">
+      <h2>Detection Results</h2>
+      
+      <div class="image-container">
+        <img id="sourceImage" alt="Uploaded image">
+        <canvas id="canvas" style="position: absolute; top: 0; left: 0;"></canvas>
+      </div>
+      
+      <div class="info-box" id="detectionInfo">
+        No detection results yet.
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // DOM elements
+    const imageUpload = document.getElementById('imageUpload');
+    const sourceImage = document.getElementById('sourceImage');
+    const canvas = document.getElementById('canvas');
+    const resultContainer = document.getElementById('resultContainer');
+    const detectionInfo = document.getElementById('detectionInfo');
+    const loading = document.querySelector('.loading');
+    const loadingText = document.getElementById('loadingText');
+    
+    // Flag to track if models are loaded
+    let modelsLoaded = false;
+    
+    // Load face detection models
+    async function loadModels() {
+      loading.style.display = 'block';
+      loadingText.innerText = 'Loading face detection models...';
+      
+      try {
+        // Try to load models from the local directory first
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+          faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+          faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+        ]);
+        
+        console.log('Models loaded from local directory');
+        modelsLoaded = true;
+      } catch (error) {
+        console.warn('Could not load models from local directory, trying CDN...', error);
+        
+        try {
+          // Fallback to loading from CDN
+          await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model')
+          ]);
+          
+          console.log('Models loaded from CDN');
+          modelsLoaded = true;
+        } catch (cdnError) {
+          console.error('Failed to load models from CDN:', cdnError);
+          loadingText.innerText = 'Failed to load face detection models. Please check console for errors.';
+          return;
+        }
+      }
+      
+      loading.style.display = 'none';
+      console.log('Face detection models loaded successfully');
+    }
+    
+    // Initialize face detection
+    loadModels();
+    
+    // Handle image upload
+    imageUpload.addEventListener('change', async (event) => {
+      if (!modelsLoaded) {
+        alert('Face detection models are still loading. Please wait.');
+        return;
+      }
+      
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Display loading indicator
+      loading.style.display = 'block';
+      loadingText.innerText = 'Processing image...';
+      
+      // Create image URL
+      const imageUrl = URL.createObjectURL(file);
+      sourceImage.src = imageUrl;
+      
+      // Wait for image to load
+      sourceImage.onload = async () => {
+        // Set canvas dimensions to match image
+        canvas.width = sourceImage.width;
+        canvas.height = sourceImage.height;
+        
+        // Detect faces
+        try {
+          const detections = await faceapi.detectAllFaces(
+            sourceImage,
+            new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 })
+          ).withFaceLandmarks();
+          
+          // Draw results on canvas
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          if (detections.length > 0) {
+            // Draw rectangles around faces
+            detections.forEach(detection => {
+              const box = detection.detection.box;
+              ctx.strokeStyle = '#00ff00';
+              ctx.lineWidth = 3;
+              ctx.strokeRect(box.x, box.y, box.width, box.height);
+              
+              // Draw face landmarks
+              const landmarks = detection.landmarks;
+              const points = landmarks.positions;
+              
+              ctx.fillStyle = '#ff0000';
+              points.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
+                ctx.fill();
+              });
+            });
+            
+            // Get the most prominent face
+            const mainFace = detections.sort((a, b) => 
+              (b.detection.box.width * b.detection.box.height) - 
+              (a.detection.box.width * a.detection.box.height)
+            )[0];
+            
+            // Calculate face size relative to image
+            const faceBox = mainFace.detection.box;
+            const faceWidth = faceBox.width;
+            const faceHeight = faceBox.height;
+            const faceToImageRatio = (faceWidth * faceHeight) / (sourceImage.width * sourceImage.height);
+            
+            // Classify photo type
+            let photoType = 'unknown';
+            if (faceToImageRatio > 0.15) {
+              photoType = 'selfie';
+            } else if (faceToImageRatio > 0.05 && faceBox.y < sourceImage.height * 0.4) {
+              photoType = 'upper_body';
+            } else {
+              photoType = 'full_body';
+            }
+            
+            // Display detection info
+            detectionInfo.innerHTML = `Faces detected: ${detections.length}\n\n` +
+              `Main face position: x=${Math.round(faceBox.x)}, y=${Math.round(faceBox.y)}, ` +
+              `width=${Math.round(faceWidth)}, height=${Math.round(faceHeight)}\n\n` +
+              `Face to image ratio: ${(faceToImageRatio * 100).toFixed(2)}%\n\n` +
+              `Photo type: ${photoType}\n\n` +
+              `Recommended placement: ${getPlacementRecommendation(photoType)}`;
+          } else {
+            detectionInfo.innerHTML = 'No faces detected in the image.';
+          }
+        } catch (error) {
+          console.error('Error during face detection:', error);
+          detectionInfo.innerHTML = `Error during face detection: ${error.message}`;
+        }
+        
+        // Show results and hide loading indicator
+        resultContainer.style.display = 'block';
+        loading.style.display = 'none';
+      };
+      
+      // Handle image load error
+      sourceImage.onerror = () => {
+        loading.style.display = 'none';
+        alert('Error loading image. Please try another file.');
+      };
+    });
+    
+    // Get placement recommendation based on photo type
+    function getPlacementRecommendation(photoType) {
+      switch (photoType) {
+        case 'selfie':
+          return 'Less scaling, focus on face';
+        case 'upper_body':
+          return 'Balanced scaling with face alignment';
+        case 'full_body':
+          return 'More aggressive scaling to ensure face visibility';
+        default:
+          return 'Default placement with smart scaling';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -166,15 +166,28 @@ const SharePoster = () => {
             // Position is adjusted to push the image to the left and lower on the canvas
             const userX = (canvas.width * 0.08) - 80; // Moved 80px to the left (40px more than before)
             // Position vertically (adjust to move down further)
-            const userY = (canvas.height - scaledHeight) + 70; // Push down by 70px from neutral position
+            const userY = (canvas.height - scaledHeight) + 90; // Push down by 90px from neutral position
             
             // Apply the calculated placement
             console.log('Positioning image using direct placement at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
             
-            // Draw the user's image with the calculated dimensions and position
-            ctx.drawImage(userImg, userX, userY, scaledWidth, scaledHeight);
+            // Create an offscreen canvas for applying tint
+            const offscreenCanvas = document.createElement('canvas');
+            offscreenCanvas.width = scaledWidth;
+            offscreenCanvas.height = scaledHeight;
+            const offCtx = offscreenCanvas.getContext('2d');
             
-            console.log('User image placed successfully using direct placement');
+            // Draw the user's image to the offscreen canvas
+            offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
+            
+            // Apply a subtle black tint (adjust alpha for intensity)
+            offCtx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Black with 15% opacity
+            offCtx.fillRect(0, 0, scaledWidth, scaledHeight);
+            
+            // Draw the tinted image to the main canvas
+            ctx.drawImage(offscreenCanvas, userX, userY, scaledWidth, scaledHeight);
+            
+            console.log('User image placed successfully with tint overlay');
           } catch (imageDrawError) {
             console.error('Error drawing user image:', imageDrawError);
             // Continue without user image placement

@@ -85,7 +85,7 @@ const UploadPhoto = () => {
       // Get face detections
       const detections = await faceapi.detectAllFaces(
         videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 })
+        new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.7 }) // Increased threshold for more accurate detection
       ).withFaceLandmarks();
       
       // Check if any faces were detected
@@ -97,6 +97,9 @@ const UploadPhoto = () => {
           (b.detection.box.width * b.detection.box.height) - 
           (a.detection.box.width * a.detection.box.height)
         )[0];
+        
+        // Get detection confidence
+        const confidence = mainFace.detection.score;
         
         // Get video dimensions
         const videoWidth = videoRef.current.videoWidth;
@@ -112,27 +115,40 @@ const UploadPhoto = () => {
         const faceCenterX = faceBox.x + (faceBox.width / 2);
         const faceCenterY = faceBox.y + (faceBox.height / 2);
         
-        // Define acceptable distance from center
+        // Calculate percentage of displacement from center
+        const xDisplacementPercent = Math.abs(faceCenterX - centerX) / (videoWidth / 2) * 100;
+        const yDisplacementPercent = Math.abs(faceCenterY - centerY) / (videoHeight / 2) * 100;
+        
+        // Log face position data for debugging
+        if (Math.random() < 0.05) { // Log only occasionally to avoid console spam
+          console.log(`Face position: x=${xDisplacementPercent.toFixed(1)}%, y=${yDisplacementPercent.toFixed(1)}%, width=${(faceBox.width/videoWidth*100).toFixed(1)}%, confidence=${confidence.toFixed(2)}`);
+        }
+        
+        // Define stricter acceptable distance from center - use percentage of screen size
         // Smaller tolerance for selfie mode (more precise face positioning)
-        const tolerance = isSelfieMode 
-          ? Math.min(videoWidth, videoHeight) * 0.08 
-          : Math.min(videoWidth, videoHeight) * 0.1;
+        const xTolerancePercent = isSelfieMode ? 10 : 15; // % of screen width from center
+        const yTolerancePercent = isSelfieMode ? 15 : 20; // % of screen height from center
+        
+        // Calculate acceptable minimum face size as percentage of screen width
+        const minFaceSizePercent = isSelfieMode ? 25 : 15; // Face should take up at least this % of screen width
         
         // Check if face is within acceptable position with different criteria for selfie mode
         let inPosition = false;
         
         if (isSelfieMode) {
-          // For selfie mode: focus more on face position and less on face size
+          // For selfie mode: strict positioning requirements
           inPosition = 
-            Math.abs(faceCenterX - centerX) < tolerance && 
-            Math.abs(faceCenterY - centerY) < tolerance &&
-            faceBox.width > videoWidth * 0.2; // Face should be larger in selfie mode
+            confidence > 0.8 && // High confidence required
+            xDisplacementPercent < xTolerancePercent && 
+            yDisplacementPercent < yTolerancePercent &&
+            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
         } else {
-          // For normal photos: allow more position variance but ensure good size
+          // For normal photos: also strict but with different parameters
           inPosition = 
-            Math.abs(faceCenterX - centerX) < tolerance && 
-            Math.abs(faceCenterY - centerY) < tolerance &&
-            faceBox.width > videoWidth * 0.15; // Face must be large enough
+            confidence > 0.75 && // Good confidence required
+            xDisplacementPercent < xTolerancePercent && 
+            yDisplacementPercent < yTolerancePercent &&
+            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
         }
         
         setFaceInPosition(inPosition);
@@ -245,16 +261,28 @@ const UploadPhoto = () => {
     
     console.log(`Captured photo with dimensions: ${canvasWidth}x${canvasHeight}, mode: ${isSelfieMode ? 'selfie' : 'normal'}`);
     
-    // Convert canvas to data URL
+    // Convert canvas to data URL with high quality
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
     
     // Set the photo as the preview
     setPreviewUrl(photoDataUrl);
     
     // Create a file from the data URL for processing
+    const fileName = isSelfieMode ? "selfie-photo.jpg" : "camera-photo.jpg";
+    
+    // Use toBlob with proper MIME type and quality
     canvas.toBlob((blob) => {
-      const newFile = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
+      // Create a proper File object with explicit type
+      const newFile = new File([blob], fileName, { 
+        type: "image/jpeg",
+        lastModified: Date.now()
+      });
+      
+      console.log('Created photo file:', newFile.name, 'size:', newFile.size, 'type:', newFile.type);
+      
+      // Set the file for processing
       setFile(newFile);
+      
       // Show preview modal immediately after photo is taken
       setShowPreviewModal(true);
     }, 'image/jpeg', 0.95); // High quality JPEG
@@ -549,13 +577,63 @@ const UploadPhoto = () => {
   const removeImageBackground = async (imageFile) => {
     try {
       setProcessingStep('Removing background...');
+      console.log('Starting background removal process for file:', imageFile?.name, 'size:', imageFile?.size);
+      
+      // Check if imageFile is valid
+      if (!imageFile || !(imageFile instanceof File)) {
+        console.error('Invalid image file for background removal:', imageFile);
+        throw new Error('Invalid image file');
+      }
+      
+      // Try FormData approach first which is more reliable for camera photos
+      try {
+        console.log('Trying FormData approach for background removal...');
+        setProcessingStep('Removing background (method 1/3)...');
+        
+        const formData = new FormData();
+        formData.append('size', 'auto');
+        formData.append('image_file', imageFile);
+        
+        const formDataResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
+          method: 'POST',
+          headers: {
+            'X-Api-Key': 'VmEeChTnKgAvW7NVH1bYrQC1',
+          },
+          body: formData
+        });
+        
+        if (!formDataResponse.ok) {
+          const errorText = await formDataResponse.text();
+          console.error(`FormData approach failed with status: ${formDataResponse.status}`, errorText);
+          throw new Error(`FormData API error: ${formDataResponse.status}`);
+        }
+        
+        const blob = await formDataResponse.blob();
+        const processedImageUrl = URL.createObjectURL(blob);
+        console.log('FormData background removal successful');
+        
+        setLoadingProgress(80);
+        return processedImageUrl;
+      } catch (formDataError) {
+        console.error('FormData approach failed:', formDataError);
+        // Continue to next method
+      }
       
       // Convert the file to base64
-      const base64Image = await fileToBase64(imageFile);
-      console.log('Image converted to base64 for background removal, length:', base64Image.length);
+      let base64Image;
+      try {
+        base64Image = await fileToBase64(imageFile);
+        console.log('Image converted to base64 for background removal, length:', base64Image.length);
+      } catch (base64Error) {
+        console.error('Failed to convert image to base64:', base64Error);
+        throw new Error('Failed to process image');
+      }
       
       // Try direct base64 API handling with Remove.bg
       try {
+        console.log('Trying base64 approach for background removal...');
+        setProcessingStep('Removing background (method 2/3)...');
+        
         // Using XMLHttpRequest for better binary data handling
         const removeResult = await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
@@ -593,18 +671,13 @@ const UploadPhoto = () => {
         return processedImageUrl;
       } catch (removeError) {
         console.error('Error with Remove.bg:', removeError);
-        throw removeError; // Try fallback
+        // Try third method
       }
-    } catch (error) {
-      console.error('Primary background removal failed:', error);
       
-      // Try fallback API
+      // Try fallback API (Crop.photo)
       try {
-        console.log('Trying fallback API for background removal...');
-        setProcessingStep('Trying alternative background removal...');
-        
-        // Convert the file to base64 again just in case
-        const base64Image = await fileToBase64(imageFile);
+        console.log('Trying Crop.photo API for background removal...');
+        setProcessingStep('Removing background (method 3/3)...');
         
         // Call Crop.photo API as fallback
         const fallbackResponse = await axios.post(
@@ -634,44 +707,16 @@ const UploadPhoto = () => {
         
         return processedImageUrl;
       } catch (fallbackError) {
-        console.error('Fallback background removal also failed:', fallbackError);
-        
-        // One last attempt with a different approach (might work on some browsers)
-        try {
-          console.log('Trying final fallback for background removal...');
-          setProcessingStep('Final attempt at background removal...');
-          
-          // Try FormData approach which sometimes works better
-          const formData = new FormData();
-          formData.append('size', 'auto');
-          formData.append('image_file', imageFile);
-          
-          const finalResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
-            method: 'POST',
-            headers: {
-              'X-Api-Key': 'VmEeChTnKgAvW7NVH1bYrQC1',
-            },
-            body: formData
-          });
-          
-          if (!finalResponse.ok) {
-            throw new Error(`HTTP error! status: ${finalResponse.status}`);
-          }
-          
-          const blob = await finalResponse.blob();
-          const processedImageUrl = URL.createObjectURL(blob);
-          console.log('Final fallback background removal successful');
-          
-          setLoadingProgress(80);
-          return processedImageUrl;
-        } catch (finalError) {
-          console.error('All background removal attempts failed:', finalError);
-          // If all API calls fail, we'll fall back to the original image
-          console.log('Using original image as fallback due to background removal failure');
-          setLoadingProgress(100); // Complete the progress bar
-          return previewUrl;
-        }
+        console.error('All background removal methods failed:', fallbackError);
+        // If all API calls fail, we'll fall back to the original image
+        console.log('Using original image as fallback due to background removal failure');
+        setLoadingProgress(100); // Complete the progress bar
+        return previewUrl;
       }
+    } catch (error) {
+      console.error('Fatal error in background removal process:', error);
+      setLoadingProgress(100);
+      return previewUrl; // Return original image as last resort
     }
   };
 
@@ -718,6 +763,9 @@ const UploadPhoto = () => {
       setIsLoading(true);
       setLoadingProgress(0);
       
+      // Log file details for debugging
+      console.log('Processing file:', file.name, 'size:', file.size, 'type:', file.type);
+      
       // Simulate initial loading progress
       simulateProgressDuringProcessing(0, 10, 1000, setLoadingProgress);
       
@@ -729,8 +777,14 @@ const UploadPhoto = () => {
       
       try {
         // Remove the background
+        console.log('Starting background removal with file:', file.name);
         processedImageUrl = await removeImageBackground(file);
-        console.log('Background removal completed');
+        console.log('Background removal completed, result URL length:', processedImageUrl?.length);
+        
+        // If the result is the same as the original preview URL, it means background removal failed
+        if (processedImageUrl === previewUrl) {
+          console.warn('Background removal may have failed as the result URL is the same as the preview URL');
+        }
         
         // Add a small delay to show progress
         setProcessingStep('Finalizing your photo...');
@@ -743,7 +797,10 @@ const UploadPhoto = () => {
         
       } catch (error) {
         console.error('Photo processing failed:', error);
+        // Log detailed error information
+        logDetailedError(error, 'PHOTO_PROCESSING');
         // Continue with the original image
+        processedImageUrl = previewUrl;
         setLoadingProgress(100);
       }
       
@@ -759,6 +816,7 @@ const UploadPhoto = () => {
       
     } catch (error) {
       console.error('Error processing image:', error);
+      logDetailedError(error, 'OVERALL_PROCESSING');
       setError('Failed to process image. Please try again.');
       setShowProcessingModal(false);
       setIsLoading(false);
@@ -845,12 +903,12 @@ const UploadPhoto = () => {
                     />
                     <div className="positioning-guide">
                       {faceInPosition ? 
-                        "Perfect! Face positioned correctly." : 
+                        "Perfect! Hold still and take the photo." : 
                         faceDetected ? 
-                          "Move your face to align with the outline" : 
+                          "Move closer and center your face in the outline" : 
                           isSelfieMode ?
-                            "Position your face in the outline" :
-                            "Position your face in the outline, stand back to show upper body"
+                            "Position your face within the outline and look at the camera" :
+                            "Position your face in the outline, hold camera at eye level"
                       }
                     </div>
                   </div>

@@ -13,19 +13,15 @@
   z-index: 9999;
 }
 
-.animated-logo {
-  width: 100px;
-  height: 100px;
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
-}
-
-.logo-path {
-  stroke: #000;
-  stroke-width: 1;
-  stroke-dasharray: 300;
-  stroke-dashoffset: 300;
-  animation: dash 3s linear infinite, colorChange 4s infinite alternate ease-in-out;
-  fill: #FFC107;
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .loading-text {
@@ -45,33 +41,6 @@
   }
 }
 
-@keyframes dash {
-  0% {
-    stroke-dashoffset: 300;
-  }
-  50% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    stroke-dashoffset: -300;
-  }
-}
-
-@keyframes colorChange {
-  0% {
-    fill: rgba(255, 193, 7, 0.5); /* Semi-transparent yellow */
-    stroke: #000;
-  }
-  50% {
-    fill: rgba(255, 193, 7, 0.8); /* More opaque yellow */
-    stroke: #000;
-  }
-  100% {
-    fill: #FFC107; /* Fully opaque yellow */
-    stroke: transparent;
-  }
-}
-
 @keyframes fadeInOut {
   0% {
     opacity: 0.5;
@@ -84,9 +53,9 @@
 }
 
 @media (max-width: 768px) {
-  .animated-logo {
-    width: 80px;
-    height: 80px;
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
   }
   
   .loading-text {
@@ -103,12 +72,13 @@
   height: auto;
 }
 
-.loader-inline .animated-logo {
-  width: 70px;
-  height: 70px;
+.loader-inline .loading-spinner {
+  width: 50px;
+  height: 50px;
+  border-width: 3px;
 }
 
 .loader-inline .loading-text {
   font-size: 14px;
   margin-top: 15px;
-} 
+}

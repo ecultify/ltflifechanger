@@ -1,6 +1,6 @@
 .header {
   background-color: #FFCB03;
-  padding: 10px 0; /* Reduced padding from 15px to 10px */
+  padding: 5px 0; /* Reduced padding from 10px to 5px */
   border-bottom: none;
   position: relative;
   z-index: 100;

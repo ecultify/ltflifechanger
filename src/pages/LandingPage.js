@@ -4,7 +4,7 @@ import '../styles/pages/LandingPage.css';
 
 // Image paths - using direct relative paths from the public folder
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';
-const LOGO_IMAGE_PATH = '/images/section1/logo.png';
+const LOGO_IMAGE_PATH = '/LOGO(3).png';
 const CAROUSEL_IMAGE_PATHS = [
   '/images/section1/carousel1.png',
   '/images/section1/carousel2.png',
@@ -16,10 +16,14 @@ const SECTION3_DESK_IMAGE = '/images/section3/section3deskimage.png';
 const GROUP_30A_IMAGE = '/images/section1/Group 30a (1).png';
 const FRAME_162422_IMAGE = '/images/section1/Frame 162422.png';
 const PROFILE_IMAGES = [
-  '/images/section1/freepik__a-rightside-pose-studio-shot-of-an-indian-male-sci__4955 3.png',
-  '/images/section1/Mask group (40).png',
-  '/images/section1/Mask group (41).png',
-  '/images/section1/photo-sri-lanka-business-man-crossed-arms-smiling 5.png'
+  '/Mask group.png',
+  '/Mask group-1.png',
+  '/Mask group-2.png',
+  '/Mask group-3.png',
+  '/Mask group-4.png',
+  '/Mask group-5.png',
+  '/Mask group-6.png',
+  '/Mask group (42).png'
 ];
 
 const LandingPage = () => {
@@ -132,13 +136,6 @@ const LandingPage = () => {
                 className="profile-carousel-image" 
               />
             </div>
-            
-            {/* Frame 162422 image on the left side */}
-            <img 
-              src={FRAME_162422_IMAGE} 
-              alt="Frame" 
-              className="frame-162422-image" 
-            />
           
             <h2 className="hero-subtitle">Get Your</h2>
             
@@ -172,13 +169,8 @@ const LandingPage = () => {
             </div>
           ) : (
             <>
-              {/* Mobile layout with profile image inside frame */}
+              {/* Mobile layout with profile image */}
               <div className="mobile-frame-container">
-                <img 
-                  src={FRAME_162422_IMAGE} 
-                  alt="Frame" 
-                  className="frame-162422-image" 
-                />
                 <div className="profile-image-container">
                   <img 
                     src={PROFILE_IMAGES[profileImageIndex]} 
@@ -258,4 +250,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage; 
+export default LandingPage;

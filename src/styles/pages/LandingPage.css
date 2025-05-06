@@ -39,7 +39,7 @@ html, body {
   position: absolute;
   top: 30px;
   left: 20px;
-  width: 150px;
+  width: 200px; /* Increased from 150px to 200px */
   transform: rotate(0deg);
   z-index: 2;
   animation: slideInLeft 0.8s ease-out;
@@ -66,10 +66,10 @@ html, body {
 
 .hero-subtitle {
   font-size: 28px;
-  margin-bottom: -15px;
+  margin-bottom: -10px; /* Reduced from -15px to bring lines closer */
   font-weight: 600;
   transform: rotate(-5deg);
-  margin-left: 50px;
+  margin-left: 10px; /* Moved further to the left from 30px */
   display: inline-block;
   position: relative;
   z-index: 1;
@@ -91,18 +91,22 @@ html, body {
   z-index: 2;
 }
 
+.neo-highlight.poster-text {
+  margin-left: -40px; /* Move the Free Personalised text further to the left */
+}
+
 .poster-text {
   font-size: 36px;
   color: var(--text-dark-blue);
-  margin-left: 50px;
-  margin-top: 0;
-  margin-bottom: 10px;
+  margin-left: 30px; /* Restored to previous position */
+  margin-top: 15px; /* Reduced top margin */
+  margin-bottom: 5px; /* Reduced bottom margin to bring lines closer */
   display: block;
 }
 
 .poster-text:nth-child(3) {
-  transform: rotate(-5deg) translateX(40px);
-  margin-bottom: 45px;
+  transform: rotate(-5deg) translateX(70px); /* Increased from 40px to 70px to move Business Poster line to the right */
+  margin-bottom: 25px; /* Reduced from 45px to bring lines closer */
 }
 
 .with-bumrah {
@@ -433,14 +437,19 @@ html, body {
     position: relative;
     top: auto;
     left: 15px; /* Moved further left from 30px */
-    transform: translateY(5px); /* Pushed down by 5px */
-    width: 220px; /* Increased width */
+    transform: translateY(20px); /* Adjusted to push up instead of down */
+    width: 260px; /* Increased width from 220px to 260px */
     height: auto;
     margin: 0;
     z-index: 2; /* Reduced from 5 to make it behind the right image */
     overflow: visible;
     display: flex;
     align-items: flex-end;
+    border: 3px solid var(--text-black);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
+    background-color: var(--primary-yellow);
+    padding: 5px;
   }
   
   .profile-carousel-image {
@@ -449,6 +458,7 @@ html, body {
     object-fit: contain;
     object-position: bottom;
     vertical-align: bottom;
+    border-radius: calc(var(--border-radius) - 3px);
   }
   
   /* Hide the frame image in mobile view */
@@ -461,11 +471,12 @@ html, body {
     position: relative;
     top: auto;
     right: 15px; /* Moved further right from 30px */
-    width: 190px; /* Increased width */
+    width: 230px; /* Increased width from 190px to 230px */
     z-index: 5; /* Increased from 2 to make it in front of the left images */
     align-self: flex-end;
     margin-bottom: 0;
-    transform: translateY(5px); /* Pushed down by 5px */
+    transform: translateY(20px); /* Adjusted to match new profile image positioning */
+    margin-left: 20px; /* Added spacing between images */
   }
   
   /* Make sure the images are positioned correctly relative to the carousel */
@@ -473,8 +484,28 @@ html, body {
     margin-top: 30px; /* Increased from -10px to move carousel down */
   }
   
-  /* Hide desktop-only images in mobile view */
-  .hero-text-container > .profile-image-container,
+  /* Style desktop profile image container */
+  .hero-text-container > .profile-image-container {
+    position: relative;
+    width: 260px;
+    height: auto;
+    margin-bottom: 20px;
+    border: 3px solid var(--text-black);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
+    background-color: var(--primary-yellow);
+    padding: 5px;
+    overflow: hidden;
+    transform: translateY(20px);
+  }
+  
+  .hero-text-container > .profile-image-container .profile-carousel-image {
+    width: 100%;
+    height: auto;
+    border-radius: calc(var(--border-radius) - 3px);
+  }
+  
+  /* Hide frame image in mobile view */
   .hero-text-container > .frame-162422-image {
     display: none;
   }
@@ -641,10 +672,10 @@ html, body {
 .play-button::before {
   content: '';
   position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
+  top: -8px;
+  left: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
   border-radius: 50%;
   border: 2px solid var(--primary-yellow);
   opacity: 0;
@@ -882,7 +913,7 @@ html, body {
 }
 
 .logo-image {
-  width: 150px;
+  width: 200px; /* Increased from 150px to 200px */
   margin-bottom: 10px;
 }
 
@@ -1158,14 +1189,19 @@ html, body {
     position: relative;
     top: auto;
     left: 15px; /* Moved further left from 30px */
-    transform: translateY(5px); /* Pushed down by 5px */
-    width: 220px; /* Increased width */
+    transform: translateY(20px); /* Adjusted to push up instead of down */
+    width: 260px; /* Increased width from 220px to 260px */
     height: auto;
     margin: 0;
     z-index: 2; /* Reduced from 5 to make it behind the right image */
     overflow: visible;
     display: flex;
     align-items: flex-end;
+    border: 3px solid var(--text-black);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
+    background-color: var(--primary-yellow);
+    padding: 5px;
   }
   
   .profile-carousel-image {
@@ -1174,6 +1210,7 @@ html, body {
     object-fit: contain;
     object-position: bottom;
     vertical-align: bottom;
+    border-radius: calc(var(--border-radius) - 3px);
   }
   
   /* Hide the frame image in mobile view */
@@ -1186,11 +1223,12 @@ html, body {
     position: relative;
     top: auto;
     right: 15px; /* Moved further right from 30px */
-    width: 190px; /* Increased width */
+    width: 230px; /* Increased width from 190px to 230px */
     z-index: 5; /* Increased from 2 to make it in front of the left images */
     align-self: flex-end;
     margin-bottom: 0;
-    transform: translateY(5px); /* Pushed down by 5px */
+    transform: translateY(20px); /* Adjusted to match new profile image positioning */
+    margin-left: 20px; /* Added spacing between images */
   }
   
   /* Make sure the images are positioned correctly relative to the carousel */
@@ -1198,8 +1236,28 @@ html, body {
     margin-top: 30px; /* Increased from -10px to move carousel down */
   }
   
-  /* Hide desktop-only images in mobile view */
-  .hero-text-container > .profile-image-container,
+  /* Style desktop profile image container */
+  .hero-text-container > .profile-image-container {
+    position: relative;
+    width: 260px;
+    height: auto;
+    margin-bottom: 20px;
+    border: 3px solid var(--text-black);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
+    background-color: var(--primary-yellow);
+    padding: 5px;
+    overflow: hidden;
+    transform: translateY(20px);
+  }
+  
+  .hero-text-container > .profile-image-container .profile-carousel-image {
+    width: 100%;
+    height: auto;
+    border-radius: calc(var(--border-radius) - 3px);
+  }
+  
+  /* Hide frame image in mobile view */
   .hero-text-container > .frame-162422-image {
     display: none;
   }

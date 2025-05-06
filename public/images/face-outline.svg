@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
   <!-- Face outline - oval shape -->
-  <ellipse cx="150" cy="150" rx="85" ry="105" 
+  <ellipse cx="150" cy="100" rx="60" ry="75" 
            fill="none" 
            stroke="white" 
            stroke-width="6" 
@@ -9,22 +9,32 @@
            opacity="0.8"/>
   
   <!-- Optional markers for eyes position (subtle guides) -->
-  <circle cx="115" cy="130" r="5" 
+  <circle cx="130" cy="90" r="4" 
           fill="none" 
           stroke="white" 
           stroke-width="2" 
           opacity="0.4"/>
   
-  <circle cx="185" cy="130" r="5" 
+  <circle cx="170" cy="90" r="4" 
           fill="none" 
           stroke="white" 
           stroke-width="2" 
           opacity="0.4"/>
   
   <!-- Optional marker for nose/mouth alignment -->
-  <line x1="150" y1="130" x2="150" y2="180" 
+  <line x1="150" y1="90" x2="150" y2="125" 
         stroke="white" 
         stroke-width="2" 
         stroke-dasharray="5,5" 
         opacity="0.4"/>
+        
+  <!-- Caption text for body positioning -->
+  <text x="150" y="200" 
+        font-family="Arial, sans-serif" 
+        font-size="14" 
+        fill="white" 
+        text-anchor="middle"
+        opacity="0.8">
+    Position face in oval, body visible below
+  </text>
 </svg> 

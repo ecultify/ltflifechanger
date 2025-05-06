@@ -83,9 +83,9 @@ const UploadPhoto = () => {
     const video = videoRef.current;
     
     // Set canvas dimensions to match video dimensions but maintain aspect ratio
-    // Use a 4:5 aspect ratio to better frame faces and match the outline
+    // Use a 3:5 aspect ratio to capture more of the body (waist-up)
     const videoAspect = video.videoWidth / video.videoHeight;
-    const targetAspect = 4/5; // Modified aspect ratio for face photos
+    const targetAspect = 3/5; // Taller aspect ratio to capture more body
     
     let canvasWidth, canvasHeight;
     if (videoAspect > targetAspect) {
@@ -103,9 +103,9 @@ const UploadPhoto = () => {
     canvas.height = canvasHeight;
     
     // Calculate centering offsets to position the image properly
-    // Shift the vertical offset up slightly to better center on face
+    // Shift the vertical offset up more to better include the body
     const offsetX = (video.videoWidth - canvasWidth) / 2;
-    const offsetY = (video.videoHeight - canvasHeight) / 2 - (video.videoHeight * 0.05); // Shift up by 5%
+    const offsetY = (video.videoHeight - canvasHeight) / 3; // Position higher to include more body
     
     // Draw the current video frame to the canvas with the correct positioning
     const ctx = canvas.getContext('2d');
@@ -718,7 +718,7 @@ const UploadPhoto = () => {
                       className="outline-image"
                     />
                     <div className="positioning-guide">
-                      Position your face within the outline
+                      Position your face in the outline, stand back to show upper body
                     </div>
                   </div>
                   <div className="camera-controls">

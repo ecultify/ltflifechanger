@@ -18,6 +18,55 @@ const SharePoster = () => {
   const [error, setError] = useState(null);
   const [loadingStatus, setLoadingStatus] = useState('Loading data...');
   const canvasRef = useRef(null);
+  const preloadedTemplateRef = useRef(null); // Ref to store preloaded image
+
+  // Preload the template image when component mounts
+  useEffect(() => {
+    const preloadTemplateImage = async () => {
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        // Try different paths to preload the template
+        const paths = [
+          `${window.location.origin}/images/mage.jpg`,
+          '/images/mage.jpg',
+          'images/mage.jpg',
+          `${window.location.origin}/images/template.jpg`,
+          '/images/template.jpg',
+          'images/template.jpg'
+        ];
+        
+        // Function to try loading with each path
+        const tryLoadingWithPath = (index) => {
+          if (index >= paths.length) {
+            console.error('All template image paths failed to load');
+            return;
+          }
+          
+          img.onload = () => {
+            console.log(`Template image preloaded successfully from: ${paths[index]}`);
+            preloadedTemplateRef.current = img;
+          };
+          
+          img.onerror = () => {
+            console.warn(`Failed to preload template image from: ${paths[index]}`);
+            // Try next path
+            tryLoadingWithPath(index + 1);
+          };
+          
+          img.src = paths[index];
+        };
+        
+        // Start trying with first path
+        tryLoadingWithPath(0);
+      } catch (error) {
+        console.error('Error preloading template image:', error);
+      }
+    };
+    
+    preloadTemplateImage();
+  }, []);
 
   // Define generatePoster with useCallback before it's used in useEffect
   const generatePoster = useCallback(async () => {
@@ -70,14 +119,51 @@ const SharePoster = () => {
         userImg.src = processedImage;
         
         // Load the template image with Bumrah
-        const templateSrc = '/images/mage.jpg';
+        // Use absolute URL path to ensure correct loading across all environments
+        const templateSrc = `${window.location.origin}/images/mage.jpg`;
           
         console.log(`Using template: ${templateSrc}`);
         
         setLoadingStatus('Loading template image...');
-        const templateImg = new Image();
-        templateImg.crossOrigin = 'anonymous';
-        templateImg.src = templateSrc;
+        let templateImg;
+        
+        // Use preloaded template image if available
+        if (preloadedTemplateRef.current && 
+            preloadedTemplateRef.current.complete && 
+            preloadedTemplateRef.current.naturalHeight !== 0) {
+          console.log('Using preloaded template image');
+          templateImg = preloadedTemplateRef.current;
+        } else {
+          // Otherwise load a new image
+          templateImg = new Image();
+          templateImg.crossOrigin = 'anonymous';
+          templateImg.src = templateSrc;
+          
+          // Add error handling for template image loading
+          templateImg.onerror = () => {
+            console.error('Failed to load template image, trying alternate path');
+            // Try without window.location.origin as a fallback
+            templateImg.src = '/images/mage.jpg';
+            
+            // If that also fails, try a relative path
+            templateImg.onerror = () => {
+              console.error('Still failed to load template image, using relative path');
+              templateImg.src = 'images/mage.jpg';
+              
+              // If that still fails, try the backup template file
+              templateImg.onerror = () => {
+                console.error('All mage.jpg paths failed, trying template.jpg');
+                templateImg.src = '/images/template.jpg';
+                
+                // Last attempt with relative path
+                templateImg.onerror = () => {
+                  console.error('Even template.jpg failed, using final fallback');
+                  templateImg.src = 'images/template.jpg';
+                };
+              };
+            };
+          };
+        }
         
         // Wait for all images to load with timeout
         setLoadingStatus('Processing images...');
@@ -123,15 +209,71 @@ const SharePoster = () => {
           try {
             // Draw the template on the full canvas
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+            console.log('Template image drawn successfully');
           } catch (e) {
             console.error('Error drawing template:', e);
-            ctx.fillStyle = '#333333';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Try to reload the image one more time with a direct approach
+            try {
+              console.log('Attempting to reload template image directly...');
+              // Create a new image object and try again
+              const retryImg = new Image();
+              retryImg.crossOrigin = 'anonymous';
+              retryImg.src = 'images/mage.jpg'; // Try the simple relative path
+              
+              // Wait briefly for the image to load
+              await new Promise((resolve) => {
+                retryImg.onload = resolve;
+                retryImg.onerror = resolve; // Continue even if error
+                setTimeout(resolve, 2000); // Max wait of 2 seconds
+              });
+              
+              if (retryImg.complete && retryImg.naturalHeight !== 0) {
+                ctx.drawImage(retryImg, 0, 0, canvas.width, canvas.height);
+                console.log('Template image drawn successfully on retry');
+              } else {
+                throw new Error('Retry failed, using fallback color');
+              }
+            } catch (retryError) {
+              console.error('Retry also failed:', retryError);
+              ctx.fillStyle = '#0a1a34'; // Navy blue background as fallback
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
           }
         } else {
           // Fallback: fill with a color
-          ctx.fillStyle = '#333333';
+          console.warn('Template image failed to load, using fallback background');
+          ctx.fillStyle = '#0a1a34'; // Navy blue background as fallback
           ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Draw L&T Finance logo as a fallback
+          try {
+            const logoImg = new Image();
+            logoImg.crossOrigin = 'anonymous';
+            logoImg.src = `${window.location.origin}/images/l&tlogo.png`;
+            
+            // Wait briefly for the logo to load
+            await new Promise((resolve) => {
+              logoImg.onload = resolve;
+              logoImg.onerror = resolve; // Continue even if error
+              setTimeout(resolve, 1000); // Max wait of 1 second
+            });
+            
+            if (logoImg.complete && logoImg.naturalHeight !== 0) {
+              // Draw logo at the top center
+              const logoWidth = canvas.width * 0.3;
+              const logoHeight = logoWidth * (logoImg.height / logoImg.width);
+              ctx.drawImage(
+                logoImg,
+                (canvas.width - logoWidth) / 2,
+                canvas.height * 0.1,
+                logoWidth,
+                logoHeight
+              );
+              console.log('Logo drawn as fallback');
+            }
+          } catch (logoError) {
+            console.error('Error drawing fallback logo:', logoError);
+          }
         }
         
         // Now place the user's image to the left of Bumrah using face detection

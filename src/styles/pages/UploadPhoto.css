@@ -188,9 +188,11 @@
   padding: 10px 25px;
   border-radius: 4px;
   font-size: 14px;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: background-color 0.3s;
   font-weight: 500;
+  margin-top: 10px;
 }
 
 .normal-upload-btn {
@@ -480,8 +482,9 @@
   border: none;
   border-radius: 4px;
   padding: 12px 20px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -496,7 +499,7 @@
 }
 
 .take-photo-btn:hover {
-  background-color: #e6b000;
+  background-color: #006a92;
 }
 
 .take-photo-btn i {
@@ -530,6 +533,40 @@
   justify-content: center;
   pointer-events: none; /* Allows clicks to pass through to camera controls */
   z-index: 10;
+  transition: all 0.3s ease;
+}
+
+/* Face detection states */
+.person-outline-overlay.face-detected .outline-image {
+  stroke: #FFC107;
+  opacity: 1;
+}
+
+.person-outline-overlay.face-in-position .outline-image {
+  stroke: #4CAF50;
+  opacity: 1;
+  animation: pulse 1.5s infinite;
+}
+
+/* Selfie mode specific styles */
+.person-outline-overlay.selfie-mode .outline-image {
+  height: 45%; /* Smaller outline for selfie mode compared to regular camera */
+  top: 35%; /* Position slightly higher for selfies to focus on face */
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
 }
 
 .outline-image {
@@ -544,6 +581,7 @@
   transform: translate(-50%, -50%);
   z-index: 15; /* Ensure it's above other elements */
   pointer-events: none; /* Allow interaction with elements below */
+  transition: all 0.3s ease;
 }
 
 .positioning-guide {
@@ -558,6 +596,16 @@
   font-size: 16px; /* Larger font size */
   font-weight: 500;
   z-index: 16; /* Above outline image */
+  transition: all 0.3s ease;
+}
+
+/* Face detection status - changing color based on status */
+.person-outline-overlay.face-detected .positioning-guide {
+  background-color: rgba(255, 193, 7, 0.7); /* Yellow for detected but not positioned */
+}
+
+.person-outline-overlay.face-in-position .positioning-guide {
+  background-color: rgba(76, 175, 80, 0.7); /* Green for properly positioned */
 }
 
 .camera-video {
@@ -603,6 +651,25 @@
 
 .camera-btn.cancel:hover {
   background-color: rgba(255, 50, 50, 0.9);
+}
+
+/* Camera button states */
+.camera-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(200, 200, 200, 0.8);
+  transform: none;
+}
+
+.camera-btn.active {
+  background-color: #4CAF50;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+.camera-btn.active:hover {
+  background-color: #45a049;
+  transform: scale(1.15);
 }
 
 /* Preview Modal Styles */
@@ -705,6 +772,7 @@
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 500;
+  font-family: 'Poppins', sans-serif;
 }
 
 .preview-modal-buttons {
@@ -717,8 +785,9 @@
   flex: 1;
   padding: 12px 15px;
   border-radius: 4px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -740,12 +809,12 @@
 }
 
 .confirm-btn {
-  background-color: #FFC107;
-  color: #0a1a34;
+  background-color: #0083B5;
+  color: white;
 }
 
 .confirm-btn:hover {
-  background-color: #e6b000;
+  background-color: #006a92;
 }
 
 /* Responsive styles for the preview modal */
@@ -968,4 +1037,13 @@
     font-size: 16px;
     margin: 20px 0 15px;
   }
+}
+
+/* Selfie mode button styles */
+.take-photo-btn.selfie-btn {
+  background-color: #FF5722; /* Different color to distinguish from regular camera button */
+}
+
+.take-photo-btn.selfie-btn:hover {
+  background-color: #E64A19;
 }

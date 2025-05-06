@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/pages/UploadPhoto.css';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import * as faceapi from 'face-api.js';
+import { loadFaceDetectionModels } from '../utils/faceDetection';
 
 const UploadPhoto = () => {
   const [file, setFile] = useState(null);
@@ -16,10 +18,29 @@ const UploadPhoto = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
   const [isNormalSelfie, setIsNormalSelfie] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [faceInPosition, setFaceInPosition] = useState(false);
+  const [faceDetectionEnabled, setFaceDetectionEnabled] = useState(false);
+  const [isSelfieMode, setIsSelfieMode] = useState(false);
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const detectionRef = useRef(null);
   const navigate = useNavigate();
+
+  // Initialize face detection when component mounts
+  useEffect(() => {
+    // Load face detection models
+    loadFaceDetectionModels()
+      .then(() => {
+        console.log('Face detection models loaded successfully');
+        setFaceDetectionEnabled(true);
+      })
+      .catch(err => {
+        console.error('Failed to load face detection models:', err);
+        setFaceDetectionEnabled(false);
+      });
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -54,19 +75,103 @@ const UploadPhoto = () => {
     }
   };
   
+  // Handle face detection in video stream
+  const detectFacesInVideo = async () => {
+    if (!videoRef.current || !videoRef.current.srcObject || !faceDetectionEnabled) {
+      return;
+    }
+    
+    try {
+      // Get face detections
+      const detections = await faceapi.detectAllFaces(
+        videoRef.current,
+        new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 })
+      ).withFaceLandmarks();
+      
+      // Check if any faces were detected
+      if (detections && detections.length > 0) {
+        setFaceDetected(true);
+        
+        // Get the most prominent face (usually the largest one)
+        const mainFace = detections.sort((a, b) => 
+          (b.detection.box.width * b.detection.box.height) - 
+          (a.detection.box.width * a.detection.box.height)
+        )[0];
+        
+        // Get video dimensions
+        const videoWidth = videoRef.current.videoWidth;
+        const videoHeight = videoRef.current.videoHeight;
+        
+        // Calculate center of the screen
+        const centerX = videoWidth / 2;
+        // Adjust centerY based on selfie mode - slightly higher center point for selfies
+        const centerY = isSelfieMode ? videoHeight / 2.5 : videoHeight / 2.2;
+        
+        // Get face dimensions and position
+        const faceBox = mainFace.detection.box;
+        const faceCenterX = faceBox.x + (faceBox.width / 2);
+        const faceCenterY = faceBox.y + (faceBox.height / 2);
+        
+        // Define acceptable distance from center
+        // Smaller tolerance for selfie mode (more precise face positioning)
+        const tolerance = isSelfieMode 
+          ? Math.min(videoWidth, videoHeight) * 0.08 
+          : Math.min(videoWidth, videoHeight) * 0.1;
+        
+        // Check if face is within acceptable position with different criteria for selfie mode
+        let inPosition = false;
+        
+        if (isSelfieMode) {
+          // For selfie mode: focus more on face position and less on face size
+          inPosition = 
+            Math.abs(faceCenterX - centerX) < tolerance && 
+            Math.abs(faceCenterY - centerY) < tolerance &&
+            faceBox.width > videoWidth * 0.2; // Face should be larger in selfie mode
+        } else {
+          // For normal photos: allow more position variance but ensure good size
+          inPosition = 
+            Math.abs(faceCenterX - centerX) < tolerance && 
+            Math.abs(faceCenterY - centerY) < tolerance &&
+            faceBox.width > videoWidth * 0.15; // Face must be large enough
+        }
+        
+        setFaceInPosition(inPosition);
+      } else {
+        setFaceDetected(false);
+        setFaceInPosition(false);
+      }
+    } catch (error) {
+      console.error('Face detection error:', error);
+    }
+    
+    // Continue detection loop if camera is still active
+    if (videoRef.current && videoRef.current.srcObject) {
+      detectionRef.current = requestAnimationFrame(detectFacesInVideo);
+    }
+  };
+  
   // Handle camera activation
-  const activateCamera = async () => {
+  const activateCamera = async (selfieMode = false) => {
     try {
       setIsCameraActive(true);
+      setIsSelfieMode(selfieMode);
       
-      // Use the back-facing camera for photos
+      // Use the appropriate camera based on mode
+      const facingMode = selfieMode ? "user" : "environment"; // "user" for front camera, "environment" for back camera
+      
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" } // "user" for front camera, "environment" for back camera
+        video: { facingMode: facingMode }
       });
       
       // Set the video source to the camera stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          // Start face detection
+          detectionRef.current = requestAnimationFrame(detectFacesInVideo);
+        };
       }
     } catch (err) {
       console.error("Error accessing camera:", err);
@@ -83,29 +188,52 @@ const UploadPhoto = () => {
     const video = videoRef.current;
     
     // Set canvas dimensions to match video dimensions but maintain aspect ratio
-    // Use a 3:5 aspect ratio to capture more of the body (waist-up)
+    // Use different aspect ratios depending on camera mode
     const videoAspect = video.videoWidth / video.videoHeight;
-    const targetAspect = 3/5; // Taller aspect ratio to capture more body
     
     let canvasWidth, canvasHeight;
-    if (videoAspect > targetAspect) {
-      // Video is wider than target aspect, use full height and calculated width
-      canvasHeight = video.videoHeight;
-      canvasWidth = video.videoHeight * targetAspect;
+    let offsetX, offsetY;
+    
+    if (isSelfieMode) {
+      // For selfie mode, use 4:5 aspect ratio focusing on the face
+      const targetAspect = 4/5;
+      
+      if (videoAspect > targetAspect) {
+        // Video is wider than target aspect, use full height and calculated width
+        canvasHeight = video.videoHeight;
+        canvasWidth = video.videoHeight * targetAspect;
+      } else {
+        // Video is taller than target aspect, use full width and calculated height
+        canvasWidth = video.videoWidth;
+        canvasHeight = video.videoWidth / targetAspect;
+      }
+      
+      // For selfies, center the face more precisely
+      offsetX = (video.videoWidth - canvasWidth) / 2;
+      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to focus on face
     } else {
-      // Video is taller than target aspect, use full width and calculated height
-      canvasWidth = video.videoWidth;
-      canvasHeight = video.videoWidth / targetAspect;
+      // For back camera (full body shots), use 3:5 aspect ratio to capture more body
+      const targetAspect = 3/5;
+      
+      if (videoAspect > targetAspect) {
+        // Video is wider than target aspect, use full height and calculated width
+        canvasHeight = video.videoHeight;
+        canvasWidth = video.videoHeight * targetAspect;
+      } else {
+        // Video is taller than target aspect, use full width and calculated height
+        canvasWidth = video.videoWidth;
+        canvasHeight = video.videoWidth / targetAspect;
+      }
+      
+      // Calculate centering offsets to position the image properly
+      // Shift the vertical offset up more to better include the body
+      offsetX = (video.videoWidth - canvasWidth) / 2;
+      offsetY = (video.videoHeight - canvasHeight) / 3; // Position higher to include more body
     }
     
     // Set canvas dimensions
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    
-    // Calculate centering offsets to position the image properly
-    // Shift the vertical offset up more to better include the body
-    const offsetX = (video.videoWidth - canvasWidth) / 2;
-    const offsetY = (video.videoHeight - canvasHeight) / 3; // Position higher to include more body
     
     // Draw the current video frame to the canvas with the correct positioning
     const ctx = canvas.getContext('2d');
@@ -115,7 +243,7 @@ const UploadPhoto = () => {
       0, 0, canvasWidth, canvasHeight               // Destination rectangle
     );
     
-    console.log(`Captured photo with dimensions: ${canvasWidth}x${canvasHeight}`);
+    console.log(`Captured photo with dimensions: ${canvasWidth}x${canvasHeight}, mode: ${isSelfieMode ? 'selfie' : 'normal'}`);
     
     // Convert canvas to data URL
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
@@ -135,8 +263,15 @@ const UploadPhoto = () => {
     stopCamera();
   };
   
-  // Stop camera stream
+  // Stop camera stream and face detection
   const stopCamera = () => {
+    // Cancel face detection loop
+    if (detectionRef.current) {
+      cancelAnimationFrame(detectionRef.current);
+      detectionRef.current = null;
+    }
+    
+    // Stop all camera tracks
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
       tracks.forEach(track => track.stop());
@@ -144,7 +279,16 @@ const UploadPhoto = () => {
     }
     
     setIsCameraActive(false);
+    setFaceDetected(false);
+    setFaceInPosition(false);
   };
+
+  // Clean up resources when component unmounts
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
 
   // Convert image to base64
   const fileToBase64 = (file) => {
@@ -579,47 +723,28 @@ const UploadPhoto = () => {
       
       let processedImageUrl = previewUrl;
       
-      if (isNormalSelfie) {
-        // Normal selfie flow - only remove background and enhance with ESRGAN
-        setProcessingStep('Processing your selfie...');
-        simulateProgressDuringProcessing(10, 30, 2000, setLoadingProgress);
+      // Normal selfie flow - first remove background
+      setProcessingStep('Processing your photo...');
+      simulateProgressDuringProcessing(10, 50, 2000, setLoadingProgress);
+      
+      try {
+        // Remove the background
+        processedImageUrl = await removeImageBackground(file);
+        console.log('Background removal completed');
         
-        try {
-          // First remove the background
-          processedImageUrl = await removeImageBackground(file);
-          console.log('Background removal completed for normal selfie');
-          
-          // Then enhance the image with ESRGAN
-          setProcessingStep('Enhancing your selfie...');
-          // Pass the background-removed image URL to the enhancement function
-          processedImageUrl = await enhanceImageWithESRGAN(processedImageUrl);
-          console.log('Image enhancement completed');
-          
-        } catch (error) {
-          console.error('Selfie processing failed:', error);
-          // Continue with the original image
-          setLoadingProgress(100);
-        }
-      } else {
-        // Original flow - generate consistent character with pose
-        try {
-          processedImageUrl = await generateConsistentCharacter(file);
-          console.log('Consistent character generated successfully');
-        } catch (error) {
-          console.error('Character generation failed:', error);
-          // Fall back to just background removal
-          setProcessingStep('Character generation failed, falling back to background removal...');
-          simulateProgressDuringProcessing(loadingProgress, 85, 2000, setLoadingProgress);
-          
-          try {
-            processedImageUrl = await removeImageBackground(file);
-            console.log('Background removal completed as fallback');
-          } catch (bgRemovalError) {
-            console.error('Background removal failed:', bgRemovalError);
-            // Continue with the original image
-            setLoadingProgress(100);
-          }
-        }
+        // Add a small delay to show progress
+        setProcessingStep('Finalizing your photo...');
+        simulateProgressDuringProcessing(50, 80, 1500, setLoadingProgress);
+        
+        // Apply enhancement at the very end
+        setProcessingStep('Enhancing your photo...');
+        processedImageUrl = await enhanceImageWithESRGAN(processedImageUrl);
+        console.log('Image enhancement completed');
+        
+      } catch (error) {
+        console.error('Photo processing failed:', error);
+        // Continue with the original image
+        setLoadingProgress(100);
       }
       
       // Store the processed image and ensure progress is complete
@@ -650,7 +775,8 @@ const UploadPhoto = () => {
         industry: sessionStorage.getItem('industry') || 'Your Industry',
         tagline: sessionStorage.getItem('tagline') || 'Your Tagline',
         phoneNumber: sessionStorage.getItem('phoneNumber') || 'Your Phone',
-        isNormalSelfie: isNormalSelfie // Add the flag to indicate if this is a normal selfie
+        isNormalSelfie: isNormalSelfie, // Add the flag to indicate if this is a normal selfie
+        isSelfieMode: isSelfieMode // Add the flag to indicate if this is a selfie mode
       }
       
       // Store data in session storage
@@ -711,18 +837,29 @@ const UploadPhoto = () => {
                     playsInline
                     className="camera-video"
                   ></video>
-                  <div className="person-outline-overlay">
+                  <div className={`person-outline-overlay ${isSelfieMode ? 'selfie-mode' : ''} ${faceInPosition ? 'face-in-position' : faceDetected ? 'face-detected' : ''}`}>
                     <img 
                       src="/images/face-outline.svg" 
                       alt="Face outline" 
                       className="outline-image"
                     />
                     <div className="positioning-guide">
-                      Position your face in the outline, stand back to show upper body
+                      {faceInPosition ? 
+                        "Perfect! Face positioned correctly." : 
+                        faceDetected ? 
+                          "Move your face to align with the outline" : 
+                          isSelfieMode ?
+                            "Position your face in the outline" :
+                            "Position your face in the outline, stand back to show upper body"
+                      }
                     </div>
                   </div>
                   <div className="camera-controls">
-                    <button className="camera-btn" onClick={takePhoto}>
+                    <button 
+                      className={`camera-btn ${faceInPosition ? 'active' : 'disabled'}`} 
+                      onClick={takePhoto}
+                      disabled={!faceInPosition}
+                    >
                       <i className="fas fa-camera"></i>
                     </button>
                     <button className="camera-btn cancel" onClick={stopCamera}>
@@ -764,43 +901,30 @@ const UploadPhoto = () => {
                         <button 
                           className="take-photo-btn"
                           onClick={() => {
-                            setIsNormalSelfie(false);
-                            activateCamera();
-                          }}
-                        >
-                          <i className="fas fa-camera"></i> Take AI Photo
-                        </button>
-                        <button 
-                          className="take-photo-btn normal-selfie-btn"
-                          onClick={() => {
                             setIsNormalSelfie(true);
-                            activateCamera();
+                            activateCamera(false); // Use back camera
                           }}
                         >
                           <i className="fas fa-camera"></i> Take a photo
                         </button>
-                        <label htmlFor="file-upload" className="browse-btn">
-                          <i className="fas fa-folder-open"></i> Browse for AI Photo
-                        </label>
-                        <input
-                          id="file-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            setIsNormalSelfie(false); // Default to AI photo for uploaded files
-                            handleFileChange(e);
+                        <button 
+                          className="take-photo-btn selfie-btn"
+                          onClick={() => {
+                            setIsNormalSelfie(true);
+                            activateCamera(true); // Use front camera (selfie mode)
                           }}
-                          style={{ display: 'none' }}
-                        />
-                        <label htmlFor="normal-file-upload" className="browse-btn normal-upload-btn">
-                          <i className="fas fa-folder-open"></i> Browse for Normal Photo
+                        >
+                          <i className="fas fa-user"></i> Take a selfie
+                        </button>
+                        <label htmlFor="normal-file-upload" className="browse-btn">
+                          <i className="fas fa-folder-open"></i> Browse for photo
                         </label>
                         <input
                           id="normal-file-upload"
                           type="file"
                           accept="image/*"
                           onChange={(e) => {
-                            setIsNormalSelfie(true); // Set to normal photo flow
+                            setIsNormalSelfie(true);
                             handleFileChange(e);
                           }}
                           style={{ display: 'none' }}
@@ -839,7 +963,7 @@ const UploadPhoto = () => {
             </div>
             
             <div className="preview-modal-footer">
-              <p className="preview-question">Would you like to use this image?</p>
+              <p className="preview-question">Use this photo?</p>
               <div className="preview-modal-buttons">
                 <button 
                   className="retake-btn"
@@ -849,7 +973,7 @@ const UploadPhoto = () => {
                     setFile(null);
                   }}
                 >
-                  <i className="fas fa-redo-alt"></i> Choose Another
+                  <i className="fas fa-redo-alt"></i> Choose another
                 </button>
                 <button 
                   className="confirm-btn"

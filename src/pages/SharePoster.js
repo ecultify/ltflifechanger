@@ -165,8 +165,8 @@ const SharePoster = () => {
             // Position to place user on the left side of Bumrah
             // Position is adjusted to push the image to the left and lower on the canvas
             const userX = (canvas.width * 0.08) - 80; // Moved 80px to the left (40px more than before)
-            // Position vertically (adjust to move down by 50px more)
-            const userY = (canvas.height - scaledHeight) + 50; // Push down by 50px from neutral position
+            // Position vertically (adjust to move down further)
+            const userY = (canvas.height - scaledHeight) + 70; // Push down by 70px from neutral position
             
             // Apply the calculated placement
             console.log('Positioning image using direct placement at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });

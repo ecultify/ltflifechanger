@@ -588,7 +588,7 @@ const UploadPhoto = () => {
       // Try FormData approach first which is more reliable for camera photos
       try {
         console.log('Trying FormData approach for background removal...');
-        setProcessingStep('Removing background (method 1/3)...');
+        setProcessingStep('Removing background...');
         
         const formData = new FormData();
         formData.append('size', 'auto');
@@ -597,7 +597,7 @@ const UploadPhoto = () => {
         const formDataResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
           method: 'POST',
           headers: {
-            'X-Api-Key': 'VmEeChTnKgAvW7NVH1bYrQC1',
+            'X-Api-Key': 'nqiyHVpjEo7HST37aokUDUVZ',
           },
           body: formData
         });
@@ -632,13 +632,13 @@ const UploadPhoto = () => {
       // Try direct base64 API handling with Remove.bg
       try {
         console.log('Trying base64 approach for background removal...');
-        setProcessingStep('Removing background (method 2/3)...');
+        setProcessingStep('Removing background with alternative method...');
         
         // Using XMLHttpRequest for better binary data handling
         const removeResult = await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           xhr.open('POST', 'https://api.remove.bg/v1.0/removebg', true);
-          xhr.setRequestHeader('X-Api-Key', 'VmEeChTnKgAvW7NVH1bYrQC1');
+          xhr.setRequestHeader('X-Api-Key', 'nqiyHVpjEo7HST37aokUDUVZ');
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.responseType = 'blob';
           
@@ -670,44 +670,7 @@ const UploadPhoto = () => {
         
         return processedImageUrl;
       } catch (removeError) {
-        console.error('Error with Remove.bg:', removeError);
-        // Try third method
-      }
-      
-      // Try fallback API (Crop.photo)
-      try {
-        console.log('Trying Crop.photo API for background removal...');
-        setProcessingStep('Removing background (method 3/3)...');
-        
-        // Call Crop.photo API as fallback
-        const fallbackResponse = await axios.post(
-          'https://api.crop.photo/v1/process',
-          {
-            image_url: `data:image/jpeg;base64,${base64Image}`,
-            operations: [
-              {
-                type: 'remove_background'
-              }
-            ]
-          },
-          {
-            headers: {
-              'Authorization': `Bearer VmEeChTnKgAvW7NVH1bYrQC1`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        // Get the processed image URL from the response
-        const processedImageUrl = fallbackResponse.data.processed_image_url;
-        console.log('Fallback background removal successful');
-        
-        // Update progress
-        setLoadingProgress(80);
-        
-        return processedImageUrl;
-      } catch (fallbackError) {
-        console.error('All background removal methods failed:', fallbackError);
+        console.error('All background removal methods failed:', removeError);
         // If all API calls fail, we'll fall back to the original image
         console.log('Using original image as fallback due to background removal failure');
         setLoadingProgress(100); // Complete the progress bar

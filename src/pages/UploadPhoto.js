@@ -830,30 +830,33 @@ const UploadPhoto = () => {
                 <i className="fas fa-times"></i>
               </button>
             </div>
-            <div className="preview-modal-content">
+            
+            {/* Updated layout with image scrollable and buttons fixed */}
+            <div className="preview-modal-body">
               <div className="preview-modal-image">
                 <img src={previewUrl} alt="Preview" />
               </div>
-              <div className="preview-modal-options">
-                <p>Would you like to use this image?</p>
-                <div className="preview-modal-buttons">
-                  <button 
-                    className="retake-btn"
-                    onClick={() => {
-                      setShowPreviewModal(false);
-                      setPreviewUrl(null);
-                      setFile(null);
-                    }}
-                  >
-                    <i className="fas fa-redo-alt"></i> Choose Another Photo
-                  </button>
-                  <button 
-                    className="confirm-btn"
-                    onClick={startProcessing}
-                  >
-                    <i className="fas fa-check"></i> Continue with {isNormalSelfie ? 'Normal Selfie' : 'AI Photo'}
-                  </button>
-                </div>
+            </div>
+            
+            <div className="preview-modal-footer">
+              <p className="preview-question">Would you like to use this image?</p>
+              <div className="preview-modal-buttons">
+                <button 
+                  className="retake-btn"
+                  onClick={() => {
+                    setShowPreviewModal(false);
+                    setPreviewUrl(null);
+                    setFile(null);
+                  }}
+                >
+                  <i className="fas fa-redo-alt"></i> Choose Another
+                </button>
+                <button 
+                  className="confirm-btn"
+                  onClick={startProcessing}
+                >
+                  <i className="fas fa-check"></i> Continue
+                </button>
               </div>
             </div>
           </div>

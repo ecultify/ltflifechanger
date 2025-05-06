@@ -11,11 +11,11 @@ html, body {
 /* Hero Section Styles */
 .hero-section {
   position: relative;
-  min-height: 600px;
+  min-height: 500px; /* Further reduced from 550px to 500px */
   background-color: #0a1a34;
   background-size: cover;
   background-position: center;
-  padding: 40px 0;
+  padding: 20px 0; /* Further reduced from 30px to 20px */
   overflow: hidden;
   color: white;
   animation: fadeIn 1s ease-out;
@@ -31,15 +31,15 @@ html, body {
   width: 90%;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 150px;
+  padding-top: 80px; /* Further reduced from 120px to 80px */
 }
 
 /* Logo styling */
 .hero-logo {
   position: absolute;
-  top: 30px;
+  top: 15px; /* Further reduced from 20px to 15px */
   left: 20px;
-  width: 200px; /* Increased from 150px to 200px */
+  width: 180px; /* Reduced from 200px to 180px to make it more compact */
   transform: rotate(0deg);
   z-index: 2;
   animation: slideInLeft 0.8s ease-out;
@@ -73,6 +73,7 @@ html, body {
   display: inline-block;
   position: relative;
   z-index: 1;
+  margin-top: 15px; /* Added to create space between logo and text */
 }
 
 /* Neo-brutalism text styling */
@@ -91,8 +92,10 @@ html, body {
   z-index: 2;
 }
 
-.neo-highlight.poster-text {
-  margin-left: -40px; /* Move the Free Personalised text further to the left */
+.neo-highlight.poster-text:first-of-type {
+  margin-left: -40px; /* Move "Free Personalised" to the left */
+  margin-top: 5px; /* Reduced from default to bring closer to "Get Your" */
+  margin-bottom: 5px; /* Added to bring lines closer together */
 }
 
 .poster-text {
@@ -104,9 +107,10 @@ html, body {
   display: block;
 }
 
-.poster-text:nth-child(3) {
-  transform: rotate(-5deg) translateX(70px); /* Increased from 40px to 70px to move Business Poster line to the right */
+.neo-highlight.poster-text:nth-of-type(2) {
+  transform: rotate(-5deg) translateX(70px); /* Move "Business Poster" to the right */
   margin-bottom: 25px; /* Reduced from 45px to bring lines closer */
+  margin-top: -5px; /* Negative margin to pull it closer to the line above */
 }
 
 .with-bumrah {
@@ -205,7 +209,7 @@ html, body {
   justify-content: space-between;
   margin-top: 80px;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px; /* Reduced from 20px to 10px */
   animation: fadeInUp 0.8s ease-out 0.6s both;
 }
 
@@ -216,8 +220,8 @@ html, body {
 
 .testimonial-card {
   position: relative;
-  width: 220px;
-  height: 300px;
+  width: 250px; /* Increased from 220px to 250px */
+  height: 340px; /* Increased from 300px to 340px */
   background-color: #0d2347;
   border: var(--border-width) solid var(--text-black);
   border-radius: 10px;
@@ -672,29 +676,29 @@ html, body {
 .play-button::before {
   content: '';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  width: calc(100% + 16px);
-  height: calc(100% + 16px);
+  top: -6px;
+  left: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
   border-radius: 50%;
   border: 2px solid var(--primary-yellow);
-  opacity: 0;
+  opacity: 0.7; /* Increased from 0 to make it visible by default */
   animation: pulse 2s infinite;
   pointer-events: none;
 }
 
 @keyframes pulse {
   0% {
-    transform: scale(0.95);
-    opacity: 0.5;
+    transform: scale(0.98);
+    opacity: 0.7;
   }
   50% {
-    transform: scale(1.1);
-    opacity: 0.3;
+    transform: scale(1.05);
+    opacity: 0.5;
   }
   100% {
-    transform: scale(0.95);
-    opacity: 0.5;
+    transform: scale(0.98);
+    opacity: 0.7;
   }
 }
 
@@ -1118,7 +1122,7 @@ html, body {
 /* Group 30a image styling */
 .group-30a-image {
   position: absolute;
-  top: -420px;
+  top: -400px; /* Changed from -420px to -400px to push down by 20px */
   right: 22px;
   width: 230px;
   z-index: 2;
@@ -1128,7 +1132,7 @@ html, body {
 .frame-162422-image {
   position: absolute;
   right: -350px;
-  top: 8px;
+  top: 28px; /* Increased from 8px to 28px to push down by 20px */
   width: 295px;
   z-index: 4;
 }
@@ -1137,7 +1141,7 @@ html, body {
 .profile-image-container {
   position: absolute;
   right: -345px;
-  top: 10px;
+  top: 30px; /* Increased from 10px to 30px to push down by 20px */
   width: 290px;
   height: 440px;
   z-index: 5;

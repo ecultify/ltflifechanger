@@ -712,12 +712,12 @@ const UploadPhoto = () => {
                   ></video>
                   <div className="person-outline-overlay">
                     <img 
-                      src="/IMG20250505124032 copy 2.png" 
-                      alt="Person outline" 
+                      src="/images/upper-body-outline.png" 
+                      alt="Upper body outline" 
                       className="outline-image"
                     />
                     <div className="positioning-guide">
-                      Position the person within the outline
+                      Position your upper body within the outline
                     </div>
                   </div>
                   <div className="camera-controls">

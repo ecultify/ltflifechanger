@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="400" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Upper body outline -->
+  <path d="M150,50 
+           C200,50 250,100 250,150
+           C250,200 200,250 150,250
+           C100,250 50,200 50,150
+           C50,100 100,50 150,50
+           M150,250
+           C150,300 150,350 150,350
+           C150,350 100,350 100,350
+           C100,350 100,300 100,300
+           C100,300 200,300 200,300
+           C200,300 200,350 200,350
+           C200,350 150,350 150,350"
+        fill="none"
+        stroke="white"
+        stroke-width="4"
+        stroke-dasharray="10,5"
+        opacity="0.7"/>
+  
+  <!-- Face guide circle -->
+  <circle cx="150" cy="120" r="40" 
+          fill="none" 
+          stroke="white" 
+          stroke-width="4" 
+          stroke-dasharray="10,5"
+          opacity="0.7"/>
+</svg> 

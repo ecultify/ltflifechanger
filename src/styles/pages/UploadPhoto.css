@@ -530,11 +530,15 @@
 }
 
 .outline-image {
-  height: 90%;
+  height: 80%; /* Reduced from 90% to focus more on upper body */
   width: auto;
-  max-width: 90%;
+  max-width: 80%;
   object-fit: contain;
-  opacity: 0.7; /* Semi-transparent */
+  opacity: 0.7;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .positioning-guide {
@@ -548,6 +552,7 @@
   text-align: center;
   font-size: 14px;
   font-weight: 500;
+  z-index: 11;
 }
 
 .camera-video {

@@ -82,27 +82,53 @@ const UploadPhoto = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
     
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // Set canvas dimensions to match video dimensions but maintain aspect ratio
+    // Use a 3:4 aspect ratio to match the outline and final poster format
+    const videoAspect = video.videoWidth / video.videoHeight;
+    const targetAspect = 3/4; // Portrait orientation for the outline
     
-    // Draw the current video frame to the canvas
+    let canvasWidth, canvasHeight;
+    if (videoAspect > targetAspect) {
+      // Video is wider than target aspect, use full height and calculated width
+      canvasHeight = video.videoHeight;
+      canvasWidth = video.videoHeight * targetAspect;
+    } else {
+      // Video is taller than target aspect, use full width and calculated height
+      canvasWidth = video.videoWidth;
+      canvasHeight = video.videoWidth / targetAspect;
+    }
+    
+    // Set canvas dimensions
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    
+    // Calculate centering offsets to position the image properly
+    const offsetX = (video.videoWidth - canvasWidth) / 2;
+    const offsetY = (video.videoHeight - canvasHeight) / 2;
+    
+    // Draw the current video frame to the canvas with the correct positioning
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(
+      video, 
+      offsetX, offsetY, canvasWidth, canvasHeight,  // Source rectangle
+      0, 0, canvasWidth, canvasHeight               // Destination rectangle
+    );
+    
+    console.log(`Captured photo with dimensions: ${canvasWidth}x${canvasHeight}`);
     
     // Convert canvas to data URL
-    const photoDataUrl = canvas.toDataURL('image/jpeg');
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9); // High quality JPEG
     
     // Set the photo as the preview
     setPreviewUrl(photoDataUrl);
     
-    // Create a file from the data URL for the background removal API
+    // Create a file from the data URL for processing
     canvas.toBlob((blob) => {
       const newFile = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
       setFile(newFile);
       // Show preview modal immediately after photo is taken
       setShowPreviewModal(true);
-    }, 'image/jpeg');
+    }, 'image/jpeg', 0.9); // High quality JPEG
     
     // Stop camera stream
     stopCamera();
@@ -381,45 +407,131 @@ const UploadPhoto = () => {
       
       // Convert the file to base64
       const base64Image = await fileToBase64(imageFile);
+      console.log('Image converted to base64 for background removal, length:', base64Image.length);
       
-      // Call Crop.photo API
-      const response = await axios.post(
-        'https://api.crop.photo/v1/process',
-        {
-          image_url: `data:image/jpeg;base64,${base64Image}`,
-          operations: [
-            {
-              type: 'remove_background'
+      // Try direct base64 API handling with Remove.bg
+      try {
+        // Using XMLHttpRequest for better binary data handling
+        const removeResult = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'https://api.remove.bg/v1.0/removebg', true);
+          xhr.setRequestHeader('X-Api-Key', 'VmEeChTnKgAvW7NVH1bYrQC1');
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.responseType = 'blob';
+          
+          xhr.onload = function() {
+            if (this.status >= 200 && this.status < 300) {
+              resolve(this.response);
+            } else {
+              reject(new Error(`Remove.bg API error: ${this.status} ${this.statusText}`));
             }
-          ]
-        },
-        {
-          headers: {
-            'Authorization': `Bearer VmEeChTnKgAvW7NVH1bYrQC1`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      // Get the processed image URL from the response
-      const processedImageUrl = response.data.processed_image_url;
-      
-      // Update progress
-      setLoadingProgress(80);
-      
-      return processedImageUrl;
+          };
+          
+          xhr.onerror = function() {
+            reject(new Error('Network error during Remove.bg API call'));
+          };
+          
+          xhr.send(JSON.stringify({
+            image_file_b64: base64Image,
+            size: 'auto',
+            format: 'png',
+            type: 'auto'
+          }));
+        });
+        
+        console.log('Remove.bg background removal successful');
+        
+        // Create URL from blob
+        const processedImageUrl = URL.createObjectURL(removeResult);
+        setLoadingProgress(80);
+        
+        return processedImageUrl;
+      } catch (removeError) {
+        console.error('Error with Remove.bg:', removeError);
+        throw removeError; // Try fallback
+      }
     } catch (error) {
-      console.error('Error removing background:', error);
+      console.error('Primary background removal failed:', error);
       
-      // If the API call fails, we'll fall back to the original image
-      console.log('Using original image as fallback due to background removal failure');
-      setLoadingProgress(100); // Complete the progress bar
-      return previewUrl;
+      // Try fallback API
+      try {
+        console.log('Trying fallback API for background removal...');
+        setProcessingStep('Trying alternative background removal...');
+        
+        // Convert the file to base64 again just in case
+        const base64Image = await fileToBase64(imageFile);
+        
+        // Call Crop.photo API as fallback
+        const fallbackResponse = await axios.post(
+          'https://api.crop.photo/v1/process',
+          {
+            image_url: `data:image/jpeg;base64,${base64Image}`,
+            operations: [
+              {
+                type: 'remove_background'
+              }
+            ]
+          },
+          {
+            headers: {
+              'Authorization': `Bearer VmEeChTnKgAvW7NVH1bYrQC1`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        // Get the processed image URL from the response
+        const processedImageUrl = fallbackResponse.data.processed_image_url;
+        console.log('Fallback background removal successful');
+        
+        // Update progress
+        setLoadingProgress(80);
+        
+        return processedImageUrl;
+      } catch (fallbackError) {
+        console.error('Fallback background removal also failed:', fallbackError);
+        
+        // One last attempt with a different approach (might work on some browsers)
+        try {
+          console.log('Trying final fallback for background removal...');
+          setProcessingStep('Final attempt at background removal...');
+          
+          // Try FormData approach which sometimes works better
+          const formData = new FormData();
+          formData.append('size', 'auto');
+          formData.append('image_file', imageFile);
+          
+          const finalResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
+            method: 'POST',
+            headers: {
+              'X-Api-Key': 'VmEeChTnKgAvW7NVH1bYrQC1',
+            },
+            body: formData
+          });
+          
+          if (!finalResponse.ok) {
+            throw new Error(`HTTP error! status: ${finalResponse.status}`);
+          }
+          
+          const blob = await finalResponse.blob();
+          const processedImageUrl = URL.createObjectURL(blob);
+          console.log('Final fallback background removal successful');
+          
+          setLoadingProgress(80);
+          return processedImageUrl;
+        } catch (finalError) {
+          console.error('All background removal attempts failed:', finalError);
+          // If all API calls fail, we'll fall back to the original image
+          console.log('Using original image as fallback due to background removal failure');
+          setLoadingProgress(100); // Complete the progress bar
+          return previewUrl;
+        }
+      }
     }
   };
 
   // Function to enhance image using ESRGAN model from Segmind
-  const enhanceImageWithESRGAN = async (imageFile) => {
+  const enhanceImageWithESRGAN = async (imageUrl) => {
     try {
       setProcessingStep('Enhancing your selfie...');
       // Start at current progress
@@ -428,20 +540,22 @@ const UploadPhoto = () => {
       // Simulate gradual progress during enhancement process
       simulateProgressDuringProcessing(currentProgress, 90, 5000, setLoadingProgress);
       
+      // Convert the URL to a file for processing if needed
+      let imageFile = imageUrl;
+      
       // In a real implementation, we would call the Segmind ESRGAN API here
       // For now, we'll simulate the enhancement by just waiting
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       console.log('Image enhancement simulated (would use ESRGAN in production)');
       
-      // For now, we'll just return the background-removed image
-      // In a real implementation, we would return the enhanced image from the API
-      return imageFile;
+      // Return the image URL (which would be the enhanced image URL in production)
+      return imageUrl;
       
     } catch (error) {
       console.error('Error enhancing image:', error);
       // If enhancement fails, return the original image
-      return imageFile;
+      return imageUrl;
     }
   };
 
@@ -476,8 +590,7 @@ const UploadPhoto = () => {
           
           // Then enhance the image with ESRGAN
           setProcessingStep('Enhancing your selfie...');
-          // We pass the background-removed image URL as a file for enhancement
-          // In a real implementation, we would convert the URL to a file
+          // Pass the background-removed image URL to the enhancement function
           processedImageUrl = await enhanceImageWithESRGAN(processedImageUrl);
           console.log('Image enhancement completed');
           
@@ -597,6 +710,16 @@ const UploadPhoto = () => {
                     playsInline
                     className="camera-video"
                   ></video>
+                  <div className="person-outline-overlay">
+                    <img 
+                      src="/IMG20250505124032 copy 2.png" 
+                      alt="Person outline" 
+                      className="outline-image"
+                    />
+                    <div className="positioning-guide">
+                      Position the person within the outline
+                    </div>
+                  </div>
                   <div className="camera-controls">
                     <button className="camera-btn" onClick={takePhoto}>
                       <i className="fas fa-camera"></i>

@@ -152,52 +152,29 @@ const SharePoster = () => {
             const userImgHeight = userImg.height;
             console.log('Original image dimensions:', { width: userImgWidth, height: userImgHeight });
             
-            // Use face detection to determine optimal placement
-            let placement;
-            try {
-              // Get optimal placement based on face detection
-              placement = await getOptimalImagePlacement(
-                processedImage,
-                { width: canvas.width, height: canvas.height },
-                targetArea
-              );
-              
-              console.log('Face detection result:', placement);
-            } catch (faceDetectionError) {
-              console.error('Face detection failed, using fallback placement:', faceDetectionError);
-              // Fallback to default placement if face detection fails
-              // Calculate a reasonable scale based on image dimensions
-              const scale = Math.min(
-                (canvas.width * 0.55) / userImgWidth,
-                (canvas.height * 0.98) / userImgHeight
-              );
-              
-              const scaledWidth = userImgWidth * scale;
-              const scaledHeight = userImgHeight * scale;
-              
-              placement = {
-                x: targetArea.x,
-                y: (canvas.height - scaledHeight) + 250, // Push down by 250px
-                width: scaledWidth,
-                height: scaledHeight,
-                usingFallback: true
-              };
-            }
+            // Use direct placement with the improved sizing and positioning
+            // Make the user image bigger
+            const scale = Math.min(
+              (canvas.width * 0.55) / userImgWidth, // Increased width from 0.5 to 0.55
+              (canvas.height * 0.98) / userImgHeight // Increased height from 0.95 to 0.98
+            );
+            
+            const scaledWidth = userImgWidth * scale;
+            const scaledHeight = userImgHeight * scale;
+            
+            // Position to place user on the left side of Bumrah
+            // Position is adjusted to push the image lower on the canvas
+            const userX = (canvas.width * 0.08) - 40; // Moved 40px to the left
+            // Add 250px to Y to push the image down
+            const userY = (canvas.height - scaledHeight) + 250; // Push the image down by 250px
             
             // Apply the calculated placement
-            const { x, y, width, height, photoType } = placement;
-            
-            console.log(`Positioning image (${photoType || 'unknown type'}) at:`, { x, y, width, height });
+            console.log('Positioning image using direct placement at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
             
             // Draw the user's image with the calculated dimensions and position
-            ctx.drawImage(userImg, x, y, width, height);
+            ctx.drawImage(userImg, userX, userY, scaledWidth, scaledHeight);
             
-            // Optional: Draw a border around the image for debugging
-            // ctx.strokeStyle = 'white';
-            // ctx.lineWidth = 2;
-            // ctx.strokeRect(x, y, width, height);
-            
-            console.log('User image placed successfully using face detection');
+            console.log('User image placed successfully using direct placement');
           } catch (imageDrawError) {
             console.error('Error drawing user image:', imageDrawError);
             // Continue without user image placement

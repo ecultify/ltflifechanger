@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/SharePoster.css';
 import Loader from '../components/Loader';
+import CTABannerCarousel from '../components/CTABannerCarousel';
 import { loadFaceDetectionModels, getOptimalImagePlacement } from '../utils/faceDetection';
 
 // Try to load face detection models early
@@ -19,6 +20,9 @@ const SharePoster = () => {
   const [loadingStatus, setLoadingStatus] = useState('Loading data...');
   const canvasRef = useRef(null);
   const preloadedTemplateRef = useRef(null); // Ref to store preloaded image
+  
+  // This will be replaced with actual banner data in the future
+  const [ctaBanners, setCtaBanners] = useState([]);
 
   // Preload the template image when component mounts
   useEffect(() => {
@@ -622,6 +626,18 @@ const SharePoster = () => {
       generatePoster();
     }
   }, [processedImage, userData, generatePoster]);
+  
+  // Load CTA banner images
+  useEffect(() => {
+    // Set the actual banners from the CTA folder
+    setCtaBanners([
+      { id: 'banner1', name: '1copy.png' },
+      { id: 'banner2', name: '2copy.png' },
+      { id: 'banner3', name: '3copy.png' },
+      { id: 'banner4', name: '4copy.png' },
+      { id: 'banner5', name: '5copy.png' }
+    ]);
+  }, []);
 
   const handleDownload = () => {
     if (!generatedPoster) return;
@@ -696,6 +712,11 @@ const SharePoster = () => {
           </div>
         </div>
       )}
+      
+      {/* Half-cut white container with CTA banners */}
+      <div className="cta-container">
+        <CTABannerCarousel banners={ctaBanners} />
+      </div>
       
       {/* Hidden canvases for poster generation */}
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>

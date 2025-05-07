@@ -80,6 +80,7 @@ const SharePosterPage = () => {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: '8px',
+            border: '3px solid white',
             overflow: 'hidden'
           }}
         >

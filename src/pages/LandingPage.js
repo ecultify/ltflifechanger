@@ -6,10 +6,10 @@ import '../styles/pages/LandingPage.css';
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';
 const LOGO_IMAGE_PATH = '/LOGO(3).png';
 const CAROUSEL_IMAGE_PATHS = [
-  '/images/section1/carousel1.png',
-  '/images/section1/carousel2.png',
-  '/images/section1/carousel3.png',
-  '/images/section1/carousel4.png',
+  '/Frame15161.png',
+  '/Frame15162.png',
+  '/Frame15163.png',
+  '/Frame15164.png',
 ];
 const SECTION2_BG_IMAGE_PATH = '/images/section2/video-bg.png';
 const SECTION3_DESK_IMAGE = '/images/section3/section3deskimage.png';
@@ -139,11 +139,11 @@ const LandingPage = () => {
           
             <h2 className="hero-subtitle">Get Your</h2>
             
-            <div className="neo-highlight poster-text">
+            <div className="neo-highlight poster-text free-personalised">
               Free Personalised
             </div>
             
-            <div className="neo-highlight poster-text">
+            <div className="neo-highlight poster-text business-poster">
               Business Poster
             </div>
             

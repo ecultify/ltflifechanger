@@ -39,7 +39,7 @@ html, body {
   position: absolute;
   top: 15px; /* Further reduced from 20px to 15px */
   left: 20px;
-  width: 180px; /* Reduced from 200px to 180px to make it more compact */
+  width: 250px; /* Increased from 180px to 250px to make it bigger */
   transform: rotate(0deg);
   z-index: 2;
   animation: slideInLeft 0.8s ease-out;
@@ -69,11 +69,11 @@ html, body {
   margin-bottom: -5px; /* Further reduced to bring lines closer */
   font-weight: 600;
   transform: rotate(-5deg);
-  margin-left: 40px; /* Adjusted to align with the text below */
+  margin-left: 40px; /* Restored to original value */
   display: inline-block;
   position: relative;
   z-index: 1;
-  margin-top: 40px; /* Keeps the text block at the same vertical position */
+  margin-top: 80px; /* Increased from 40px to 80px to push down and avoid logo conflict */
 }
 
 /* Neo-brutalism text styling */
@@ -93,7 +93,7 @@ html, body {
 }
 
 .neo-highlight.poster-text:first-of-type {
-  margin-left: -200px; /* Moved 50px more to the left as requested */
+  margin-left: -250px; /* Moved an additional 25px more to the left */
   margin-top: 5px; /* Keeps the spacing from "Get Your" */
   margin-bottom: 5px; /* Maintains spacing between lines */
 }
@@ -146,15 +146,15 @@ html, body {
 .poster-btn {
   margin-top: 50px;
   margin-left: 70px;
-  padding: 12px 24px;
+  padding: 14px 28px; /* Increased from 12px 24px to make button bigger */
   background-color: var(--primary-yellow);
   color: var(--text-black);
   transform: rotate(0deg);
-  border: var(--border-width) solid var(--text-black);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
+  border: 2px solid var(--text-white); /* Added white border */
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark-blue); /* Changed from white to blue */
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 20px; /* Increased from 18px to make text bigger */
   cursor: pointer;
   outline: none;
   transition: all 0.3s ease;
@@ -163,33 +163,37 @@ html, body {
   position: relative;
   overflow: hidden;
   z-index: 1;
+  border-radius: 0; /* Changed from 4px to 0 for sharp edges */
 }
 
 .poster-btn::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.7s ease;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease;
   z-index: -1;
 }
 
 .poster-btn:hover {
   background-color: #e7ba00;
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 4px 4px 0 var(--text-white);
+  box-shadow: 3px 3px 0 var(--dark-blue); /* Changed from white to blue */
 }
 
 .poster-btn:hover::before {
-  left: 100%;
+  width: 300px;
+  height: 300px;
 }
 
 .poster-btn:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 2px 2px 0 var(--text-white);
+  box-shadow: 1px 1px 0 var(--dark-blue); /* Changed from white to blue */
 }
 
 .poster-btn span {
@@ -208,9 +212,13 @@ html, body {
   display: flex;
   justify-content: center;
   margin-top: 80px;
-  flex-wrap: wrap;
-  gap: 20px; /* Increased from 5px to 20px to add more space between cards */
+  flex-wrap: nowrap; /* Changed from wrap to nowrap to ensure all cards stay in one line */
+  gap: 15px; /* Reduced from 20px to 15px to fit all cards in one line */
   animation: fadeInUp 0.8s ease-out 0.6s both;
+  width: 100%;
+  max-width: 1300px; /* Increased to accommodate all 4 cards in one line */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @keyframes fadeInUp {
@@ -220,8 +228,8 @@ html, body {
 
 .testimonial-card {
   position: relative;
-  width: 270px; /* Increased from 250px to 270px to make cards wider */
-  height: 340px; /* Maintained height */
+  width: 280px; /* Reduced from 300px to 280px to ensure all 4 fit in one line */
+  height: 380px; /* Maintained height */
   background-color: #0d2347;
   border: 2px solid var(--text-white); /* Single white border */
   border-radius: 10px; /* Rounded corners */
@@ -234,6 +242,7 @@ html, body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   will-change: transform;
   z-index: 3; /* Higher than Group 30a image */
+  flex-shrink: 0; /* Prevent cards from shrinking */
 }
 
 .testimonial-card:hover {
@@ -311,14 +320,18 @@ html, body {
   }
   
   .neo-highlight.poster-text:first-of-type {
-    margin-left: -170px; /* Increased from -120px to -170px to move "Free Personalised" further to the left */
+    margin-left: -150px; /* Adjusted from -170px for better alignment */
+    transform: rotate(-12deg) !important; /* Match the tilt of Business Poster line */
+    transform-origin: bottom left !important; /* Match the transform origin */
+    margin-bottom: 10px; /* Added space between lines */
+    margin-top: 5px; /* Adjusted spacing from "Get Your" */
   }
   
   .poster-text:nth-child(3) {
     transform: rotate(-12deg) translateX(60px); /* Increased from 20px to 60px to move "Business Poster" to the right by 40px */
     transform-origin: bottom left; /* Changed rotation origin */
     margin-bottom: 20px;
-    margin-top: -15px; /* Increased negative margin to pull it even closer to first line */
+    margin-top: -5px; /* Adjusted from -15px for more consistent spacing */
   }
   
   .with-bumrah {
@@ -357,11 +370,12 @@ html, body {
   
   .testimonial-container {
     width: 100%;
-    max-width: 280px;
+    max-width: 320px; /* Increased from 280px to 320px */
     margin: 40px auto 20px;
     overflow: hidden;
     position: relative;
-    height: 370px;
+    height: 400px; /* Increased from 370px to 400px */
+    z-index: 10; /* Higher z-index to ensure it's above the group image */
   }
   
   .testimonial-wrapper {
@@ -375,7 +389,7 @@ html, body {
   
   .testimonial-card {
     min-width: 100%;
-    height: 350px;
+    height: 380px; /* Increased from 350px to 380px */
     margin: 0 auto;
     box-sizing: border-box;
     border: 2px solid var(--text-white); /* Single white border */
@@ -446,32 +460,35 @@ html, body {
     margin-bottom: -10px;
   }
   
-  .profile-image-container {
-    position: relative;
-    top: auto;
-    left: 40px; /* Moved further left from 30px */
-    transform: translateY(10px); /* Adjusted to push up instead of down */
-    width: 260px; /* Increased width from 220px to 260px */
-    height: auto;
-    margin: 0;
-    z-index: 2; /* Reduced from 5 to make it behind the right image */
-    overflow: visible;
-    display: flex;
-    align-items: flex-end;
-    border: 3px solid var(--text-black);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
-    background-color: var(--primary-yellow);
-    padding: 5px;
+  .mobile-frame-container .profile-image-container {
+    position: relative !important;
+    top: auto !important;
+    left: 20px !important; /* Moved left from 40px */
+    right: auto !important; /* Override any right positioning */
+    transform: translateY(40px) !important; /* Push down by 40px */
+    width: 380px !important; /* Increased from 350px to 380px to make it even bigger */
+    height: auto !important;
+    margin: 0 !important;
+    z-index: 2 !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    /* Removed neo-brutalism container styling */
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    padding: 0 !important;
   }
   
-  .profile-carousel-image {
-    width: 100%;
-    max-height: 360px; /* Increased height vertically */
-    object-fit: contain;
-    object-position: bottom;
-    vertical-align: bottom;
-    border-radius: calc(var(--border-radius) - 3px);
+  .mobile-frame-container .profile-carousel-image {
+    width: 100% !important;
+    max-height: 400px !important; /* Adjusted to maintain consistent height with group image */
+    object-fit: contain !important;
+    object-position: bottom !important;
+    vertical-align: bottom !important;
+    border-radius: 0 !important; /* Removed border radius */
+    border: none !important; /* Ensure no border */
   }
   
   /* Hide the frame image in mobile view */
@@ -483,44 +500,50 @@ html, body {
     display: block; 
     position: relative;
     top: auto;
-    right: 15px; /* Moved further right from 30px */
-    width: 230px; /* Increased width from 190px to 230px */
-    z-index: 5; /* Increased from 2 to make it in front of the left images */
+    right: -30px; /* Pushed further right from 15px to -30px */
+    width: 250px; /* Decreased from 280px to 250px to make it even smaller */
+    height: 400px; /* Set explicit height to match profile image height */
+    object-fit: contain; /* Ensure image maintains aspect ratio */
+    z-index: 1;
     align-self: flex-end;
     margin-bottom: 0;
-    transform: translateY(-5px); /* Adjusted to match new profile image positioning */
-    margin-left: 20px; /* Added spacing between images */
+    transform: translateY(40px); /* Push down by 40px to match profile image */
+    margin-left: 20px;
   }
   
   /* Make sure the images are positioned correctly relative to the carousel */
   .testimonial-container {
-    margin-top: 30px; /* Increased from -10px to move carousel down */
+    margin-top: -80px; /* Changed from 30px to -80px to overlap with the group image */
+    position: relative; /* Ensure proper stacking context */
   }
   
-  /* Style desktop profile image container */
+  /* Hide desktop profile image container completely */
   .hero-text-container > .profile-image-container {
-    position: relative;
-    width: 260px;
-    height: auto;
-    margin-bottom: 20px;
-    border: 3px solid var(--text-black);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--text-white);
-    background-color: var(--primary-yellow);
-    padding: 5px;
-    overflow: hidden;
-    transform: translateY(20px);
+    display: none; /* Hide completely instead of styling */
   }
   
-  .hero-text-container > .profile-image-container .profile-carousel-image {
-    width: 100%;
-    height: auto;
-    border-radius: calc(var(--border-radius) - 3px);
+  /* Hide desktop carousel in mobile view */
+  .hero-text-container > .testimonial-container {
+    display: none;
   }
   
   /* Hide frame image in mobile view */
   .hero-text-container > .frame-162422-image {
     display: none;
+  }
+  
+  /* Adjust mobile frame container */
+  .mobile-frame-container {
+    position: relative;
+    width: 100%;
+    min-height: 420px; /* Increased from 380px to 420px to accommodate taller images */
+    display: flex;
+    justify-content: space-between; /* Changed back to space-between */
+    align-items: flex-start; /* Changed to flex-start to allow manual positioning */
+    margin: 0 auto;
+    padding: 0;
+    margin-bottom: 40px; /* Increased from 20px to 40px */
+    overflow: visible;
   }
 }
 
@@ -581,7 +604,7 @@ html, body {
   background-color: var(--primary-teal);
   color: white;
   padding: 15px 30px;
-  border: var(--border-width) solid var(--text-black);
+  border: none; /* Removed black border */
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--teal-shadow);
   display: inline-block;
   border-radius: var(--border-radius);
@@ -619,7 +642,7 @@ html, body {
   max-width: 800px;
   height: 450px;
   background-color: rgba(26, 26, 26, 0.7);
-  border: var(--border-width) solid var(--text-black);
+  border: none; /* Removed black border */
   box-shadow: 
     var(--shadow-offset) var(--shadow-offset) 0 var(--primary-yellow),
     calc(var(--shadow-offset) * 2) calc(var(--shadow-offset) * 2) 0 white,
@@ -741,16 +764,16 @@ html, body {
 .start-btn {
   background-color: var(--dark-blue);
   color: var(--text-white);
-  padding: 12px 24px;
-  font-size: 18px;
+  padding: 14px 28px; /* Increased from 12px 24px to make button bigger */
+  font-size: 20px; /* Increased from 18px to make text bigger */
   font-weight: 600;
-  border: var(--border-width) solid var(--text-black);
+  border: 2px solid var(--text-white); /* Added white border */
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--primary-teal);
   cursor: pointer;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  border-radius: var(--border-radius);
+  border-radius: 0; /* Changed to 0 for sharp edges */
   font-family: 'Poppins', sans-serif;
   position: relative;
   overflow: hidden;
@@ -941,7 +964,7 @@ html, body {
 }
 
 .logo-image {
-  width: 200px; /* Increased from 150px to 200px */
+  width: 250px; /* Increased from 200px to 250px to make it bigger */
   margin-bottom: 10px;
 }
 
@@ -983,17 +1006,28 @@ html, body {
   left: 0;
   bottom: -3px;
   width: 0;
-  height: 2px;
+  height: 0; /* Changed from 2px to 0 to remove the underline */
   background: linear-gradient(90deg, var(--primary-yellow), transparent);
   transition: width 0.4s ease;
 }
 
-.loan-disbursement-container:hover .loan-title {
-  transform: translateX(5px);
+.loan-text-carousel {
+  min-height: 160px; /* Set a fixed height for the carousel container */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.loan-disbursement-container:hover .loan-title::after {
-  width: 100%;
+.loan-title {
+  animation: fadeInText 0.8s ease-in-out;
+  transition: all 0.5s ease;
+}
+
+/* Removed the underline completely */
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .in-minutes {
@@ -1004,23 +1038,35 @@ html, body {
   line-height: 1;
   position: relative;
   display: inline-block;
-  background: linear-gradient(90deg, white, var(--primary-yellow), white);
+  background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700); /* Changed gradient to gold/orange */
   background-size: 200% auto;
   color: white;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  transition: all 0.3s ease;
+  animation: fadeInText 0.8s ease-in-out, gradientShift 3s ease-in-out infinite;
+  transition: all 0.5s ease;
 }
 
-.loan-disbursement-container:hover .in-minutes {
-  text-shadow: 0 0 15px rgba(255, 214, 0, 0.5);
-  background-position: right center;
+@keyframes gradientShift {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
 }
 
 /* Override start-btn styles for section 3 */
 .section-3 .start-btn {
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--primary-yellow);
+  border: 2px solid var(--text-white); /* Added white border */
+  border-radius: 0; /* Sharp edges */
+  padding: 14px 28px; /* Increased padding for bigger button */
+  font-size: 20px; /* Increased font size */
 }
 
 .section-3 .start-btn:hover {
@@ -1122,7 +1168,7 @@ html, body {
   
   /* Make text smaller */
   .section-3 .logo-image {
-    width: 120px;
+    width: 150px; /* Increased from 120px to 150px to make it bigger */
     margin-bottom: 5px;
   }
   
@@ -1138,15 +1184,17 @@ html, body {
   
   /* Smaller button */
   .section-3 .start-btn {
-    font-size: 15px;
-    padding: 10px 20px;
+    font-size: 18px; /* Increased from 15px to 18px */
+    padding: 12px 24px; /* Increased from 10px 20px to 12px 24px */
+    border: 2px solid var(--text-white); /* Ensure white border in mobile */
+    border-radius: 0; /* Ensure sharp edges in mobile */
   }
 }
 
 /* Group 30a image styling */
 .group-30a-image {
   position: absolute;
-  top: -420px; /* Changed from -400px to -420px to push up by 20px */
+  top: -460px; /* Pushed up by an additional 15px for better positioning */
   right: 22px;
   width: 280px; /* Increased from 260px to 280px to make it bigger */
   z-index: 2;
@@ -1156,7 +1204,7 @@ html, body {
 .frame-162422-image {
   position: absolute;
   right: -350px;
-  top: 8px; /* Changed from 28px to 8px to push up by 20px */
+  top: -17px; /* Changed from 8px to -17px to push up by 25px more */
   width: 315px; /* Increased from 295px to 315px to make it bigger */
   z-index: 4;
 }
@@ -1165,9 +1213,9 @@ html, body {
 .profile-image-container {
   position: absolute;
   right: -345px;
-  top: 10px; /* Changed from 30px to 10px to push up by 20px */
-  width: 340px; /* Increased from 320px to 340px to make it bigger */
-  height: 510px; /* Increased from 480px to 510px to maintain aspect ratio */
+  top: 10px; /* Reverted back to original position */
+  width: 380px; /* Increased from 340px to 380px to make it bigger */
+  height: 570px; /* Increased from 510px to 570px to maintain aspect ratio */
   z-index: 5;
   overflow: hidden;
 }

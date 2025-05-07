@@ -198,8 +198,8 @@
   padding: 15px;
   background-color: #FFC107;
   color: #000;
-  border: 2px solid #000;
-  border-radius: 0; /* Sharp corners */
+  border: none;
+  border-radius: 8px; /* Rounded corners */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -234,10 +234,10 @@
   gap: 8px;
   width: 100%;
   padding: 15px;
-  background-color: transparent;
-  color: #FFC107;
-  border: 2px solid #FFC107;
-  border-radius: 0; /* Sharp corners */
+  background-color: #FFC107;
+  color: #000;
+  border: none;
+  border-radius: 8px; /* Rounded corners */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -247,7 +247,7 @@
 }
 
 .make-another-btn:hover {
-  background-color: rgba(255, 193, 7, 0.1);
+  background-color: #e6b000;
 }
 
 .make-another-btn i {

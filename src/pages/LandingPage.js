@@ -4,7 +4,7 @@ import '../styles/pages/LandingPage.css';
 
 // Image paths - using direct relative paths from the public folder
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';
-const LOGO_IMAGE_PATH = '/LOGO(3).png';
+const LOGO_IMAGE_PATH = '/GAMECHANGERLOGOFINAL.png';
 const CAROUSEL_IMAGE_PATHS = [
   '/Frame15161.png',
   '/Frame15162.png',
@@ -30,6 +30,31 @@ const LandingPage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [profileImageIndex, setProfileImageIndex] = useState(0);
+  const [loanTextIndex, setLoanTextIndex] = useState(0);
+  
+  // Loan text carousel content
+  const loanTextContent = [
+    {
+      topLine: "Get loan up to",
+      bottomLine: "₹75 Lakh*"
+    },
+    {
+      topLine: "Enjoy interest rates starting at",
+      bottomLine: "15%* p.a."
+    },
+    {
+      topLine: "Repay easily over",
+      bottomLine: "60 months*"
+    },
+    {
+      topLine: "Track loan status",
+      bottomLine: "In Real Time"
+    },
+    {
+      topLine: "Collateral-Free",
+      bottomLine: "Loans*"
+    }
+  ];
 
   // Check if device is mobile
   useEffect(() => {
@@ -55,6 +80,15 @@ const LandingPage = () => {
     const interval = setInterval(() => {
       setProfileImageIndex((prev) => (prev === PROFILE_IMAGES.length - 1 ? 0 : prev + 1));
     }, 3000); // Change image every 3 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Loan text carousel - automatic rotation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoanTextIndex((prev) => (prev === loanTextContent.length - 1 ? 0 : prev + 1));
+    }, 4000); // Change text every 4 seconds
     
     return () => clearInterval(interval);
   }, []);
@@ -233,8 +267,10 @@ const LandingPage = () => {
             <div className="loan-disbursement-container">
               <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" />
               
-              <h2 className="loan-title">Get Your Loan Disbursed</h2>
-              <h3 className="in-minutes">In Minutes.</h3>
+              <div className="loan-text-carousel">
+                <h2 className="loan-title" key={`title-${loanTextIndex}`}>{loanTextContent[loanTextIndex].topLine}</h2>
+                <h3 className="in-minutes" key={`minutes-${loanTextIndex}`}>{loanTextContent[loanTextIndex].bottomLine}</h3>
+              </div>
               
               <Link to="/otp-verification" className="btn-neo start-btn">
                 Apply Today <span>&gt;</span>

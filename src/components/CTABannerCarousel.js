@@ -27,7 +27,7 @@ const CTABannerCarousel = ({ banners = [] }) => {
           </div>
         ))}
       </div>
-      <div className="scroll-indicator">Scroll to see more</div>
+      <div className="scroll-indicator">scroll for more</div>
     </div>
   );
 };

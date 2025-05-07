@@ -454,7 +454,7 @@
   right: 0;
   top: 240px; /* Increased from 140px to 240px (100px more from top) */
   bottom: 240px; /* Increased from 140px to 240px (100px more from bottom) */
-  width: 320px; /* Increased from 280px to 320px */
+  width: 360px; /* Increased from 320px to 360px */
   background-color: #ffffff;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
@@ -481,13 +481,14 @@
   overflow-y: hidden; /* Disable vertical scrolling */
   white-space: nowrap; /* Keep items in a row */
   scroll-behavior: smooth; /* Smooth scrolling */
-  padding: 0 10px;
+  padding: 0;
   box-sizing: border-box;
   scroll-snap-type: x mandatory; /* Enable horizontal snap scrolling */
+  scroll-padding-left: 0; /* Ensure scrolling starts at the first image */
   
   /* Custom scrollbar styling */
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #FFC107 #f0f0f0; /* Firefox: thumb and track */
+  scrollbar-color: #999999 #e0e0e0; /* Firefox: thumb and track - more grayish */
 }
 
 /* Webkit scrollbar styling (Chrome, Safari, Edge) */
@@ -496,17 +497,17 @@
 }
 
 .banners-container::-webkit-scrollbar-track {
-  background: #f0f0f0; /* Track color */
+  background: #e0e0e0; /* Track color - lighter gray */
   border-radius: 10px;
 }
 
 .banners-container::-webkit-scrollbar-thumb {
-  background: #FFC107; /* Thumb color */
+  background: #999999; /* Thumb color - medium gray */
   border-radius: 10px;
 }
 
 .banners-container::-webkit-scrollbar-thumb:hover {
-  background: #e6b000; /* Thumb hover color */
+  background: #777777; /* Thumb hover color - darker gray */
 }
 
 /* Individual banner item */
@@ -514,18 +515,18 @@
   display: inline-block; /* Display inline but respect width/height */
   min-width: 100%; /* Each banner takes full width of container */
   height: 100%;
-  padding: 10px;
+  padding: 5px;
   box-sizing: border-box;
   text-align: center;
   vertical-align: middle;
-  scroll-snap-align: center; /* Snap to center when scrolling */
+  scroll-snap-align: start; /* Snap to start when scrolling */
 }
 
 .cta-banner img {
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 98%;
+  max-height: 98%;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: 0; /* Removed rounded corners */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
@@ -553,19 +554,17 @@
 /* Scroll indicator text */
 .scroll-indicator {
   text-align: center;
-  color: #666;
-  font-size: 12px;
-  margin-top: 8px;
+  color: #999;
+  font-size: 11px;
+  margin-top: 5px;
   font-style: italic;
-  padding: 2px 0;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
+  padding: 1px 0;
 }
 
 /* Media queries for responsive design */
 @media (max-width: 992px) {
   .cta-container {
-    width: 280px;
+    width: 320px;
     top: 200px;
     bottom: 200px;
   }
@@ -573,7 +572,7 @@
 
 @media (max-width: 768px) {
   .cta-container {
-    width: 220px;
+    width: 260px;
     top: 180px;
     bottom: 180px;
   }
@@ -581,7 +580,7 @@
 
 @media (max-width: 480px) {
   .cta-container {
-    width: 180px;
+    width: 200px;
     top: 160px;
     bottom: 160px;
   }

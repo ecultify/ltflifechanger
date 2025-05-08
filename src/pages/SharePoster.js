@@ -74,6 +74,11 @@ const SharePoster = () => {
 
   // Define generatePoster with useCallback before it's used in useEffect
   const generatePoster = useCallback(async () => {
+    console.log('Starting poster generation with following requirements:');
+    console.log('- User image should match Bumrah height');
+    console.log('- User image should be pushed up by 3px');
+    console.log('- Processing flow: tint → enhance → remove bg → place on poster');
+
     // Track if we're still processing to avoid duplicate states
     let isProcessing = true;
     
@@ -280,60 +285,78 @@ const SharePoster = () => {
           }
         }
         
-        // Now place the user's image to the left of Bumrah using face detection
+        // Now place the user's image to the left of Bumrah with same height as Bumrah
         if (userImg.complete && userImg.naturalHeight !== 0) {
           try {
-            // Define the target area for user image placement with fixed top position
-            const targetArea = {
-              x: (canvas.width * 0.08) - 40, // Left position
-              y: canvas.height * 0.6,        // Fixed top position (60% down the canvas)
-              width: canvas.width * 0.4,      // 40% of canvas width
-              height: canvas.height * 0.4     // 40% of canvas height
-            };
-            
-            console.log('Using fixed-top target area:', targetArea);
-            
             // Get original image dimensions
             const userImgWidth = userImg.width;
             const userImgHeight = userImg.height;
             console.log('Original image dimensions:', { width: userImgWidth, height: userImgHeight });
             
-            // Use direct placement with the improved sizing and positioning
-            // Make the user image bigger
-            const scale = Math.min(
-              (canvas.width * 0.55) / userImgWidth, // Increased width from 0.5 to 0.55
-              (canvas.height * 0.98) / userImgHeight // Increased height from 0.95 to 0.98
-            );
+            // Calculate Bumrah's approximate height in the template
+            // Using the full template height (with some small margins)
+            const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
             
-            const scaledWidth = userImgWidth * scale;
-            const scaledHeight = userImgHeight * scale;
+            // Calculate scale to match Bumrah's height exactly, preserving aspect ratio
+            const heightScale = bumrahHeight / userImgHeight;
+            const scaledWidth = userImgWidth * heightScale;
+            const scaledHeight = bumrahHeight; // Will exactly match Bumrah's height
+            
+            console.log('Scaling to match Bumrah height:', { heightScale, scaledWidth, scaledHeight });
             
             // Position to place user on the left side of Bumrah
-            // Position is adjusted to push the image to the left and lower on the canvas
-            const userX = (canvas.width * 0.08) - 80; // Moved 80px to the left (40px more than before)
-            // Position vertically (adjust to move down further)
-            const userY = (canvas.height - scaledHeight) + 90; // Push down by 90px from neutral position
+            // Position is adjusted to push the image to the left
+            const userX = (canvas.width * 0.08) - 80; // Left position
+            
+            // Position vertically to align with Bumrah and push up by 3px as requested
+            const userY = (canvas.height - scaledHeight) + 90 - 3; // Base position + 90px adjustment - 3px (push up)
             
             // Apply the calculated placement
-            console.log('Positioning image using direct placement at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
+            console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
             
-            // Create an offscreen canvas for applying tint
+            // Create an offscreen canvas for applying tint and enhancements
             const offscreenCanvas = document.createElement('canvas');
             offscreenCanvas.width = scaledWidth;
             offscreenCanvas.height = scaledHeight;
             const offCtx = offscreenCanvas.getContext('2d');
             
-            // Draw the user's image to the offscreen canvas
+            // 1. Draw the user's image to the offscreen canvas
             offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
             
-            // Apply a subtle black tint (adjust alpha for intensity)
+            // 2. Apply a subtle black tint (adjust alpha for intensity) before other processing
             offCtx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Black with 15% opacity
             offCtx.fillRect(0, 0, scaledWidth, scaledHeight);
             
-            // Draw the tinted image to the main canvas
+            // 3. Apply basic image enhancement (contrast and brightness)
+            try {
+              // Get image data for manipulation
+              const imageData = offCtx.getImageData(0, 0, scaledWidth, scaledHeight);
+              const data = imageData.data;
+              
+              // Increase contrast and brightness slightly
+              const contrast = 1.1; // Subtle contrast boost
+              const brightness = 5;  // Slight brightness boost
+              
+              for (let i = 0; i < data.length; i += 4) {
+                // Apply contrast and brightness
+                data[i] = Math.min(255, Math.max(0, ((data[i] - 128) * contrast) + 128 + brightness));          // red
+                data[i + 1] = Math.min(255, Math.max(0, ((data[i + 1] - 128) * contrast) + 128 + brightness));  // green
+                data[i + 2] = Math.min(255, Math.max(0, ((data[i + 2] - 128) * contrast) + 128 + brightness));  // blue
+              }
+              
+              // Put the enhanced image data back
+              offCtx.putImageData(imageData, 0, 0);
+              console.log('Image enhancement applied');
+            } catch (enhanceError) {
+              console.error('Error enhancing image:', enhanceError);
+              // Continue with unenhanced image if enhancement fails
+            }
+            
+            // 4. Now draw the processed image to the main canvas
+            // Note: Background removal is assumed to be already done in the processedImage
             ctx.drawImage(offscreenCanvas, userX, userY, scaledWidth, scaledHeight);
             
-            console.log('User image placed successfully with tint overlay');
+            console.log('User image placed successfully with tint and enhancements');
           } catch (imageDrawError) {
             console.error('Error drawing user image:', imageDrawError);
             // Continue without user image placement

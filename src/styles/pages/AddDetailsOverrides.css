@@ -1,0 +1,50 @@
+/* Overrides for Add Details page */
+
+/* Close the gap between keyword box and tagline box */
+.form-group:has(.keywords-input-container) {
+  margin-bottom: 5px !important; /* Reduced from 15px */
+}
+
+/* Alternative way to target the keywords section if :has() selector is not supported in all browsers */
+.keywords-input-container {
+  margin-bottom: -10px !important;
+}
+
+/* Add a 5px gap between keyword box and keyword suggestions */
+.keywords-input-container {
+  margin-bottom: 5px !important; /* Create clear separation from suggestions */
+}
+
+.suggested-keywords {
+  margin-top: 5px !important;
+  margin-bottom: 0;
+  padding-top: 5px !important; /* Additional spacing for better separation */
+  border-top: 1px solid #f0f0f0 !important; /* Light separator line for visual distinction */
+}
+
+/* Push the Group15183 image up by 30px */
+.left-group-container {
+  top: 190px !important; /* Changed from 220px (220 - 30 = 190) */
+}
+
+/* Add space above the Generate Tagline section */
+.form-group:has(label[for="tagline"]) {
+  margin-top: 20px !important; /* Add space above the tagline section */
+}
+
+/* Center align the Layer1 image and prevent it from being cut off */
+.left-people-container {
+  bottom: 0 !important;
+  right: auto !important;
+  left: 0 !important;
+  width: 100% !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+.left-people-image {
+  max-height: 75% !important; /* Reduced from 90% */
+  max-width: 95% !important; /* Increased to prevent cutting off */
+  margin: 0 auto !important;
+  position: relative !important;
+}

@@ -1,0 +1,30 @@
+/* Step Color Overrides 
+   Changes step indicator colors to #0A86AE for:
+   - OTP Verification Page
+   - Add Details Page 
+   - Upload Photo Page
+*/
+
+/* Active step indicator styling for all pages */
+.progress-step.active .step-circle {
+  background-color: #0A86AE !important; /* Changed from #0a1a34 */
+  color: white;
+}
+
+/* Active step label styling for all pages */
+.progress-step.active .step-label {
+  color: #0A86AE !important; /* Changed from #0a1a34 */
+  font-weight: 600;
+}
+
+/* Completed step indicator styling (used in Upload Photo page) */
+.progress-step.completed .step-circle {
+  background-color: #0A86AE !important; /* Changed from #0a1a34 */
+  color: white;
+}
+
+/* Progress line between steps */
+.progress-line {
+  background-color: #0A86AE !important; /* Changed progress lines to match the step circles */
+  height: 2px;
+}

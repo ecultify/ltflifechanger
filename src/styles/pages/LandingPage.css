@@ -45,6 +45,15 @@ html, body {
   animation: slideInLeft 0.8s ease-out;
 }
 
+.group-30a-image {
+  position: absolute;
+  right: 10px; /* Moved from 20px to 10px */
+  top: 60px; /* Increased from 50px to 60px to move it down */
+  width: 150px; /* Reduced size to make it smaller than profile image */
+  z-index: 2;
+  transform: rotate(7deg); /* Changed rotation from -7deg to 7deg */
+}
+
 @keyframes slideInLeft {
   from { transform: translateX(-100px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -162,7 +171,7 @@ html, body {
   color: var(--text-black);
   transform: rotate(0deg);
   border: 2px solid var(--text-white); /* Added white border */
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #0066cc; /* Changed to a blue shadow */
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #264E72; /* Changed shadow color to #264E72 */
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 20px; /* Increased from 18px to make text bigger */
@@ -194,7 +203,7 @@ html, body {
 .poster-btn:hover {
   background-color: #e7ba00;
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 3px 3px 0 #0066cc; /* Changed to a blue shadow */
+  box-shadow: 3px 3px 0 #264E72; /* Changed shadow color to #264E72 */
 }
 
 .poster-btn:hover::before {
@@ -315,31 +324,31 @@ html, body {
     margin-bottom: 5px; /* Reduced to bring closer to Free Personalised line */
     text-align: left;
     margin-top: 25px; /* Increased from 0px to 25px to move the text block down */
-    transform: rotate(-12deg); /* Match the tilt of other text */
+    transform: rotate(-3deg); /* Reduced tilt to match desktop */
     transform-origin: bottom left;
-    margin-left: 115px; /* Increased from 75px to 115px to move "Get Your" more to the right by 40px */
+    margin-left: 30px; /* Push to the left to match desktop */
   }
   
   .poster-text {
     margin-left: 0;
-    font-size: 24px !important; /* Reduced from 28px */
+    font-size: 32px !important; /* Increased size */
     display: inline-block;
-    transform: rotate(-12deg); /* Changed to negative rotation */
+    transform: rotate(-3deg); /* Reduced tilt to match desktop */
     transform-origin: bottom left; /* Changed rotation origin */
     margin-bottom: 5px; /* Further reduced to bring lines even closer together */
     margin-top: 0; /* Removed space to bring closer to Get Your line */
   }
   
   .neo-highlight.poster-text:first-of-type {
-    margin-left: -150px; /* Adjusted from -170px for better alignment */
-    transform: rotate(-12deg) !important; /* Match the tilt of Business Poster line */
+    margin-left: 30px; /* Push to the left to match desktop */
+    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
     transform-origin: bottom left !important; /* Match the transform origin */
     margin-bottom: 10px; /* Added space between lines */
     margin-top: 5px; /* Adjusted spacing from "Get Your" */
   }
   
   .poster-text:nth-child(3) {
-    transform: rotate(-12deg) translateX(60px); /* Increased from 20px to 60px to move "Business Poster" to the right by 40px */
+    transform: rotate(-3deg) translateX(30px); /* Reduced tilt and pushed to the left */
     transform-origin: bottom left; /* Changed rotation origin */
     margin-bottom: 20px;
     margin-top: -5px; /* Adjusted from -15px for more consistent spacing */
@@ -476,8 +485,8 @@ html, body {
     top: auto !important;
     left: 20px !important; /* Moved left from 40px */
     right: auto !important; /* Override any right positioning */
-    transform: translateY(40px) !important; /* Push down by 40px */
-    width: 380px !important; /* Increased from 350px to 380px to make it even bigger */
+    transform: translateY(0) !important; /* Reset vertical positioning */
+    width: 200px !important; /* Increase size compared to Group image */
     height: auto !important;
     margin: 0 !important;
     z-index: 2 !important;

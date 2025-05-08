@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/pages/OtpVerification.css';
+import '../styles/pages/StepColorOverrides.css'; // Added step color overrides
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';

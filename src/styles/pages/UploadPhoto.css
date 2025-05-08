@@ -42,7 +42,7 @@
 /* Bumrah and You image container and image */
 .left-bumrah-container {
   position: absolute;
-  top: 150px; /* Moved down as requested */
+  top: 240px; /* Pushed down even further as requested */
   left: 0;
   right: 0;
   z-index: 2;
@@ -52,14 +52,14 @@
 }
 
 .left-bumrah-image {
-  max-width: 300px; 
+  max-width: 360px; /* Made bigger as requested */
   object-fit: contain;
 }
 
 /* Do's images container and images */
 .left-dos-container {
   position: absolute;
-  top: 270px; /* Moved up to avoid being cut off */
+  top: 450px; /* Pushed down further to accommodate larger Bumrah+YOU image */
   left: 0;
   right: 0;
   z-index: 2;
@@ -292,15 +292,17 @@
 .right-content {
   max-width: 500px;
   width: 100%;
+  padding: 20px;
+  margin: 20px auto 0;
   box-sizing: border-box; /* Include any padding in width calculation */
 }
 
 /* Progress tracker */
 .progress-tracker {
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-top: 20px;
+  margin-bottom: 30px;
   position: relative;
   width: 100%; /* Ensure full width */
 }

@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import '../styles/pages/AddDetails.css';
+import '../styles/pages/StepColorOverrides.css';
+import '../styles/pages/AddDetailsOverrides.css'; // Added for layout adjustments
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { OPENAI_API_KEY } from '../config'; // Import API key from config file
 
 // Add this at the top level to provide an alternative for testing
 const testOpenAIAPI = async () => {
@@ -148,10 +151,15 @@ const AddDetails = () => {
       'Experience', 'Legacy']
   }), []);
 
-  // Update industry keywords when industry changes
+  // Update industry keywords when industry changes AND reset selected keywords
   useEffect(() => {
     if (industry) {
       setIndustryKeywords(industryKeywordsMap[industry] || []);
+      // Reset keywords when industry changes to fix the issue with keywords not being reset
+      setKeywords([]);
+      // Reset tagline when industry changes
+      setTagline('');
+      setIsTaglineGenerated(false);
     } else {
       setIndustryKeywords([]);
     }
@@ -182,13 +190,15 @@ const AddDetails = () => {
     return true;
   };
 
-  // Handle adding a keyword
+  // Handle adding a keyword - limited to max 5 keywords
   const handleAddKeyword = (keyword) => {
-    if (keyword && !keywords.includes(keyword) && keywords.length < 5) {
-      setKeywords([...keywords, keyword]);
-      setKeywordInput('');
-    } else if (keywords.length >= 5) {
-      alert('You can select a maximum of 5 keywords');
+    if (keyword && !keywords.includes(keyword)) {
+      if (keywords.length < 5) {
+        setKeywords([...keywords, keyword]);
+        setKeywordInput('');
+      } else {
+        alert('You can select a maximum of 5 keywords');
+      }
     }
   };
 
@@ -207,8 +217,34 @@ const AddDetails = () => {
 
   // Add a button to test the API
   const handleTestAPI = async () => {
-    const result = await testOpenAIAPI();
-    alert(result);
+    try {
+      console.log("Testing API with key from config.js");
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      };
+      
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: "gpt-4o",
+          messages: [
+            { role: "user", content: "Generate a quick test response in 5 words or less." }
+          ],
+          temperature: 0.7,
+          max_tokens: 20
+        },
+        { headers }
+      );
+      
+      const result = "Test successful! API response: " + response.data.choices[0].message.content;
+      alert(result);
+      return result;
+    } catch (error) {
+      console.error("API test failed:", error);
+      alert(`Test failed: ${error.message}`);
+      return `Test failed: ${error.message}`;
+    }
   };
 
   // Generate tagline using OpenAI API
@@ -224,11 +260,11 @@ const AddDetails = () => {
       return;
     }
 
-    console.log("Starting tagline generation...");
-    console.log("API Key available:", process.env.REACT_APP_OPENAI_API_KEY ? "Yes (length: " + process.env.REACT_APP_OPENAI_API_KEY.length + ")" : "No");
+    console.log("Starting tagline generation with imported API key...");
+    console.log("API Key available from config.js:", OPENAI_API_KEY ? "Yes (length: " + OPENAI_API_KEY.length + ")" : "No");
     
-    if (!process.env.REACT_APP_OPENAI_API_KEY) {
-      console.error("OpenAI API key is not set in environment variables");
+    if (!OPENAI_API_KEY) {
+      console.error("OpenAI API key is not available");
       alert("OpenAI API key is not configured. Using fallback tagline generation instead.");
       generateFallbackTagline();
       return;
@@ -239,35 +275,40 @@ const AddDetails = () => {
     try {
       console.log("Making API request to OpenAI...");
       
-      // Create headers with more detailed configuration for project API keys
+      // Create headers with the imported API key
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
       };
       
-      // If this is a project API key (starts with sk-proj-), you might need additional configuration
-      if (process.env.REACT_APP_OPENAI_API_KEY.startsWith('sk-proj-')) {
+      // Handle project API key format
+      if (OPENAI_API_KEY.startsWith('sk-proj-')) {
         console.log("Using project API key format");
-        // Some implementations might require organization ID for project keys
-        if (process.env.REACT_APP_OPENAI_ORG_ID) {
-          headers['OpenAI-Organization'] = process.env.REACT_APP_OPENAI_ORG_ID;
-        }
+        // Note: You can add an organization ID here if needed
+        // headers['OpenAI-Organization'] = 'your-org-id';
       }
       
-      // Improved prompt to ensure proper spacing in taglines
+      // Enhanced prompt to fix spacing issues and ensure ALL keywords are included
       const requestData = {
         model: "gpt-4o",
           messages: [
             {
               role: "system",
-            content: `You are a world-class marketing expert specializing in creating memorable, impactful business taglines for the ${industry || "business"} industry. Create powerful taglines that are exactly 8-10 words long, in first person, and incorporate all provided keywords naturally with proper spacing between words. The taglines should be aspirational, emotionally resonant, and capture the core value proposition of the business. Avoid clichés and create something truly distinctive that would stand out in the ${industry || "business"} market. Do not use quotation marks in your response. Ensure there are proper spaces between all words.`
+            content: `You are a world-class marketing expert specializing in creating memorable business taglines. Your task is to create a tagline that MUST include ALL of the following keywords: ${keywords.join(", ")}. Follow these strict requirements:
+1. Create a first-person tagline between 8-10 words total
+2. Include EVERY keyword provided (mandatory)
+3. Ensure proper spacing between ALL words (no run-on words)
+4. Make the tagline relevant to the ${industry || "business"} industry
+5. The tagline must be concise, impactful, and easy to read
+6. Do not use quotation marks or punctuation in your response
+7. Return ONLY the final tagline with proper spacing`
             },
             {
               role: "user",
-            content: `Create a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline must be EXACTLY 8-10 words long and must incorporate these keywords: ${keywords.join(", ")}. The tagline should be bold, memorable, and convey confidence specific to the ${industry || "business"} industry. It should have a natural flow and rhythm when spoken aloud. Ensure there are proper spaces between all words. Do not include quotation marks, explanations, or variations - provide only the final tagline itself.`
+            content: `Create a powerful first-person tagline for my ${industry || "business"}. The tagline MUST incorporate ALL of these keywords: ${keywords.join(", ")}. The keywords are non-negotiable and must all appear in the tagline. Every word must be properly spaced from adjacent words. Return only the final tagline.`
             }
           ],
-        temperature: 0.7, // Reduced from 0.9 for more consistent results
+        temperature: 0.5, // Lower temperature for more controlled output
         max_tokens: 75
       };
       
@@ -517,19 +558,7 @@ const AddDetails = () => {
               />
             </div>
             
-            {/* Company Name field in its own row */}
-            <div className="form-group">
-              <label htmlFor="companyName">Company Name</label>
-              <input 
-                type="text" 
-                id="companyName"
-                placeholder="Company Name" 
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="form-input border-blue"
-                style={inputStyle}
-              />
-            </div>
+            {/* Company Name field removed as requested */}
             
             <div className="form-group">
               <label htmlFor="industry">Industry</label>
@@ -627,7 +656,7 @@ const AddDetails = () => {
                 </div>
               </div>
               <div className="suggested-keywords">
-                {industryKeywords.length > 0 ? (
+                {industryKeywords.length > 0 && 
                   industryKeywords.slice(0, 10).map((keyword, index) => (
                     <button 
                       key={index} 
@@ -638,16 +667,15 @@ const AddDetails = () => {
                       style={keywords.includes(keyword) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                     >{keyword}</button>
                   ))
-                ) : (
-                  <p className="industry-prompt">Select an industry to see suggested keywords</p>
-                )}
+                }
               </div>
             </div>
             
             <div className="form-group">
               <label htmlFor="tagline">Generate Tagline</label>
               <div className="tagline-input-container">
-                <div className="input-and-button">
+                {/* First approach: Tagline input/display with buttons below it */}
+                <div className="tagline-display-area" style={{ marginBottom: '15px' }}>
                   {tagline ? (
                     <div 
                       className="tagline-display border-blue"
@@ -656,29 +684,38 @@ const AddDetails = () => {
                         padding: '12px 15px',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
-                        minHeight: '46px',
+                        minHeight: '60px',
                         display: 'flex',
                         alignItems: 'center',
                         flexWrap: 'wrap',
                         gap: '2px',
-                        backgroundColor: 'white'
+                        backgroundColor: 'white',
+                        width: '100%'
                       }}
                     >
                       {tagline.split(' ').map((word, index) => {
-                        // Check if this word (without punctuation) matches any keyword
-                        const cleanWord = word.replace(/[.,!?;:()\[\]{}'"-]/g, '').toLowerCase();
-                        const isKeyword = keywords.some(keyword => 
-                          cleanWord === keyword.toLowerCase() || 
-                          cleanWord.includes(keyword.toLowerCase())
-                        );
+                        // Remove punctuation for comparison
+                        const cleanWord = word.replace(/[.,!?;:()\[\]{}'"\-]/g, '').toLowerCase();
                         
+                        // Check which keywords match this word
+                        const matchingKeyword = keywords.find(keyword => {
+                          const keywordLower = keyword.toLowerCase();
+                          return cleanWord === keywordLower || cleanWord.includes(keywordLower);
+                        });
+                        
+                        const isKeyword = !!matchingKeyword;
+                        
+                        // Apply special styling for keywords
                         return (
                           <span 
                             key={index} 
                             style={{
                               fontWeight: isKeyword ? 'bold' : 'normal',
                               color: isKeyword ? '#0083B5' : 'inherit',
-                              display: 'inline-block'
+                              display: 'inline-block',
+                              textDecoration: isKeyword ? 'underline' : 'none',
+                              textUnderlineOffset: '3px',
+                              textDecorationThickness: '1px'
                             }}
                           >
                             {word}{index < tagline.split(' ').length - 1 ? ' ' : ''}
@@ -697,11 +734,28 @@ const AddDetails = () => {
                       style={inputStyle}
                     />
                   )}
+                </div>
+                
+                {/* Buttons arranged horizontally */}
+                <div className="tagline-buttons" style={{ display: 'flex', gap: '10px' }}>
                   <button 
                     type="button" 
                     className="generate-btn"
                     onClick={handleGenerateTagline}
                     disabled={isGeneratingTagline || keywords.length === 0}
+                    style={{
+                      backgroundColor: isTaglineGenerated ? '#FFC107' : '#0083B5',
+                      color: isTaglineGenerated ? '#000' : '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '10px 15px',
+                      cursor: keywords.length === 0 ? 'not-allowed' : 'pointer',
+                      opacity: keywords.length === 0 ? 0.7 : 1,
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}
                   >
                     {isGeneratingTagline ? (
                       <>
@@ -720,6 +774,7 @@ const AddDetails = () => {
                       </>
                     )}
                   </button>
+                  
                   {isTaglineGenerated && (
                     <button 
                       type="button" 
@@ -733,11 +788,11 @@ const AddDetails = () => {
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
-                        padding: '8px 12px',
-                        marginLeft: '10px',
+                        padding: '10px 15px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
+                        justifyContent: 'center',
                         gap: '5px'
                       }}
                     >

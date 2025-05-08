@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/pages/LandingPage.css';
+import '../styles/pages/MobileResponsiveOverrides.css'; // Added mobile responsive overrides
 
 // Image paths - using direct relative paths from the public folder
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';

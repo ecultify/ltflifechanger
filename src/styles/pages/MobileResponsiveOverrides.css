@@ -1,0 +1,80 @@
+/* Mobile Responsive Overrides for Landing Page */
+
+/* Fix reduced tilt and alignment of the three text lines */
+@media (max-width: 768px) {
+  .hero-subtitle {
+    font-size: 20px;
+    margin-bottom: 5px;
+    text-align: left;
+    margin-top: 25px;
+    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
+    transform-origin: bottom left;
+    margin-left: 20px; /* Same position as other text lines */
+  }
+  
+  .poster-text {
+    font-size: 32px !important; /* Increased size */
+    display: inline-block;
+    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
+    transform-origin: bottom left;
+    margin-bottom: 5px;
+    margin-top: 0;
+  }
+  
+  .neo-highlight.poster-text:first-of-type {
+    margin-left: 20px; /* Push to the left, centered with tilt */
+    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
+    transform-origin: bottom left !important;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    text-align: left; /* Ensure text alignment */
+  }
+  
+  .poster-text:nth-child(3) {
+    margin-left: 20px; /* Push to the left, centered with tilt */
+    transform: rotate(-3deg) !important; /* Reduced tilt only */
+    transform-origin: bottom left;
+    margin-bottom: 20px;
+    margin-top: -5px;
+    text-align: left; /* Ensure text alignment */
+  }
+  
+  /* Reduced height of the Make My Poster button and shadow color */
+  .poster-btn {
+    margin-left: 30px !important; /* Push to the left to match desktop */
+    margin-top: 35px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    padding: 8px 20px !important; /* Reduced height */
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #264E72 !important; /* Changed shadow color to #264E72 */
+  }
+  
+  /* Adjust images in mobile view */
+  .mobile-frame-container {
+    min-height: 180px !important; /* Decreased height for better proportions */
+    align-items: center !important;
+    margin-top: 20px !important; /* Push down images by 20px */
+  }
+  
+  .mobile-frame-container .profile-image-container {
+    transform: translateY(0) !important; /* Reset vertical positioning */
+    width: 200px !important; /* Increase size compared to Group image */
+  }
+  
+  .mobile-frame-container .group-30a-image {
+    position: relative !important;
+    top: auto !important;
+    width: 150px !important; /* Reduced size to make it smaller than profile image */
+    height: auto !important;
+  }
+  
+  /* Make testimonial cards bigger height-wise */
+  .testimonial-card {
+    min-width: 100% !important;
+    height: 450px !important; /* Increased height from 380px to 450px */
+  }
+  
+  .testimonial-container {
+    height: 470px !important; /* Increased container height to match card height */
+  }
+}

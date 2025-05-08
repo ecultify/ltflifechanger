@@ -508,6 +508,24 @@ const SharePoster = () => {
           console.error('Error adding text to poster:', textError);
         }
         
+        // Add black strip at the bottom with URL as requested by the client
+        try {
+          // Create black strip at bottom
+          const stripHeight = 40; // Height of the strip in pixels
+          ctx.fillStyle = '#000000'; // Black color
+          ctx.fillRect(0, canvas.height - stripHeight, canvas.width, stripHeight);
+          
+          // Add URL text to the strip
+          ctx.fillStyle = '#FFFFFF'; // White text
+          ctx.font = '22px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('Visit – www.ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
+          
+          console.log('Added URL strip to poster');
+        } catch (stripError) {
+          console.error('Error adding URL strip to poster:', stripError);
+        }
+        
         // Convert canvas to image
         setLoadingStatus('Finalizing your poster...');
         try {
@@ -573,6 +591,22 @@ const SharePoster = () => {
           // Add L&T branding
           ctx.font = 'bold 36px Arial';
           ctx.fillText('L&T Finance', canvas.width / 2, canvas.height - 100);
+          
+          // Add black strip at the bottom with URL
+          try {
+            // Create black strip at bottom
+            const stripHeight = 40; // Height of the strip in pixels
+            ctx.fillStyle = '#000000'; // Black color
+            ctx.fillRect(0, canvas.height - stripHeight, canvas.width, stripHeight);
+            
+            // Add URL text to the strip
+            ctx.fillStyle = '#FFFFFF'; // White text
+            ctx.font = '22px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Visit – www.ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
+          } catch (stripError) {
+            console.error('Error adding URL strip to fallback poster:', stripError);
+          }
           
           // Convert canvas to image
           try {

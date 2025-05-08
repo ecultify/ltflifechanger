@@ -1,6 +1,5 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import OtpVerification from './pages/OtpVerification';
@@ -15,7 +14,6 @@ function App() {
     <Router>
       <ScrollToTop />
       <div className="App">
-        <Header />
         <Routes>
           <Route path="/add-details" element={
             <main className="main-content">

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/UploadPhoto.css';
 import '../styles/pages/StepColorOverrides.css';
+import '../styles/components/FixedStepper.css';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import * as faceapi from 'face-api.js';
@@ -841,6 +842,28 @@ const UploadPhoto = () => {
     }
   };
 
+  // Add a style tag to forcefully override logo size
+  useEffect(() => {
+    // Create style element
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+      .forced-small-logo {
+        max-width: 230px !important;
+        width: 230px !important;
+      }
+
+      .logo-container-fix {
+        top: 45px !important;
+      }
+    `;
+    document.head.appendChild(styleEl);
+    
+    // Clean up
+    return () => {
+      document.head.removeChild(styleEl);
+    };
+  }, []);
+
   return (
     <div className="upload-page">
       <div className="left-section">
@@ -855,25 +878,27 @@ const UploadPhoto = () => {
             />
 
             {/* Logo at the top left */}
-            <div className="left-logo-container">
+            <div className="left-logo-container" style={{ top: '70px' }}>
               <img
                 src="/images/LOGO.png"
                 alt="Logo"
-                className="left-logo-image"
+                className="left-logo-image forced-small-logo"
+                style={{ width: '230px' }} /* Increased size slightly and pushed down with container fix */
               />
             </div>
 
             {/* Bumrah and You image below logo, center-aligned and moved down */}
-            <div className="left-bumrah-container">
+            <div className="left-bumrah-container" style={{ top: '225px' }} /* Pushed down by 40px */>
               <img
                 src="/images/uploadphoto/bumraahandu.png"
                 alt="Bumrah and You"
                 className="left-bumrah-image"
+                style={{ maxWidth: '350px' }} /* Made bigger */
               />
             </div>
 
             {/* Two DOS images side by side below Bumrah+YOU */}
-            <div className="left-dos-container">
+            <div className="left-dos-container" style={{ top: '390px' }} /* Pushed down by 50px */>
               <img
                 src="/images/uploadphoto/dos1.png"
                 alt="Do's 1"
@@ -930,24 +955,27 @@ const UploadPhoto = () => {
       </div>
 
       <div className="right-section">
+        {/* Fixed position stepper in right column */}
+        <div className="fixed-stepper-container">
+          <div className="fixed-stepper">
+            <div className="progress-step completed">
+              <div className="step-circle">1</div>
+              <div className="step-label">OTP</div>
+            </div>
+            <div className="progress-line active"></div>
+            <div className="progress-step completed">
+              <div className="step-circle">2</div>
+              <div className="step-label">Add Details</div>
+            </div>
+            <div className="progress-line active"></div>
+            <div className="progress-step active">
+              <div className="step-circle">3</div>
+              <div className="step-label">Upload</div>
+            </div>
+          </div>
+        </div>
         {isMobile && (
           <div className="right-content" style={{ marginTop: '20px' }}>
-            <div className="progress-tracker">
-              <div className="progress-step completed">
-                <div className="step-circle">1</div>
-                <div className="step-label">OTP</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step completed">
-                <div className="step-circle">2</div>
-                <div className="step-label">Add Details</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step active">
-                <div className="step-circle">3</div>
-                <div className="step-label">Upload</div>
-              </div>
-            </div>
 
             <h2 className="form-title">Upload Your Photo</h2>
 
@@ -992,22 +1020,6 @@ const UploadPhoto = () => {
 
         {!isMobile && (
           <div className="right-content">
-            <div className="progress-tracker">
-              <div className="progress-step completed">
-                <div className="step-circle">1</div>
-                <div className="step-label">OTP</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step completed">
-                <div className="step-circle">2</div>
-                <div className="step-label">Add Details</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step active">
-                <div className="step-circle">3</div>
-                <div className="step-label">Upload</div>
-              </div>
-            </div>
 
             <div className="upload-container">
               <h1 className="upload-title">Upload Your Photo</h1>

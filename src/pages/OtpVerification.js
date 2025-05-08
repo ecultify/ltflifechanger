@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/pages/OtpVerification.css';
 import '../styles/pages/StepColorOverrides.css'; // Added step color overrides
+import '../styles/components/FixedStepper.css'; // For fixed position stepper
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
@@ -235,6 +236,25 @@ const OtpVerification = () => {
       )}
       
       <div className={`right-section ${isMobile ? 'mobile-view' : ''}`}>
+        {/* Fixed position stepper in right column */}
+        <div className="fixed-stepper-container">
+          <div className="fixed-stepper">
+            <div className="progress-step active">
+              <div className="step-circle">1</div>
+              <div className="step-label">OTP</div>
+            </div>
+            <div className="progress-line"></div>
+            <div className="progress-step">
+              <div className="step-circle">2</div>
+              <div className="step-label">Add Details</div>
+            </div>
+            <div className="progress-line"></div>
+            <div className="progress-step">
+              <div className="step-circle">3</div>
+              <div className="step-label">Upload</div>
+            </div>
+          </div>
+        </div>
         <div className="right-content">
           {/* Logo only shown on mobile */}
           {isMobile && (
@@ -259,23 +279,7 @@ const OtpVerification = () => {
           )}
           
           <div className="form-container">
-            {/* Progress tracker shown in different places based on device */}
-            <div className="progress-tracker">
-              <div className="progress-step active">
-                <div className="step-circle">1</div>
-                <div className="step-label">OTP</div>
-              </div>
-              <div className="progress-line"></div>
-              <div className="progress-step">
-                <div className="step-circle">2</div>
-                <div className="step-label">Add Details</div>
-              </div>
-              <div className="progress-line"></div>
-              <div className="progress-step">
-                <div className="step-circle">3</div>
-                <div className="step-label">Upload</div>
-              </div>
-            </div>
+
             
             <h1 className="form-title">Game on.</h1>
             <h2 className="form-subtitle">First delivery's yours!</h2>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import '../styles/pages/AddDetails.css';
 import '../styles/pages/StepColorOverrides.css';
 import '../styles/pages/AddDetailsOverrides.css'; // Added for layout adjustments
+import '../styles/components/FixedStepper.css'; // For fixed position stepper
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { OPENAI_API_KEY } from '../config'; // Import API key from config file
@@ -532,7 +533,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
   return (
     <div className="details-page" style={{
       ...isMobile ? { backgroundColor: '#0a1a34' } : {},
-      minHeight: 'calc(100vh - 120px)' // Reduced height as requested
+      minHeight: 'calc(100vh - 95px)' // Increased height by 10px more (from -105px to -95px)
     }}>
       <div className="left-section">
         {/* Desktop view with the new images layout - COMPLETE REDESIGN */}
@@ -558,20 +559,20 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               paddingTop: '10px' /* Reduced padding to bring elements up */
             }}>
               {/* Logo container */}
-              <div className="left-logo-container" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+              <div className="left-logo-container" style={{ position: 'absolute', top: '-15px', left: '20px' }}>
                 <img 
                   src="/images/adddetails/LOGO.png" 
                   alt="Logo" 
-                  style={{ width: '350px' }} /* Increased size */
+                  style={{ width: '550px' }} /* Significantly increased size from 350px to 550px */
                 />
               </div>
               
               {/* Group image */}
-              <div className="left-group-container" style={{ position: 'absolute', top: '280px', left: '50%', transform: 'translateX(-50%)' }}>
+              <div className="left-group-container" style={{ position: 'absolute', top: '250px', left: '50%', transform: 'translateX(-50%)' }}>
                 <img 
                   src="/images/adddetails/Group15183.png" 
                   alt="Group" 
-                  style={{ width: '600px' }}
+                  style={{ width: '300px' }} /* Further reduced size from 450px to 300px */
                 />
               </div>
             </div>
@@ -598,6 +599,25 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       </div>
       
       <div className="right-section">
+        {/* Fixed position stepper in right column */}
+        <div className="fixed-stepper-container">
+          <div className="fixed-stepper">
+            <div className="progress-step completed">
+              <div className="step-circle">1</div>
+              <div className="step-label">OTP</div>
+            </div>
+            <div className="progress-line active"></div>
+            <div className="progress-step active">
+              <div className="step-circle">2</div>
+              <div className="step-label">Add Details</div>
+            </div>
+            <div className="progress-line"></div>
+            <div className="progress-step">
+              <div className="step-circle">3</div>
+              <div className="step-label">Upload</div>
+            </div>
+          </div>
+        </div>
         {isMobile && (
           <div style={{
             position: 'absolute',
@@ -617,296 +637,290 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         )}
         <div className="right-content" style={isMobile ? { marginTop: '600px' } : {}}>
           <div className="form-container">
-            <div className="progress-tracker">
-              <div className="progress-step active">
-                <div className="step-circle">1</div>
-                <div className="step-label">OTP</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step active">
-                <div className="step-circle">2</div>
-                <div className="step-label">Add Details</div>
-              </div>
-              <div className="progress-line"></div>
-              <div className="progress-step">
-                <div className="step-circle">3</div>
-                <div className="step-label">Upload</div>
-              </div>
-            </div>
+
             
             <h1 className="form-title">Add your Details</h1>
             
-            {/* Name field - alone in its row */}
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <input 
-                type="text" 
-                id="name"
-                placeholder="Your Name" 
-                value={name}
-                onChange={handleNameChange}
-                className="form-input border-blue"
-                style={inputStyle}
-              />
-            </div>
-            
-            {/* Company Name field removed as requested */}
-            
-            <div className="form-group">
-              <label htmlFor="industry">Industry</label>
-              <div className="select-wrapper border-blue">
-                <select 
-                  id="industry"
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  className="form-select"
+            {/* Name and Industry in one row */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="name">Name</label>
+                <input 
+                  type="text" 
+                  id="name"
+                  placeholder="Your Name" 
+                  value={name}
+                  onChange={handleNameChange}
+                  className="form-input border-blue"
                   style={inputStyle}
-                >
-                  <option value="" disabled>Choose industry</option>
-                  <option value="manufacturing">Manufacturing</option>
-                  <option value="retail">Retail & Wholesale Trade</option>
-                  <option value="services">Services</option>
-                  <option value="food">Food & Beverage</option>
-                  <option value="construction">Construction & Real Estate</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="agriculture">Agriculture & Allied Activities</option>
-                  <option value="education">Education & Training</option>
-                  <option value="transport">Transport & Logistics</option>
-                  <option value="technology">IT & Tech Services</option>
-                  <option value="tourism">Tourism & Hospitality</option>
-                  <option value="fashion">Fashion & Apparel</option>
-                  <option value="events">Event Management</option>
-                  <option value="ecommerce">E-commerce Sellers</option>
-                  <option value="printing">Printing & Packaging</option>
-                  <option value="beauty">Beauty & Wellness</option>
-                  <option value="automotive">Automotive Services</option>
-                  <option value="media">Media & Advertising Agencies</option>
-                  <option value="cleaning">Cleaning & Sanitation Services</option>
-                  <option value="handicrafts">Handicrafts & Artisan Units</option>
-                  <option value="other">Others</option>
-                </select>
+                />
               </div>
-            </div>
-            
-            {/* Business Vintage dropdown */}
-            <div className="form-group">
-              <label htmlFor="businessVintage">Business Vintage</label>
-              <div className="select-wrapper border-blue">
-                <select 
-                  id="businessVintage"
-                  value={businessVintage}
-                  onChange={(e) => setBusinessVintage(e.target.value)}
-                  className="form-select"
-                  style={inputStyle}
-                >
-                  <option value="" disabled>Select business vintage</option>
-                  <option value="<3">Less than 3 Years</option>
-                  <option value="3-5">3-5 Years</option>
-                  <option value="5-10">5-10 Years</option>
-                  <option value="10+">10+ Years</option>
-                </select>
-              </div>
-            </div>
-            
-            {/* Turnover dropdown */}
-            <div className="form-group">
-              <label htmlFor="turnover">Turnover</label>
-              <div className="select-wrapper border-blue">
-                <select 
-                  id="turnover"
-                  value={turnover}
-                  onChange={(e) => setTurnover(e.target.value)}
-                  className="form-select"
-                  style={inputStyle}
-                >
-                  <option value="" disabled>Select annual turnover</option>
-                  <option value="<80L">Less than 80 Lakh</option>
-                  <option value="80L-3Cr">80 Lakh - 3 Cr</option>
-                  <option value="3-10Cr">3 - 10 Cr</option>
-                  <option value=">10Cr">More than 10 Cr</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="keywords">Keywords</label>
-              <div className="keywords-input-container border-blue">
-                <div className="keywords-tags">
-                  {keywords.map((keyword, index) => (
-                    <div key={index} className="keyword-tag">
-                      {keyword}
-                      <button 
-                        type="button" 
-                        className="remove-tag"
-                        onClick={() => handleRemoveKeyword(keyword)}
-                      >×</button>
-                    </div>
-                  ))}
-                  <div className="keywords-input" style={{ ...inputStyle, fontStyle: 'italic', color: '#999' }}>
-                    Select keywords from below
-                  </div>
-                </div>
-              </div>
-              <div className="suggested-keywords">
-                {industryKeywords.length > 0 && 
-                  industryKeywords.slice(0, 10).map((keyword, index) => (
-                    <button 
-                      key={index} 
-                      type="button" 
-                      className="suggested-keyword"
-                      onClick={() => handleAddKeyword(keyword)}
-                      disabled={keywords.includes(keyword)}
-                      style={keywords.includes(keyword) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
-                    >{keyword}</button>
-                  ))
-                }
-              </div>
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="tagline">Generate Tagline</label>
-              <div className="tagline-input-container">
-                {/* First approach: Tagline input/display with buttons below it */}
-                <div className="tagline-display-area" style={{ marginBottom: '15px' }}>
-                  {tagline ? (
-                    <div 
-                      className="tagline-display border-blue"
-                      style={{
-                        ...inputStyle,
-                        padding: '12px 15px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        minHeight: '60px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '2px',
-                        backgroundColor: 'white',
-                        width: '100%'
-                      }}
-                    >
-                      {tagline.split(' ').map((word, index) => {
-                        // Remove punctuation for comparison
-                        const cleanWord = word.replace(/[.,!?;:()\[\]{}'"\-]/g, '').toLowerCase();
-                        
-                        // Check which keywords match this word
-                        const matchingKeyword = keywords.find(keyword => {
-                          const keywordLower = keyword.toLowerCase();
-                          return cleanWord === keywordLower || cleanWord.includes(keywordLower);
-                        });
-                        
-                        const isKeyword = !!matchingKeyword;
-                        
-                        // Apply special styling for keywords
-                        return (
-                          <span 
-                            key={index} 
-                            style={{
-                              fontWeight: isKeyword ? 'bold' : 'normal',
-                              color: isKeyword ? '#0083B5' : 'inherit',
-                              display: 'inline-block',
-                              textDecoration: isKeyword ? 'underline' : 'none',
-                              textUnderlineOffset: '3px',
-                              textDecorationThickness: '1px'
-                            }}
-                          >
-                            {word}{index < tagline.split(' ').length - 1 ? ' ' : ''}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <input 
-                      type="text" 
-                      id="tagline"
-                      placeholder="Your company tagline..." 
-                      value={tagline}
-                      readOnly={true}
-                      className="form-input border-blue"
-                      style={inputStyle}
-                    />
-                  )}
-                </div>
-                
-                {/* Buttons arranged horizontally */}
-                <div className="tagline-buttons" style={{ display: 'flex', gap: '10px' }}>
-                  <button 
-                    type="button" 
-                    className="generate-btn"
-                    onClick={handleGenerateTagline}
-                    disabled={isGeneratingTagline || keywords.length === 0}
-                    style={{
-                      backgroundColor: isTaglineGenerated ? '#FFC107' : '#0083B5',
-                      color: isTaglineGenerated ? '#000' : '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '10px 15px',
-                      cursor: keywords.length === 0 ? 'not-allowed' : 'pointer',
-                      opacity: keywords.length === 0 ? 0.7 : 1,
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px'
-                    }}
+              
+              <div className="form-group">
+                <label htmlFor="industry">Industry</label>
+                <div className="select-wrapper border-blue">
+                  <select 
+                    id="industry"
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="form-select"
+                    style={inputStyle}
                   >
-                    {isGeneratingTagline ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin"></i>
-                        Generating...
-                      </>
-                    ) : isTaglineGenerated ? (
-                      <>
-                        <i className="fas fa-redo-alt"></i>
-                        Regenerate
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-magic sparkle-icon"></i>
-                        Generate
-                      </>
-                    )}
-                  </button>
-                  
-                  {isTaglineGenerated && (
-                    <button 
-                      type="button" 
-                      className="delete-btn"
-                      onClick={() => {
-                        setTagline('');
-                        setIsTaglineGenerated(false);
-                      }}
-                      style={{
-                        backgroundColor: '#f44336',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '10px 15px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '5px'
-                      }}
-                    >
-                      <i className="fas fa-trash"></i>
-                      Delete
-                    </button>
-                  )}
+                    <option value="" disabled>Choose industry</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="retail">Retail & Wholesale Trade</option>
+                    <option value="services">Services</option>
+                    <option value="food">Food & Beverage</option>
+                    <option value="construction">Construction & Real Estate</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="agriculture">Agriculture & Allied Activities</option>
+                    <option value="education">Education & Training</option>
+                    <option value="transport">Transport & Logistics</option>
+                    <option value="technology">IT & Tech Services</option>
+                    <option value="tourism">Tourism & Hospitality</option>
+                    <option value="fashion">Fashion & Apparel</option>
+                    <option value="events">Event Management</option>
+                    <option value="ecommerce">E-commerce Sellers</option>
+                    <option value="printing">Printing & Packaging</option>
+                    <option value="beauty">Beauty & Wellness</option>
+                    <option value="automotive">Automotive Services</option>
+                    <option value="media">Media & Advertising Agencies</option>
+                    <option value="cleaning">Cleaning & Sanitation Services</option>
+                    <option value="handicrafts">Handicrafts & Artisan Units</option>
+                    <option value="other">Others</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            {/* Business Vintage and Turnover in one row */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="businessVintage">Business Vintage</label>
+                <div className="select-wrapper border-blue">
+                  <select 
+                    id="businessVintage"
+                    value={businessVintage}
+                    onChange={(e) => setBusinessVintage(e.target.value)}
+                    className="form-select"
+                    style={inputStyle}
+                  >
+                    <option value="" disabled>Select business vintage</option>
+                    <option value="<3">Less than 3 Years</option>
+                    <option value="3-5">3-5 Years</option>
+                    <option value="5-10">5-10 Years</option>
+                    <option value="10+">10+ Years</option>
+                  </select>
                 </div>
               </div>
               
-              {/* Callback checkbox */}
-              <div className="form-group" style={{ marginTop: '15px' }}>
-                <div className="checkbox-container" style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="checkbox"
-                    id="needCallback"
-                    checked={needCallback}
-                    onChange={(e) => setNeedCallback(e.target.checked)}
-                    style={{ marginRight: '10px', width: '18px', height: '18px' }}
-                  />
-                  <label htmlFor="needCallback" style={{ marginBottom: 0, fontWeight: 'normal' }}>
-                    Information not correct? Get a call back!
+              <div className="form-group">
+                <label htmlFor="turnover">Turnover</label>
+                <div className="select-wrapper border-blue">
+                  <select 
+                    id="turnover"
+                    value={turnover}
+                    onChange={(e) => setTurnover(e.target.value)}
+                    className="form-select"
+                    style={inputStyle}
+                  >
+                    <option value="" disabled>Select annual turnover</option>
+                    <option value="<80L">Less than 80 Lakh</option>
+                    <option value="80L-3Cr">80 Lakh - 3 Cr</option>
+                    <option value="3-10Cr">3 - 10 Cr</option>
+                    <option value=">10Cr">More than 10 Cr</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            {/* Keywords in one row */}
+            <div className="form-row">
+              <div className="form-group" style={{ width: '100%' }}>
+                <label htmlFor="keywords">Keywords</label>
+                <div className="keywords-input-container border-blue">
+                  <div className="keywords-tags">
+                    {keywords.map((keyword, index) => (
+                      <div key={index} className="keyword-tag">
+                        {keyword}
+                        <button 
+                          type="button" 
+                          className="remove-tag"
+                          onClick={() => handleRemoveKeyword(keyword)}
+                        >×</button>
+                      </div>
+                    ))}
+                    <div className="keywords-input" style={{ ...inputStyle, fontStyle: 'italic', color: '#999' }}>
+                      Select keywords from below
+                    </div>
+                  </div>
+                </div>
+                <div className="suggested-keywords">
+                  {industryKeywords.length > 0 && 
+                    industryKeywords.slice(0, 10).map((keyword, index) => (
+                      <button 
+                        key={index} 
+                        type="button" 
+                        className="suggested-keyword"
+                        onClick={() => handleAddKeyword(keyword)}
+                        disabled={keywords.includes(keyword)}
+                        style={keywords.includes(keyword) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                      >{keyword}</button>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+            
+            {/* Tagline in one row */}
+            <div className="form-row">
+              <div className="form-group" style={{ width: '100%' }}>
+                <label htmlFor="tagline">Generate Tagline</label>
+                <div className="tagline-input-container">
+                  {/* Tagline input/display with buttons below it */}
+                  <div className="tagline-display-area" style={{ marginBottom: '15px' }}>
+                    {tagline ? (
+                      <div 
+                        className="tagline-display border-blue"
+                        style={{
+                          ...inputStyle,
+                          padding: '12px 15px',
+                          border: '1px solid #ddd',
+                          borderRadius: '4px',
+                          minHeight: '60px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '2px',
+                          backgroundColor: 'white',
+                          width: '100%'
+                        }}
+                      >
+                        {tagline.split(' ').map((word, index) => {
+                          // Remove punctuation for comparison
+                          const cleanWord = word.replace(/[.,!?;:()\[\]{}'"\-]/g, '').toLowerCase();
+                          
+                          // Check which keywords match this word
+                          const matchingKeyword = keywords.find(keyword => {
+                            const keywordLower = keyword.toLowerCase();
+                            return cleanWord === keywordLower || cleanWord.includes(keywordLower);
+                          });
+                          
+                          const isKeyword = !!matchingKeyword;
+                          
+                          // Apply special styling for keywords
+                          return (
+                            <span 
+                              key={index} 
+                              style={{
+                                fontWeight: isKeyword ? 'bold' : 'normal',
+                                color: isKeyword ? '#0083B5' : 'inherit',
+                                display: 'inline-block',
+                                textDecoration: isKeyword ? 'underline' : 'none',
+                                textUnderlineOffset: '3px',
+                                textDecorationThickness: '1px'
+                              }}
+                            >
+                              {word}{index < tagline.split(' ').length - 1 ? ' ' : ''}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <input 
+                        type="text" 
+                        id="tagline"
+                        placeholder="Your company tagline..." 
+                        value={tagline}
+                        readOnly={true}
+                        className="form-input border-blue"
+                        style={inputStyle}
+                      />
+                    )}
+                  </div>
+                  
+                  {/* Buttons arranged horizontally */}
+                  <div className="tagline-buttons" style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                      type="button" 
+                      className="generate-btn"
+                      onClick={handleGenerateTagline}
+                      disabled={isGeneratingTagline || keywords.length === 0}
+                      style={{
+                        backgroundColor: isTaglineGenerated ? '#FFC107' : '#0083B5',
+                        color: isTaglineGenerated ? '#000' : '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '10px 15px',
+                        cursor: keywords.length === 0 ? 'not-allowed' : 'pointer',
+                        opacity: keywords.length === 0 ? 0.7 : 1,
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      {isGeneratingTagline ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin"></i>
+                          Generating...
+                        </>
+                      ) : isTaglineGenerated ? (
+                        <>
+                          <i className="fas fa-redo-alt"></i>
+                          Regenerate
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-magic sparkle-icon"></i>
+                          Generate
+                        </>
+                      )}
+                    </button>
+                    
+                    {isTaglineGenerated && (
+                      <button 
+                        type="button" 
+                        className="delete-btn"
+                        onClick={() => {
+                          setTagline('');
+                          setIsTaglineGenerated(false);
+                        }}
+                        style={{
+                          backgroundColor: '#f44336',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '10px 15px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '5px'
+                        }}
+                      >
+                        <i className="fas fa-trash"></i>
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Request callback checkbox at the bottom */}
+            <div className="form-row">
+              <div className="form-group" style={{ width: '100%', marginTop: '15px' }}>
+                <div className="checkbox-wrapper">
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      id="needCallback"
+                      className="checkbox-input"
+                      checked={needCallback}
+                      onChange={() => setNeedCallback(!needCallback)}
+                    />
+                    <span className="checkbox-text">Request a call back</span>
                   </label>
                 </div>
               </div>
@@ -923,4 +937,3 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
 };
 
 export default AddDetails;
-

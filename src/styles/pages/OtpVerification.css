@@ -1,7 +1,7 @@
 /* OTP Verification Page Styles */
 .otp-page {
   display: flex;
-  min-height: calc(100vh - 90px); /* Adjusted for moderately sized header and footer */
+  min-height: calc(100vh - 55px); /* Increased height by 10px */
   width: 100%;
   font-family: 'Poppins', sans-serif;
   overflow-x: hidden; /* Prevent horizontal scrolling */
@@ -33,9 +33,9 @@
 /* Logo styling */
 .left-section-logo {
   position: absolute;
-  top: 5px; /* Moved up by 20px from 30px to 10px */
-  left: -65px; /* Moved further left by 20px from -25px to -45px */
-  width: 450px; /* Maintained the same size */
+  top: 30px; /* Moved down by 15px from 15px to 30px */
+  left: 25px; /* Moved right by 15px from 10px to 25px */
+  width: 240px; /* Further reduced size from 280px to 240px */
   z-index: 3;
 }
 

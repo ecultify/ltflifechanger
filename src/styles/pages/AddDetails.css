@@ -1,7 +1,7 @@
 /* Add Details Page Styles */
 .details-page {
   display: flex;
-  min-height: calc(100vh - 150px); /* Further reduced height */
+  min-height: calc(100vh - 25px); /* Increased height by an additional 15px */
   width: 100%;
   font-family: 'Poppins', sans-serif;
 }
@@ -37,7 +37,7 @@
 /* Logo container and image */
 .left-logo-container {
   position: absolute;
-  top: 95px; /* Pushed down by 35px (from 60px) as requested */
+  top: 95px; /* Pushed down by 25px from 70px to 95px */
   left: 0;
   right: 0;
   display: flex;
@@ -46,13 +46,13 @@
 }
 
 .left-logo-image {
-  max-width: 320px; /* Further increased size from 250px to 320px */
+  max-width: 420px; /* Increased size from 380px to 420px to make it bigger */
 }
 
 /* Group image container and image */
 .left-group-container {
   position: absolute;
-  top: 255px; /* Pushed down by 35px (from 220px) as requested */
+  top: 225px; /* Pushed down by 25px from 200px to 225px */
   left: 0;
   right: 0;
   display: flex;
@@ -61,7 +61,7 @@
 }
 
 .left-group-image {
-  max-width: 450px; /* Increased from 380px to 450px to make it even bigger */
+  max-width: 370px; /* Further reduced from 400px to 370px to make it smaller */
 }
 
 /* People image container and image */
@@ -85,15 +85,16 @@
   flex: 1;
   background-color: white;
   display: flex;
-  align-items: flex-start;
+  align-items: center; /* Center aligned vertically */
   justify-content: center;
   padding: 30px;
-  padding-top: 20px;
+  margin-top: 0; /* Removed negative margin */
 }
 
 .right-content {
   max-width: 500px;
   width: 100%;
+  margin-top: 0; /* Removed negative margin for equal spacing */
 }
 
 /* Progress tracker */

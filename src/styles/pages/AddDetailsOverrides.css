@@ -1,5 +1,6 @@
 /* Overrides for Add Details page */
 
+
 /* Close the gap between keyword box and tagline box */
 .form-group:has(.keywords-input-container) {
   margin-bottom: 5px !important; /* Reduced from 15px */
@@ -24,16 +25,100 @@
 
 /* Adjusted positioning for logo and Group15183 image */
 .left-logo-container {
-  top: 15px !important; /* Moved up to reduce spacing */
+  top: 45px !important; /* Pushed down by 50px from -5px */
+}
+
+.left-logo-image {
+  max-width: 460px !important; /* Further increased size from 420px to 460px */
 }
 
 .left-group-container {
-  top: 200px !important; /* Moved up to reduce space between logo and group image */
+  top: 300px !important; /* Pushed down by an additional 25px from 275px */
+}
+
+.left-group-image {
+  max-width: 300px !important; /* Further reduced size from 340px to 300px */
+}
+
+/* Ensure the Group15183 image stays center-aligned */
+.left-group-container {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 
 /* Add space above the Generate Tagline section */
 .form-group:has(label[for="tagline"]) {
   margin-top: 20px !important; /* Add space above the tagline section */
+}
+
+/* Two-column form layout for better space utilization */
+.form-container {
+  margin-top: -30px !important; /* Maintained */
+}
+
+/* Add space between top and stepper indicator */
+.progress-tracker {
+  margin-top: 35px !important;
+  margin-bottom: 15px !important;
+}
+
+.right-content {
+  max-width: 700px !important; /* Make form container even wider for better spacing */
+  padding: 0 20px !important; /* Add some padding on the sides */
+}
+
+/* Create two-column layout for specific form fields */
+.form-row {
+  display: flex !important;
+  gap: 20px !important;
+  margin-bottom: 15px !important;
+  align-items: flex-start !important;
+}
+
+.form-row .form-group {
+  flex: 1 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Make all form groups more compact but still readable */
+.form-group {
+  margin-bottom: 15px !important;
+}
+
+/* Better spacing for labels */
+.form-group label {
+  margin-bottom: 5px !important;
+  display: block !important;
+  font-weight: 500 !important;
+}
+
+/* Position keywords and tagline in a row */
+.keywords-tagline-row {
+  display: flex !important;
+  gap: 25px !important; /* Increased gap between keywords and tagline */
+  margin-bottom: 20px !important;
+}
+
+.keywords-tagline-row .form-group {
+  flex: 1 !important;
+}
+
+/* Make tagline section stand out a bit more */
+.tagline-input-container {
+  margin-top: 5px !important;
+}
+
+/* Button styling improvements */
+.next-btn {
+  margin-top: 10px !important;
+  padding: 12px 30px !important;
+}
+
+/* Checkbox positioning */
+.checkbox-wrapper {
+  margin-top: -25px !important; /* Push up the checkbox */
 }
 
 /* Center align the Layer1 image and prevent it from being cut off */

@@ -13,7 +13,7 @@ const CAROUSEL_IMAGE_PATHS = [
   '/Frame15164.png',
 ];
 const SECTION2_BG_IMAGE_PATH = '/images/section2/video-bg.png';
-const SECTION3_BG_IMAGE = '/images/section3/section3bg.jpg';
+const SECTION3_BG_IMAGE = '/images/Landingpage(2).jpg';
 const SECTION3_MOBILE_BG_IMAGE = '/images/section3/section3bgwithoutimage.jpg';
 const SECTION3_DESKTOP_IMAGE = '/images/section3/desktopimage.png';
 const GROUP_30A_IMAGE = '/images/section1/Group 30a (1).png';

@@ -22,6 +22,8 @@ const UploadPhoto = () => {
   const [faceInPosition, setFaceInPosition] = useState(false);
   const [faceDetectionEnabled, setFaceDetectionEnabled] = useState(false);
   const [isSelfieMode, setIsSelfieMode] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  console.log('Current device width:', window.innerWidth, 'Is Mobile:', window.innerWidth <= 768);
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -40,6 +42,18 @@ const UploadPhoto = () => {
         console.error('Failed to load face detection models:', err);
         setFaceDetectionEnabled(false);
       });
+  }, []);
+  
+  // Add resize listener to update mobile state
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768;
+      console.log('Resize detected:', window.innerWidth, 'Setting mobile:', newIsMobile);
+      setIsMobile(newIsMobile);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleFileChange = (e) => {
@@ -817,15 +831,154 @@ const UploadPhoto = () => {
   return (
     <div className="upload-page">
       <div className="left-section">
-        <img 
-          src="/images/adddetails pageimage.jpg" 
-          alt="L&T Finance Upload" 
-          className="left-section-image"
-        />
+        {!isMobile ? (
+          // Desktop view
+          <>
+            {/* Background image */}
+            <img 
+              src="/images/uploadphoto/uploadphotobg.png" 
+              alt="Background" 
+              className="left-section-background"
+            />
+            
+            {/* Logo at the top left */}
+            <div className="left-logo-container">
+              <img 
+                src="/images/uploadphoto/GAMECHANGERLOGOFINAL.png" 
+                alt="Logo" 
+                className="left-logo-image"
+              />
+            </div>
+            
+            {/* Bumrah and You image below logo, center-aligned and moved down */}
+            <div className="left-bumrah-container">
+              <img 
+                src="/images/uploadphoto/bumraahandu.png" 
+                alt="Bumrah and You" 
+                className="left-bumrah-image"
+              />
+            </div>
+            
+            {/* Two DOS images side by side below Bumrah+YOU */}
+            <div className="left-dos-container">
+              <img 
+                src="/images/uploadphoto/dos1.png" 
+                alt="Do's 1" 
+                className="left-dos-image"
+              />
+              <img 
+                src="/images/uploadphoto/Dos2.png" 
+                alt="Do's 2" 
+                className="left-dos-image"
+              />
+            </div>
+          </>
+        ) : (
+          // Mobile view
+          <>
+            {/* Background image */}
+            <img 
+              src="/images/uploadphoto/uploadphotobg.png" 
+              alt="Background" 
+              className="left-section-background"
+            />
+            
+            {/* Logo at the top */}
+            <div className="left-logo-container">
+              <img 
+                src="/images/uploadphoto/GAMECHANGERLOGOFINAL.png" 
+                alt="Logo" 
+                className="left-logo-image"
+                style={{maxWidth: '160px'}}
+              />
+            </div>
+            
+            {/* Bumrah and You image below logo */}
+            <div className="left-bumrah-container">
+              <img 
+                src="/images/uploadphoto/bumraahandu.png" 
+                alt="Bumrah and You" 
+                className="left-bumrah-image"
+                style={{maxWidth: '240px'}}
+              />
+            </div>
+            
+            {/* DOS1 image */}
+            <div className="left-dos-container">
+              <img 
+                src="/images/uploadphoto/dos1.png" 
+                alt="Do's 1" 
+                className="left-dos-image"
+                style={{maxWidth: '240px'}}
+              />
+            </div>
+          </>
+        )}
       </div>
       
       <div className="right-section">
-        <div className="right-content">
+        {isMobile && (
+          <div className="right-content" style={{marginTop: '20px'}}>
+            <div className="progress-tracker">
+              <div className="progress-step completed">
+                <div className="step-circle">1</div>
+                <div className="step-label">OTP</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step completed">
+                <div className="step-circle">2</div>
+                <div className="step-label">Add Details</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step active">
+                <div className="step-circle">3</div>
+                <div className="step-label">Upload</div>
+              </div>
+            </div>
+            
+            <h2 className="form-title">Upload Your Photo</h2>
+            
+            <div className="form-container" style={{textAlign: 'center'}}>
+              <div className="upload-area" onDragOver={handleDragOver} onDrop={handleDrop}>
+                <p>Drag your file to start uploading</p>
+                <div className="upload-divider"><span>or</span></div>
+                
+                <div className="upload-buttons">
+                  <button 
+                    className="upload-btn blue-btn"
+                    onClick={() => activateCamera(false)}
+                  >
+                    <i className="fa fa-camera"></i> Take a photo
+                  </button>
+                  
+                  <button 
+                    className="upload-btn orange-btn"
+                    onClick={() => activateCamera(true)}
+                  >
+                    <i className="fa fa-user"></i> Take a selfie
+                  </button>
+                  
+                  <button 
+                    className="browse-button"
+                    onClick={() => document.getElementById('file-input').click()}
+                  >
+                    <i className="fa fa-folder-open"></i> Browse for photo
+                  </button>
+                  <input
+                    type="file"
+                    id="file-input"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {!isMobile && (
+          <div className="right-content">
           <div className="progress-tracker">
             <div className="progress-step completed">
               <div className="step-circle">1</div>
@@ -957,6 +1110,7 @@ const UploadPhoto = () => {
               )}
             </div>
           </div>
+        )}  {/* End of !isMobile condition */}
         </div>
       </div>
       

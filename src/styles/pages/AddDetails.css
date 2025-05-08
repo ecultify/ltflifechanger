@@ -6,7 +6,7 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* Left side - empty for now but keeping the structure */
+/* Left side - with desktop layout */
 .left-section {
   flex: 1;
   background-color: #0a1a34;
@@ -17,6 +17,7 @@
   overflow: hidden;
 }
 
+/* Default image for mobile */
 .left-section-image {
   max-width: 100%;
   height: 100%;
@@ -24,14 +25,70 @@
   object-position: center;
 }
 
+/* Background image for desktop */
+.left-section-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Logo container and image */
+.left-logo-container {
+  position: absolute;
+  top: 60px; /* Pushed down for more spacing from top */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
+
+.left-logo-image {
+  max-width: 250px; /* Increased size for bigger logo */
+}
+
+/* Group image container and image */
+.left-group-container {
+  position: absolute;
+  top: 220px; /* Further pushed down for more spacing from logo */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
+
+.left-group-image {
+  max-width: 450px; /* Increased from 380px to 450px to make it even bigger */
+}
+
+/* People image container and image */
+.left-people-container {
+  position: absolute;
+  bottom: 0; /* Positioned at the very bottom */
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+}
+
+.left-people-image {
+  max-height: 90%;
+  max-width: 100%;
+  display: block;
+}
+
 /* Right side - Form section */
 .right-section {
   flex: 1;
   background-color: white;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 40px;
+  padding: 30px;
+  padding-top: 20px;
 }
 
 .right-content {
@@ -44,7 +101,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 15px;
   position: relative;
 }
 
@@ -87,7 +144,7 @@
 .progress-line {
   height: 2px;
   background-color: #e9e9e9;
-  width: 80px;
+  width: 100px;
   margin: 0 10px;
   position: relative;
   top: -15px; /* Align with the middle of circles */
@@ -100,20 +157,20 @@
 
 /* Form styles */
 .form-title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
-  margin: 0 0 30px 0;
+  margin: 0 0 12px 0;
   color: #0a1a34;
 }
 
 .form-row {
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   width: 100%;
 }
 
@@ -125,16 +182,16 @@ label {
   display: block;
   font-size: 14px;
   font-weight: 500;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #333;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
   box-sizing: border-box;
 }
 
@@ -176,7 +233,7 @@ label {
 .keywords-input-container {
   border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 8px 12px;
+  padding: 6px 10px;
   background-color: white;
 }
 
@@ -228,8 +285,8 @@ label {
 .suggested-keywords {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 .suggested-keyword {

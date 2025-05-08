@@ -204,37 +204,176 @@ const OtpVerification = () => {
       } else {
         setError('Invalid OTP. The correct OTP is 123456.');
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  return (
-    <div className="otp-page" style={{ backgroundImage: `url('/mobile/images/otpverfication/BG (1).png')` }}>
-      {isLoading && !showOtpInput && <Loader />}
+// Start countdown timer
+const startCountdown = () => {
+  setRemainingTime(30);
+  const timer = setInterval(() => {
+    setRemainingTime(prevTime => {
+      if (prevTime <= 1) {
+        clearInterval(timer);
+        return 0;
+      }
+      return prevTime - 1;
+    });
+  }, 1000);
+};
+
+// Handle get OTP button click - Using hardcoded approach
+const handleGetOtp = async () => {
+  try {
+    setIsLoading(true);
+    setError('');
+    
+    // Show the OTP input section
+    setShowOtpInput(true);
+    startCountdown();
+    
+    // Pre-fill the OTP with 123456
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    
+    // Display test mode message
+    setError('TEST MODE: Using hardcoded OTP 123456');
+    setUsingTestMode(true);
+    
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    
+    // Still show the OTP input with pre-filled value
+    setShowOtpInput(true);
+    startCountdown();
+    setUsingTestMode(true);
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    setError('TEST MODE: Using hardcoded OTP 123456');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Handle resend OTP - Using hardcoded approach
+const handleResendOtp = async (e) => {
+  e.preventDefault();
+  
+  try {
+    setIsLoading(true);
+    setError('');
+    
+    // Reset and start countdown
+    startCountdown();
+    
+    // Pre-fill the OTP with 123456
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    
+    // Display test mode message
+    setError('TEST MODE: Using hardcoded OTP 123456');
+    setUsingTestMode(true);
+    
+  } catch (error) {
+    console.error('Error resending OTP:', error);
+    
+    // Still show the OTP input with pre-filled value
+    startCountdown();
+    setUsingTestMode(true);
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    setError('TEST MODE: Using hardcoded OTP 123456');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Handle verify button click - Using hardcoded approach
+const handleVerify = async () => {
+  try {
+    setIsLoading(true);
+    setError('');
+    
+    // If OTP is 123456, proceed to the next page
+    if (otp.join('') === '123456') {
+      // Store phone number in sessionStorage 
+      sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
       
-      {!isMobile && (
-        <div className="left-section">
-          <img 
-            src="/images/otpverfication/otpverfifcationbg.png" 
-            alt="Background" 
-            className="left-section-background"
-          />
+      // Navigate to the next page
+      navigate('/add-details');
+      return;
+    } else {
+      setError('Invalid OTP. The correct OTP is 123456.');
+    }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    
+    // For consistency, still check the hardcoded OTP
+    if (otp.join('') === '123456') {
+      sessionStorage.setItem('phoneNumber', `${countryCode} ${phoneNumber}`);
+      navigate('/add-details');
+    } else {
+      setError('Invalid OTP. The correct OTP is 123456.');
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+return (
+  <div className="otp-page" style={{ backgroundImage: `url('/mobile/images/otpverfication/BG (1).png')` }}>
+    {isLoading && !showOtpInput && <Loader />}
+    
+    {!isMobile && (
+      <div className="left-section">
+        {/* Using the same background as AddDetails page */}
+        <img 
+          src="/images/adddetails/UploadPhoto+AddDetails.png" 
+          alt="Background" 
+          className="left-section-background"
+        />
+        {/* Logo at the top center */}
+        <div className="left-logo-container">
           <img 
             src="/images/otpverfication/GAMECHANGERLOGOFINAL.png" 
             alt="Game Changer Logo" 
-            className="left-section-logo"
+            className="left-logo-image"
           />
+        </div>
+        {/* Person image at the bottom */}
+        <div className="left-people-container">
           <img 
             src="/images/otpverfication/Frame162427.png" 
             alt="Person" 
-            className="left-section-person"
+            className="left-people-image"
           />
         </div>
-      )}
-      
-      <div className={`right-section ${isMobile ? 'mobile-view' : ''}`}>
-        <div className="right-content">
+      </div>
+    )}
+    
+    <div className={`right-section ${isMobile ? 'mobile-view' : ''}`}>
+      <div className="right-content">
+        {/* Logo only shown on mobile */}
+        {isMobile && (
+          <div className="logo-container">
+            <img 
+              src="/mobile/images/otpverfication/LOGO (2).png" 
+              alt="L&T Finance Logo" 
+              className="logo"
+            />
+          </div>
+        )}
+        
+        {/* Bumrah image above the form - only on mobile */}
+        {isMobile && (
+          <div className="bumrah-container">
+            <img 
+              src="/mobile/images/otpverfication/Bumrah.png" 
+              alt="Bumrah" 
+              className="bumrah-image"
+            />
+          </div>
+        )}
+        
+        <div className="form-container">
+          {/* Progress tracker shown in different places based on device */}
+          <div className="progress-tracker">
+            <div className="progress-step active">
+              <div className="step-circle">1</div>
+              <div className="step-label">OTP</div>
           {/* Logo only shown on mobile */}
           {isMobile && (
             <div className="logo-container">

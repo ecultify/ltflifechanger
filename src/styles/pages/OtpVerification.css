@@ -10,10 +10,9 @@
   background-repeat: no-repeat;
 }
 
-/* Left side - empty for now but keeping the structure */
+/* Left side with new design */
 .left-section {
   flex: 1;
-  background-color: #0a1a34;
   position: relative;
   display: flex;
   align-items: center;
@@ -21,11 +20,33 @@
   overflow: hidden;
 }
 
-.left-section-image {
-  max-width: 100%;
+/* Background image - now a complete image without overlays */
+.left-section-background {
+  position: absolute;
+  width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+  z-index: 1;
+}
+
+/* Logo styling */
+.left-section-logo {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 200px;
+  z-index: 3;
+}
+
+/* Person image */
+.left-section-person {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Center in the column */
+  max-height: 90%;
+  z-index: 3;
 }
 
 /* Right side - Form section */
@@ -70,13 +91,16 @@
 .bumrah-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px; /* Reduced to make more of the form visible */
+  overflow: hidden;
   margin-top: 40px; /* Push it down by 40px */
 }
 
 .bumrah-image {
-  display: block;
   max-width: 220px; /* Increased size */
+  height: auto;
+  max-height: 200px; /* Limited height to show more of the form */
+  object-fit: contain;
   margin-bottom: -30px;
 }
 
@@ -85,7 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 40px; /* Original spacing for desktop */
+  margin-bottom: 25px; /* Reduced spacing */
   position: relative;
   width: 100%; /* Ensure it takes full width */
 }
@@ -129,7 +153,7 @@
 .progress-line {
   height: 2px;
   background-color: #e9e9e9;
-  width: 80px;
+  width: 100px; /* Increased width */
   margin: 0 10px;
   position: relative;
   top: -15px; /* Align with the middle of circles */
@@ -141,8 +165,8 @@
   width: 100%;
   background-color: white;
   border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  box-shadow: none;
   box-sizing: border-box;
   margin: 0 auto;
 }
@@ -158,22 +182,22 @@
 .form-title {
   font-size: 32px;
   font-weight: 700;
-  margin: 0 0 5px 0;
+  margin: 0 0 3px 0; /* Reduced spacing */
   color: #0a1a34;
 }
 
 .form-subtitle {
   font-size: 24px;
   font-weight: 600;
-  margin: 0 0 30px 0;
+  margin: 0 0 20px 0; /* Reduced spacing */
   color: #0a1a34;
 }
 
 .form-description {
   font-size: 14px;
   color: #666;
-  margin-bottom: 20px;
-  line-height: 1.5;
+  margin-bottom: 15px; /* Reduced spacing */
+  line-height: 1.4; /* Slightly reduced line height */
   width: 100%; /* Ensure text doesn't overflow */
 }
 
@@ -251,21 +275,21 @@
 /* Common OTP styles (used in both desktop and mobile) */
 .otp-container {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   margin-bottom: 15px;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%; /* Ensure full width */
   box-sizing: border-box; /* Include padding in width calculation */
-  padding: 0 15px; /* Increased padding to prevent edge touching and add space on both sides */
+  padding: 0; /* Remove padding to use full width */
 }
 
 .otp-input {
-  width: 40px;
-  height: 45px;
+  width: 55px;
+  height: 55px;
   border: 1px solid #ddd;
   border-radius: 8px;
   text-align: center;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   box-sizing: border-box; /* Include padding and border in the width */
@@ -360,16 +384,11 @@
   cursor: not-allowed;
 }
 
-/* Desktop OTP Container (inline) */
-.desktop-otp-container {
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 15px 0 25px;
-  border: 1px solid #e5e5e5;
+/* Simple OTP Container for desktop */
+.simple-otp-container {
+  margin: 25px 0 20px;
   width: 100%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  box-sizing: border-box; /* Include padding in width calculation */
+  box-sizing: border-box;
 }
 
 .desktop-otp-container .otp-title {
@@ -385,9 +404,11 @@
   margin-bottom: 20px;
 }
 
-.desktop-otp-container .otp-container {
-  justify-content: center;
-  padding: 0 10px; /* Add padding to center inputs better */
+.simple-otp-container .otp-container {
+  justify-content: space-between;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* OTP Modal Styles - Only for Mobile */
@@ -499,7 +520,7 @@
 }
 
 .consent-modal-text {
-  font-size: 14px;
+  font-size: 12px;
   color: #333;
   line-height: 1.5;
   margin-bottom: 20px;
@@ -557,13 +578,15 @@
 .consent-container {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20px;
-  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 100%;
 }
 
 .consent-container label {
-  font-size: 12px;
+  font-size: 11px; /* Reduced by 2px */
   color: #666;
+  margin-left: 10px;
   line-height: 1.4;
   flex: 1;
 }

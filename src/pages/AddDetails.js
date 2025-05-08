@@ -59,6 +59,8 @@ const AddDetails = () => {
   const [name, setName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [industry, setIndustry] = useState('');
+  const [businessVintage, setBusinessVintage] = useState('');
+  const [turnover, setTurnover] = useState('');
   const [keywords, setKeywords] = useState([]);
   const [tagline, setTagline] = useState('');
   const [keywordInput, setKeywordInput] = useState('');
@@ -66,6 +68,7 @@ const AddDetails = () => {
   const [isGeneratingTagline, setIsGeneratingTagline] = useState(false);
   const [industryKeywords, setIndustryKeywords] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [needCallback, setNeedCallback] = useState(false);
   
   // Add resize listener to update mobile state
   useEffect(() => {
@@ -154,11 +157,38 @@ const AddDetails = () => {
     }
   }, [industry, industryKeywordsMap]);
 
+  // List of negative keywords to filter out from name field
+  const negativeKeywords = [
+    'private', 'limited', 'ltd', 'clinic', 'corporate', 'company',
+    // Add more abusive words or unwanted terms here
+  ];
+
+  // Function to check and filter name input
+  const filterNameInput = (input) => {
+    // Convert to lowercase for case-insensitive comparison
+    const lowerInput = input.toLowerCase();
+    
+    // Check if input contains any negative keywords
+    const containsNegativeKeyword = negativeKeywords.some(keyword => 
+      lowerInput.includes(keyword.toLowerCase())
+    );
+    
+    if (containsNegativeKeyword) {
+      // Alert user about invalid input
+      alert('Please avoid using business terms like "private", "limited", "ltd", "clinic", "corporate", "company" in the name field.');
+      return false;
+    }
+    
+    return true;
+  };
+
   // Handle adding a keyword
   const handleAddKeyword = (keyword) => {
-    if (keyword && !keywords.includes(keyword)) {
+    if (keyword && !keywords.includes(keyword) && keywords.length < 5) {
       setKeywords([...keywords, keyword]);
       setKeywordInput('');
+    } else if (keywords.length >= 5) {
+      alert('You can select a maximum of 5 keywords');
     }
   };
 
@@ -188,6 +218,12 @@ const AddDetails = () => {
       return;
     }
 
+    // Limit to max 5 keywords
+    if (keywords.length > 5) {
+      alert("Please select a maximum of 5 keywords");
+      return;
+    }
+
     console.log("Starting tagline generation...");
     console.log("API Key available:", process.env.REACT_APP_OPENAI_API_KEY ? "Yes (length: " + process.env.REACT_APP_OPENAI_API_KEY.length + ")" : "No");
     
@@ -199,9 +235,6 @@ const AddDetails = () => {
     }
 
     setIsGeneratingTagline(true);
-
-    // For debugging only, don't include in production
-    console.log("API Key first 10 chars:", process.env.REACT_APP_OPENAI_API_KEY.substring(0, 10) + "...");
 
     try {
       console.log("Making API request to OpenAI...");
@@ -221,23 +254,23 @@ const AddDetails = () => {
         }
       }
       
+      // Improved prompt to ensure proper spacing in taglines
       const requestData = {
         model: "gpt-4o",
           messages: [
             {
               role: "system",
-            content: `You are a world-class marketing expert specializing in creating memorable, impactful business taglines for the ${industry || "business"} industry. Create powerful taglines that are exactly 10-12 words long, in first person, and incorporate all provided keywords naturally. The taglines should be aspirational, emotionally resonant, and capture the core value proposition of the business. Avoid clichés and create something truly distinctive that would stand out in the ${industry || "business"} market. Do not use quotation marks in your response.`
+            content: `You are a world-class marketing expert specializing in creating memorable, impactful business taglines for the ${industry || "business"} industry. Create powerful taglines that are exactly 8-10 words long, in first person, and incorporate all provided keywords naturally with proper spacing between words. The taglines should be aspirational, emotionally resonant, and capture the core value proposition of the business. Avoid clichés and create something truly distinctive that would stand out in the ${industry || "business"} market. Do not use quotation marks in your response. Ensure there are proper spaces between all words.`
             },
             {
               role: "user",
-            content: `Create a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline must be EXACTLY 10-12 words long and must incorporate these keywords: ${keywords.join(", ")}. The tagline should be bold, memorable, and convey confidence specific to the ${industry || "business"} industry. It should have a natural flow and rhythm when spoken aloud. Do not include quotation marks, explanations, or variations - provide only the final tagline itself.`
+            content: `Create a powerful first-person tagline for my ${industry || "business"} company${companyName ? ` called "${companyName}"` : ""}. The tagline must be EXACTLY 8-10 words long and must incorporate these keywords: ${keywords.join(", ")}. The tagline should be bold, memorable, and convey confidence specific to the ${industry || "business"} industry. It should have a natural flow and rhythm when spoken aloud. Ensure there are proper spaces between all words. Do not include quotation marks, explanations, or variations - provide only the final tagline itself.`
             }
           ],
-        temperature: 0.9,
+        temperature: 0.7, // Reduced from 0.9 for more consistent results
         max_tokens: 75
       };
       
-      console.log("Request headers:", headers);
       console.log("Request data:", requestData);
       
       const response = await axios.post(
@@ -253,6 +286,9 @@ const AddDetails = () => {
       
       // Remove any quotation marks, periods, or other unwanted characters
       generatedTagline = generatedTagline.replace(/["""'''.]/g, '');
+      
+      // Fix spacing issues - ensure single space between words
+      generatedTagline = generatedTagline.replace(/\s+/g, ' ');
       
       console.log("Generated tagline:", generatedTagline);
       setTagline(generatedTagline);
@@ -322,12 +358,31 @@ const AddDetails = () => {
     setIsTaglineGenerated(true);
   };
 
+  // Reset keywords when industry changes
+  useEffect(() => {
+    // Clear selected keywords when industry changes
+    setKeywords([]);
+    setTagline('');
+    setIsTaglineGenerated(false);
+  }, [industry]);
+
+  // Handle name input with filtering
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    if (filterNameInput(value)) {
+      setName(value);
+    }
+  };
+
   // Handle next button click
   const handleNext = () => {
     // Store form data in sessionStorage instead of localStorage
     sessionStorage.setItem('userName', name);
     sessionStorage.setItem('companyName', companyName);
     sessionStorage.setItem('industry', industry);
+    sessionStorage.setItem('businessVintage', businessVintage);
+    sessionStorage.setItem('turnover', turnover);
+    sessionStorage.setItem('needCallback', needCallback.toString());
     sessionStorage.setItem('tagline', tagline);
     
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
@@ -360,11 +415,53 @@ const AddDetails = () => {
   return (
     <div className="details-page" style={isMobile ? { backgroundColor: '#0a1a34' } : {}}>
       <div className="left-section">
-        <img 
-          src="/images/adddetails pageimage.jpg" 
-          alt="L&T Finance Add Details" 
-          className="left-section-image"
-        />
+        {/* Desktop view with the new images layout */}
+        {!isMobile && (
+          <>
+            {/* Background image */}
+            <img 
+              src="/images/adddetails/UploadPhoto+AddDetails.png" 
+              alt="Background" 
+              className="left-section-background"
+            />
+            
+            {/* Logo at the top */}
+            <div className="left-logo-container">
+              <img 
+                src="/images/adddetails/LOGO.png" 
+                alt="Logo" 
+                className="left-logo-image"
+              />
+            </div>
+            
+            {/* Group image below the logo with spacing */}
+            <div className="left-group-container">
+              <img 
+                src="/images/adddetails/Group15183.png" 
+                alt="Group" 
+                className="left-group-image"
+              />
+            </div>
+            
+            {/* People image */}
+            <div className="left-people-container">
+              <img 
+                src="/images/adddetails/Layer1.png" 
+                alt="People" 
+                className="left-people-image"
+              />
+            </div>
+          </>
+        )}
+        
+        {/* Keep the original image for mobile view */}
+        {isMobile && (
+          <img 
+            src="/images/adddetails pageimage.jpg" 
+            alt="L&T Finance Add Details" 
+            className="left-section-image"
+          />
+        )}
       </div>
       
       <div className="right-section">
@@ -406,32 +503,32 @@ const AddDetails = () => {
             
             <h1 className="form-title">Add your Details</h1>
             
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="name">Name</label>
-                <input 
-                  type="text" 
-                  id="name"
-                  placeholder="Your Name" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="form-input border-blue"
-                  style={inputStyle}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="companyName">Company Name</label>
-                <input 
-                  type="text" 
-                  id="companyName"
-                  placeholder="Company Name" 
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="form-input border-blue"
-                  style={inputStyle}
-                />
-              </div>
+            {/* Name field - alone in its row */}
+            <div className="form-group">
+              <label htmlFor="name">Name</label>
+              <input 
+                type="text" 
+                id="name"
+                placeholder="Your Name" 
+                value={name}
+                onChange={handleNameChange}
+                className="form-input border-blue"
+                style={inputStyle}
+              />
+            </div>
+            
+            {/* Company Name field in its own row */}
+            <div className="form-group">
+              <label htmlFor="companyName">Company Name</label>
+              <input 
+                type="text" 
+                id="companyName"
+                placeholder="Company Name" 
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="form-input border-blue"
+                style={inputStyle}
+              />
             </div>
             
             <div className="form-group">
@@ -466,6 +563,46 @@ const AddDetails = () => {
                   <option value="cleaning">Cleaning & Sanitation Services</option>
                   <option value="handicrafts">Handicrafts & Artisan Units</option>
                   <option value="other">Others</option>
+                </select>
+              </div>
+            </div>
+            
+            {/* Business Vintage dropdown */}
+            <div className="form-group">
+              <label htmlFor="businessVintage">Business Vintage</label>
+              <div className="select-wrapper border-blue">
+                <select 
+                  id="businessVintage"
+                  value={businessVintage}
+                  onChange={(e) => setBusinessVintage(e.target.value)}
+                  className="form-select"
+                  style={inputStyle}
+                >
+                  <option value="" disabled>Select business vintage</option>
+                  <option value="<3">Less than 3 Years</option>
+                  <option value="3-5">3-5 Years</option>
+                  <option value="5-10">5-10 Years</option>
+                  <option value="10+">10+ Years</option>
+                </select>
+              </div>
+            </div>
+            
+            {/* Turnover dropdown */}
+            <div className="form-group">
+              <label htmlFor="turnover">Turnover</label>
+              <div className="select-wrapper border-blue">
+                <select 
+                  id="turnover"
+                  value={turnover}
+                  onChange={(e) => setTurnover(e.target.value)}
+                  className="form-select"
+                  style={inputStyle}
+                >
+                  <option value="" disabled>Select annual turnover</option>
+                  <option value="<80L">Less than 80 Lakh</option>
+                  <option value="80L-3Cr">80 Lakh - 3 Cr</option>
+                  <option value="3-10Cr">3 - 10 Cr</option>
+                  <option value=">10Cr">More than 10 Cr</option>
                 </select>
               </div>
             </div>
@@ -611,23 +748,20 @@ const AddDetails = () => {
                 </div>
               </div>
               
-              {/* Add test button for debugging */}
-              <div style={{ marginTop: '10px', textAlign: 'right' }}>
-                <button 
-                  type="button" 
-                  onClick={handleTestAPI}
-                  style={{ 
-                    backgroundColor: '#ddd', 
-                    color: '#333', 
-                    border: 'none', 
-                    padding: '5px 10px', 
-                    borderRadius: '4px', 
-                    fontSize: '12px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Test API Connection
-                </button>
+              {/* Callback checkbox */}
+              <div className="form-group" style={{ marginTop: '15px' }}>
+                <div className="checkbox-container" style={{ display: 'flex', alignItems: 'center' }}>
+                  <input
+                    type="checkbox"
+                    id="needCallback"
+                    checked={needCallback}
+                    onChange={(e) => setNeedCallback(e.target.checked)}
+                    style={{ marginRight: '10px', width: '18px', height: '18px' }}
+                  />
+                  <label htmlFor="needCallback" style={{ marginBottom: 0, fontWeight: 'normal' }}>
+                    Information not correct? Get a call back!
+                  </label>
+                </div>
               </div>
             </div>
             

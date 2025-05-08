@@ -12,7 +12,9 @@ const CAROUSEL_IMAGE_PATHS = [
   '/Frame15164.png',
 ];
 const SECTION2_BG_IMAGE_PATH = '/images/section2/video-bg.png';
-const SECTION3_DESK_IMAGE = '/images/section3/section3deskimage.png';
+const SECTION3_BG_IMAGE = '/images/section3/section3bg.jpg';
+const SECTION3_MOBILE_BG_IMAGE = '/images/section3/section3bgwithoutimage.jpg';
+const SECTION3_DESKTOP_IMAGE = '/images/section3/desktopimage.png';
 const GROUP_30A_IMAGE = '/images/section1/Group 30a (1).png';
 const FRAME_162422_IMAGE = '/images/section1/Frame 162422.png';
 const PROFILE_IMAGES = [
@@ -173,11 +175,11 @@ const LandingPage = () => {
           
             <h2 className="hero-subtitle">Get Your</h2>
             
-            <div className="neo-highlight poster-text free-personalised">
+            <div className="neo-highlight poster-text line-1">
               Free Personalised
             </div>
             
-            <div className="neo-highlight poster-text business-poster">
+            <div className="neo-highlight poster-text line-2">
               Business Poster
             </div>
             
@@ -261,15 +263,31 @@ const LandingPage = () => {
       </section>
 
       {/* Section 3 */}
-      <section className="section-3" style={section3Style}>
+      <section 
+        className="section-3" 
+        style={{
+          ...section3Style,
+          backgroundImage: `url(${isMobile ? SECTION3_MOBILE_BG_IMAGE : SECTION3_BG_IMAGE})`
+        }}
+      >
         <div className="container">
           <div className="section-3-content">
             <div className="loan-disbursement-container">
               <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" />
               
               <div className="loan-text-carousel">
-                <h2 className="loan-title" key={`title-${loanTextIndex}`}>{loanTextContent[loanTextIndex].topLine}</h2>
-                <h3 className="in-minutes" key={`minutes-${loanTextIndex}`}>{loanTextContent[loanTextIndex].bottomLine}</h3>
+                <h2 
+                  className={`loan-title ${loanTextIndex === 4 ? 'bold-title' : ''}`} 
+                  key={`title-${loanTextIndex}`}
+                >
+                  {loanTextContent[loanTextIndex].topLine}
+                </h2>
+                <h3 
+                  className="in-minutes" 
+                  key={`minutes-${loanTextIndex}`}
+                >
+                  {loanTextContent[loanTextIndex].bottomLine}
+                </h3>
               </div>
               
               <Link to="/otp-verification" className="btn-neo start-btn">
@@ -277,9 +295,13 @@ const LandingPage = () => {
               </Link>
             </div>
           </div>
-          <div className="section-3-desk-image">
-            <img src={SECTION3_DESK_IMAGE} alt="Desk" />
-          </div>
+          
+          {/* Desktop image is shown in mobile/tablet view at the very bottom */}
+          {isMobile && (
+            <div className="section-3-desktop-image">
+              <img src={SECTION3_DESKTOP_IMAGE} alt="Desktop" />
+            </div>
+          )}
         </div>
       </section>
     </div>

@@ -40,7 +40,7 @@ html, body {
   top: 15px; /* Further reduced from 20px to 15px */
   left: 20px;
   width: 250px; /* Increased from 180px to 250px to make it bigger */
-  transform: rotate(0deg);
+  transform: rotate(-3deg); /* Added rotation to the logo */
   z-index: 2;
   animation: slideInLeft 0.8s ease-out;
 }
@@ -69,11 +69,11 @@ html, body {
   margin-bottom: -5px; /* Further reduced to bring lines closer */
   font-weight: 600;
   transform: rotate(-5deg);
-  margin-left: 40px; /* Restored to original value */
+  margin-left: 55px; /* Added 15px to push entire block to the right */
   display: inline-block;
   position: relative;
   z-index: 1;
-  margin-top: 80px; /* Increased from 40px to 80px to push down and avoid logo conflict */
+  margin-top: 95px;
 }
 
 /* Neo-brutalism text styling */
@@ -92,25 +92,36 @@ html, body {
   z-index: 2;
 }
 
-.neo-highlight.poster-text:first-of-type {
-  margin-left: -250px; /* Moved an additional 25px more to the left */
-  margin-top: 5px; /* Keeps the spacing from "Get Your" */
-  margin-bottom: 5px; /* Maintains spacing between lines */
-}
-
+/* Generic poster text styling */
 .poster-text {
   font-size: 36px;
   color: var(--text-dark-blue);
-  margin-left: 30px; /* Restored to previous position */
-  margin-top: 15px; /* Reduced top margin */
-  margin-bottom: 5px; /* Reduced bottom margin to bring lines closer */
   display: block;
+  transform: rotate(-5deg);
 }
 
-.neo-highlight.poster-text:nth-of-type(2) {
-  transform: rotate(-5deg) translateX(70px); /* Adjusted to align with the text above */
-  margin-bottom: 25px; /* Maintains spacing below */
-  margin-top: -5px; /* Maintains spacing from the line above */
+/* Specific styling for "Free Personalised" line */
+.line-1 {
+  margin-left: 5px; /* Base position */
+  margin-top: 5px; /* Keeps the spacing from "Get Your" */
+  margin-bottom: 20px; /* Increased spacing between lines from 5px to 20px */
+  position: relative;
+  left: 50px; /* Increased from 25px to 50px to push more to the right */
+  background-color: #ffd700; /* Match the yellow color from the image */
+  border: 2px solid black; /* Add black border as shown in image */
+  padding: 5px 15px; /* Adjust padding to match image */
+}
+
+/* Specific styling for "Business Poster" line */
+.line-2 {
+  margin-left: 30px; /* Base position */
+  margin-bottom: 25px;
+  margin-top: 0px; /* Adjusted to account for increased bottom margin of line-1 */
+  position: relative;
+  left: 50px; /* Increased from 25px to 50px to push it more to the right */
+  background-color: #ffd700; /* Match the yellow color from the image */
+  border: 2px solid black; /* Add black border as shown in image */
+  padding: 5px 15px; /* Adjust padding to match image */
 }
 
 .with-bumrah {
@@ -151,7 +162,7 @@ html, body {
   color: var(--text-black);
   transform: rotate(0deg);
   border: 2px solid var(--text-white); /* Added white border */
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark-blue); /* Changed from white to blue */
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #0066cc; /* Changed to a blue shadow */
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 20px; /* Increased from 18px to make text bigger */
@@ -183,7 +194,7 @@ html, body {
 .poster-btn:hover {
   background-color: #e7ba00;
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 3px 3px 0 var(--dark-blue); /* Changed from white to blue */
+  box-shadow: 3px 3px 0 #0066cc; /* Changed to a blue shadow */
 }
 
 .poster-btn:hover::before {
@@ -193,7 +204,7 @@ html, body {
 
 .poster-btn:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 1px 1px 0 var(--dark-blue); /* Changed from white to blue */
+  box-shadow: 1px 1px 0 #0066cc; /* Changed to a blue shadow */
 }
 
 .poster-btn span {
@@ -370,12 +381,12 @@ html, body {
   
   .testimonial-container {
     width: 100%;
-    max-width: 320px; /* Increased from 280px to 320px */
-    margin: 40px auto 20px;
+    max-width: 320px;
+    margin: 20px auto 20px; /* Reduced top margin from 40px to 20px to pull it up */
     overflow: hidden;
     position: relative;
-    height: 400px; /* Increased from 370px to 400px */
-    z-index: 10; /* Higher z-index to ensure it's above the group image */
+    height: 400px;
+    z-index: 10;
   }
   
   .testimonial-wrapper {
@@ -915,7 +926,7 @@ html, body {
   color: white;
   background-size: cover;
   background-position: center;
-  min-height: 480px;
+  min-height: 560px; /* Increased to accommodate the desktop image */
   margin-bottom: 0;
   overflow: hidden;
   border-bottom: 0;
@@ -937,6 +948,7 @@ html, body {
   align-items: center;
   height: 100%;
   padding-bottom: 0;
+  overflow: visible;
 }
 
 .section-3 h2 {
@@ -992,12 +1004,17 @@ html, body {
 /* Section 3 loan title styling */
 .loan-title {
   font-size: 40px;
-  font-weight: 500;
+  font-weight: 400; /* Regular weight for all titles except the last one */
   margin-bottom: 0;
   line-height: 0.9;
   position: relative;
   display: inline-block;
   transition: transform 0.3s ease;
+}
+
+/* Bold title styling for the Collateral-Free Loans entry */
+.bold-title {
+  font-weight: 700; /* Bold weight for the last entry */
 }
 
 .loan-title::after {
@@ -1032,19 +1049,14 @@ html, body {
 
 .in-minutes {
   font-size: 60px;
-  font-weight: 700;
-  margin-top: -5px;
+  font-weight: 700; /* Already bold */
+  margin-top: -10px; /* Reduced the margin to bring closer to title */
   margin-bottom: 30px;
   line-height: 1;
   position: relative;
   display: inline-block;
-  background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700); /* Changed gradient to gold/orange */
-  background-size: 200% auto;
-  color: white;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fadeInText 0.8s ease-in-out, gradientShift 3s ease-in-out infinite;
+  color: white; /* Plain white color instead of gradient */
+  animation: fadeInText 0.8s ease-in-out;
   transition: all 0.5s ease;
 }
 
@@ -1073,17 +1085,47 @@ html, body {
   box-shadow: 2px 2px 0 var(--primary-yellow);
 }
 
-.section-3-desk-image {
-  position: relative;
-  width: 65%;
-  max-width: 1000px;
-  height: auto;
+/* Removed the desktop image from section 3 for desktop view */
+
+/* Section 3 for mobile/tablet view - adjust container to make room for image */
+@media (max-width: 768px) {
+  .section-3 {
+    position: relative;
+    padding-bottom: 0; /* Remove bottom padding to allow image to touch bottom */
+    display: flex;
+    flex-direction: column;
+    min-height: 650px; /* Increased height for mobile view */
+  }
+  
+  .section-3 .container {
+    flex: 1;
+    position: static; /* Reset position to allow absolute positioning relative to section */
+    padding-bottom: 280px; /* Increased padding to make more room for the desktop image */
+  }
+}
+
+/* Desktop image for mobile/tablet view */
+.section-3-desktop-image {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
   z-index: 2;
+  margin-bottom: 0;
   line-height: 0;
-  font-size: 0;
-  margin-right: calc(-5% - 250px);
-  margin-bottom: -1px;
-  animation: slideLeft 0.8s ease-out 0.3s both;
+  transform: translateY(0); /* Ensure it's at the very bottom */
+}
+
+.section-3-desktop-image img {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes slideLeft {
@@ -1120,7 +1162,7 @@ html, body {
   object-fit: contain;
   display: block;
   margin-bottom: 0;
-  vertical-align: bottom;
+  /* Removed vertical-align as it doesn't work with display: block */
   transition: filter 0.3s ease;
 }
 
@@ -1194,9 +1236,9 @@ html, body {
 /* Group 30a image styling */
 .group-30a-image {
   position: absolute;
-  top: -460px; /* Pushed up by an additional 15px for better positioning */
+  top: -505px; /* Pushed up by an additional 15px (from -490px to -505px) */
   right: 22px;
-  width: 280px; /* Increased from 260px to 280px to make it bigger */
+  width: 280px;
   z-index: 2;
 }
 
@@ -1204,8 +1246,8 @@ html, body {
 .frame-162422-image {
   position: absolute;
   right: -350px;
-  top: -17px; /* Changed from 8px to -17px to push up by 25px more */
-  width: 315px; /* Increased from 295px to 315px to make it bigger */
+  top: -40px; /* Changed from -17px to -40px to push up further */
+  width: 315px;
   z-index: 4;
 }
 
@@ -1213,7 +1255,7 @@ html, body {
 .profile-image-container {
   position: absolute;
   right: -345px;
-  top: 10px; /* Reverted back to original position */
+  top: -20px; /* Changed from 10px to -20px to push up by 30px */
   width: 380px; /* Increased from 340px to 380px to make it bigger */
   height: 570px; /* Increased from 510px to 570px to maintain aspect ratio */
   z-index: 5;

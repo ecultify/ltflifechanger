@@ -1,6 +1,10 @@
 // Configuration file for API keys and other environment variables
-// For local development only - don't commit to version control
 
-export const OPENAI_API_KEY = "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";
+// Use environment variables for sensitive information
+// For development, create a .env.local file with your keys
+// In production, set these in your hosting environment (Netlify, Vercel, etc.)
+export const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY || "";
 
-// Add this file to .gitignore if deploying to production
+// Example of accessing environment variables in React:
+// Remember to prefix React environment variables with REACT_APP_
+// For example: REACT_APP_OPENAI_API_KEY

@@ -33,9 +33,9 @@
 /* Logo styling */
 .left-section-logo {
   position: absolute;
-  top: 30px;
-  left: 0px; /* Pushed left from 30px to 0px */
-  width: 450px; /* Increased to 450px to match the landing page logo size */
+  top: 10px; /* Moved up by 20px from 30px to 10px */
+  left: -45px; /* Moved further left by 20px from -25px to -45px */
+  width: 450px; /* Maintained the same size */
   z-index: 3;
 }
 

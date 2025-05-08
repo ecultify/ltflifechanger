@@ -22,9 +22,13 @@
   border-top: 1px solid #f0f0f0 !important; /* Light separator line for visual distinction */
 }
 
-/* Push the Group15183 image up by 30px */
+/* Adjusted positioning for logo and Group15183 image */
+.left-logo-container {
+  top: 25px !important; /* Brought back up to make visible */
+}
+
 .left-group-container {
-  top: 190px !important; /* Changed from 220px (220 - 30 = 190) */
+  top: 280px !important; /* Pushed down to match inline style */
 }
 
 /* Add space above the Generate Tagline section */

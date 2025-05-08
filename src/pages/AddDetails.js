@@ -288,39 +288,44 @@ const AddDetails = () => {
         // headers['OpenAI-Organization'] = 'your-org-id';
       }
       
-      // Significantly enhanced prompt for more meaningful and contextual taglines
+      // Improved prompt for more meaningful and contextual taglines with highlighted keywords
       const requestData = {
         model: "gpt-4o",
           messages: [
             {
               role: "system",
-            content: `You are a world-class marketing expert specializing in creating meaningful and impactful business taglines. Your task is to create a COHERENT and PROFESSIONALLY MEANINGFUL tagline that incorporates the following keywords organically: ${keywords.join(", ")}.
+            content: `You are a world-class marketing expert specializing in creating meaningful and impactful business taglines. Your task is to create a COHERENT and PROFESSIONALLY MEANINGFUL tagline that incorporates the following keywords organically: ${keywords.join(", ")}. 
 
 Follow these strict requirements:
 1. Create a first-person tagline (I/my/we/our) between 7-10 words total
 2. Include as many of the provided keywords as possible while maintaining NATURAL FLOW
 3. Keywords must be integrated MEANINGFULLY - not just forced into the tagline
-4. Make the tagline specifically relevant to the "${industry || "business"}" industry - research actual taglines in this industry first
-5. The tagline must convey ACTUAL VALUE PROPOSITION, not just generic statements
-6. Create something that sounds like a real business would use - professional and meaningful
-7. No quotation marks or punctuation in your response
-8. Return ONLY the final tagline with proper spacing`
+4. Make the tagline specifically relevant to the "${industry || "business"}" industry 
+5. The tagline must convey a SPECIFIC VALUE PROPOSITION that resonates with customers
+6. Create something that sounds like a premium brand would use - professional, impactful and meaningful
+7. HIGHLIGHT each keyword by placing asterisks around them (e.g., *keyword*)
+8. The final tagline should read as a coherent statement even with the highlighted keywords
+9. Focus on conveying expertise, transformation, or innovation related to the industry
+10. No quotation marks or punctuation (except the asterisks for highlighting) in your response
+11. Return ONLY the final tagline with proper spacing and highlighted keywords`
             },
             {
               role: "user",
             content: `Create a powerful, meaningful first-person tagline for my ${industry || "business"} business. The tagline should incorporate these keywords organically: ${keywords.join(", ")}.
 
 The tagline must:
-- Feel natural and professionally written
-- Have a clear value proposition related to ${industry || "business"}
-- Express a benefit or quality that makes sense in my industry
-- Be something a real business would actually use
+- Feel natural and professionally written with keywords *highlighted using asterisks*
+- Have a clear, specific value proposition related to ${industry || "business"}
+- Express a concrete benefit that would resonate with my target audience
+- Be something a premium business would proudly use in marketing materials
+- Highlight transformation, expertise, or innovation in my field
+- Be memorable and impactful for use on a poster
 
-Return only the final tagline text with no added punctuation or quotation marks.`
+Return only the final tagline text with keywords highlighted with asterisks (*keyword*) and no other punctuation or quotation marks.`
             }
           ],
-        temperature: 0.7, // Slightly higher temperature for more creative but still controlled output
-        max_tokens: 75
+        temperature: 0.75, // Slightly higher temperature for more creative but still controlled output
+        max_tokens: 100
       };
       
       console.log("Request data:", requestData);
@@ -336,13 +341,15 @@ Return only the final tagline text with no added punctuation or quotation marks.
       // Extract the generated tagline from the response
       let generatedTagline = response.data.choices[0].message.content.trim();
       
-      // Remove any quotation marks, periods, or other unwanted characters
+      // Remove any quotation marks, periods, or other unwanted characters (but preserve asterisks)
       generatedTagline = generatedTagline.replace(/["""'''.]/g, '');
       
       // Fix spacing issues - ensure single space between words
       generatedTagline = generatedTagline.replace(/\s+/g, ' ');
       
-      console.log("Generated tagline:", generatedTagline);
+      console.log("Generated tagline with highlights:", generatedTagline);
+      
+      // Store the tagline with the keyword highlights intact
       setTagline(generatedTagline);
       setIsTaglineGenerated(true);
     } catch (error) {
@@ -523,9 +530,12 @@ Return only the final tagline text with no added punctuation or quotation marks.
   };
 
   return (
-    <div className="details-page" style={isMobile ? { backgroundColor: '#0a1a34' } : {}}>
+    <div className="details-page" style={{
+      ...isMobile ? { backgroundColor: '#0a1a34' } : {},
+      minHeight: 'calc(100vh - 120px)' // Reduced height as requested
+    }}>
       <div className="left-section">
-        {/* Desktop view with the new images layout */}
+        {/* Desktop view with the new images layout - COMPLETE REDESIGN */}
         {!isMobile && (
           <>
             {/* Background image */}
@@ -535,22 +545,35 @@ Return only the final tagline text with no added punctuation or quotation marks.
               className="left-section-background"
             />
             
-            {/* Logo at the top */}
-            <div className="left-logo-container">
-              <img 
-                src="/images/adddetails/LOGO.png" 
-                alt="Logo" 
-                className="left-logo-image"
-              />
-            </div>
-            
-            {/* Group image below the logo with spacing */}
-            <div className="left-group-container">
-              <img 
-                src="/images/adddetails/Group15183.png" 
-                alt="Group" 
-                className="left-group-image"
-              />
+            {/* Logo and Group images container */}
+            <div style={{
+              position: 'absolute', 
+              top: 0, 
+              left: 0, 
+              width: '100%', 
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              paddingTop: '10px' /* Reduced padding to bring elements up */
+            }}>
+              {/* Logo container */}
+              <div className="left-logo-container" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+                <img 
+                  src="/images/adddetails/LOGO.png" 
+                  alt="Logo" 
+                  style={{ width: '350px' }} /* Increased size */
+                />
+              </div>
+              
+              {/* Group image */}
+              <div className="left-group-container" style={{ position: 'absolute', top: '280px', left: '50%', transform: 'translateX(-50%)' }}>
+                <img 
+                  src="/images/adddetails/Group15183.png" 
+                  alt="Group" 
+                  style={{ width: '600px' }}
+                />
+              </div>
             </div>
             
             {/* People image */}

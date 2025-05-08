@@ -64,7 +64,7 @@
 /* Individual outline segments */
 .logo-outline {
   position: absolute;
-  background-color: #1a4686; /* L&T Finance blue */
+  background-color: transparent; /* Removed border by making it transparent */
   opacity: 0;
 }
 

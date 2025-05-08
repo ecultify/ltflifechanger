@@ -222,7 +222,7 @@ const OtpVerification = () => {
             className="left-section-background"
           />
           <img 
-            src="/images/otpverfication/GAMECHANGERLOGOFINAL.png" 
+            src="/images/LOGO.png" 
             alt="Game Changer Logo" 
             className="left-section-logo"
           />
@@ -240,7 +240,7 @@ const OtpVerification = () => {
           {isMobile && (
             <div className="logo-container">
               <img 
-                src="/mobile/images/otpverfication/LOGO (2).png" 
+                src="/images/LOGO.png" 
                 alt="L&T Finance Logo" 
                 className="logo"
               />

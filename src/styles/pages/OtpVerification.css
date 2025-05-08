@@ -34,8 +34,8 @@
 .left-section-logo {
   position: absolute;
   top: 30px;
-  left: 30px;
-  width: 200px;
+  left: 0px; /* Pushed left from 30px to 0px */
+  width: 450px; /* Increased to 450px to match the landing page logo size */
   z-index: 3;
 }
 

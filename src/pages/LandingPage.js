@@ -5,7 +5,7 @@ import '../styles/pages/MobileResponsiveOverrides.css'; // Added mobile responsi
 
 // Image paths - using direct relative paths from the public folder
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';
-const LOGO_IMAGE_PATH = '/GAMECHANGERLOGOFINAL.png';
+const LOGO_IMAGE_PATH = '/images/section1/LOGO copy.png';
 const CAROUSEL_IMAGE_PATHS = [
   '/Frame15161.png',
   '/Frame15162.png',

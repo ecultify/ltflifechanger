@@ -1,10 +1,11 @@
 /* Upload Photo Page Styles */
 .upload-page {
   display: flex;
-  min-height: calc(100vh - 130px); /* Reduced by an additional 40px as requested */
+  min-height: 90vh; /* Reduced from 100vh to 85vh for a more compact layout */
   width: 100%;
   font-family: 'Poppins', sans-serif;
   overflow-x: hidden; /* Prevent horizontal scrolling */
+  margin-bottom: 0; /* Ensure no margin at the bottom */
 }
 
 /* Left section - desktop view */
@@ -36,13 +37,13 @@
 }
 
 .left-logo-image {
-  max-width: 220px;
+  max-width: 330px; /* Increased from 220px to 330px (1.5 times larger) */
 }
 
 /* Bumrah and You image container and image */
 .left-bumrah-container {
   position: absolute;
-  top: 240px; /* Pushed down even further as requested */
+  top: 185px; /* Pushed down by 25px from 140px to 165px */
   left: 0;
   right: 0;
   z-index: 2;
@@ -52,14 +53,14 @@
 }
 
 .left-bumrah-image {
-  max-width: 360px; /* Made bigger as requested */
+  max-width: 320px; /* Reduced from 360px to 320px for a more compact layout */
   object-fit: contain;
 }
 
 /* Do's images container and images */
 .left-dos-container {
   position: absolute;
-  top: 450px; /* Pushed down further to accommodate larger Bumrah+YOU image */
+  top: 340px; /* Reduced from 390px to 340px to maintain spacing with Bumrah image */
   left: 0;
   right: 0;
   z-index: 2;

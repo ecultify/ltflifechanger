@@ -1,7 +1,7 @@
 /* Add Details Page Styles */
 .details-page {
   display: flex;
-  min-height: calc(100vh - 90px); /* Adjusted for moderately sized header and footer */
+  min-height: calc(100vh - 120px); /* Reduced height as requested */
   width: 100%;
   font-family: 'Poppins', sans-serif;
 }
@@ -37,7 +37,7 @@
 /* Logo container and image */
 .left-logo-container {
   position: absolute;
-  top: 60px; /* Pushed down for more spacing from top */
+  top: 95px; /* Pushed down by 35px (from 60px) as requested */
   left: 0;
   right: 0;
   display: flex;
@@ -52,7 +52,7 @@
 /* Group image container and image */
 .left-group-container {
   position: absolute;
-  top: 220px; /* Further pushed down for more spacing from logo */
+  top: 255px; /* Pushed down by 35px (from 220px) as requested */
   left: 0;
   right: 0;
   display: flex;

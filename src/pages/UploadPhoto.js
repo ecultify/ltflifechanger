@@ -857,7 +857,7 @@ const UploadPhoto = () => {
             {/* Logo at the top left */}
             <div className="left-logo-container">
               <img
-                src="/images/uploadphoto/GAMECHANGERLOGOFINAL.png"
+                src="/images/LOGO.png"
                 alt="Logo"
                 className="left-logo-image"
               />
@@ -899,7 +899,7 @@ const UploadPhoto = () => {
             {/* Logo at the top */}
             <div className="left-logo-container">
               <img
-                src="/images/uploadphoto/GAMECHANGERLOGOFINAL.png"
+                src="/images/LOGO.png"
                 alt="Logo"
                 className="left-logo-image"
                 style={{ maxWidth: '160px' }}

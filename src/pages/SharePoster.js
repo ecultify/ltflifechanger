@@ -297,10 +297,10 @@ const SharePoster = () => {
             // Using the full template height (with some small margins)
             const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
             
-            // Calculate scale to match Bumrah's height exactly, preserving aspect ratio
-            const heightScale = bumrahHeight / userImgHeight;
+            // Calculate scale to make user image 90% of Bumrah's height, preserving aspect ratio
+            const heightScale = (bumrahHeight * 0.9) / userImgHeight; // Make user image 90% of Bumrah's height
             const scaledWidth = userImgWidth * heightScale;
-            const scaledHeight = bumrahHeight; // Will exactly match Bumrah's height
+            const scaledHeight = bumrahHeight * 0.9; // 90% of Bumrah's height
             
             console.log('Scaling to match Bumrah height:', { heightScale, scaledWidth, scaledHeight });
             
@@ -323,9 +323,7 @@ const SharePoster = () => {
             // 1. Draw the user's image to the offscreen canvas
             offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
             
-            // 2. Apply a subtle black tint (adjust alpha for intensity) before other processing
-            offCtx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Black with 15% opacity
-            offCtx.fillRect(0, 0, scaledWidth, scaledHeight);
+            // Black tint has been removed as requested
             
             // 3. Apply basic image enhancement (contrast and brightness)
             try {
@@ -356,7 +354,7 @@ const SharePoster = () => {
             // Note: Background removal is assumed to be already done in the processedImage
             ctx.drawImage(offscreenCanvas, userX, userY, scaledWidth, scaledHeight);
             
-            console.log('User image placed successfully with tint and enhancements');
+            console.log('User image placed successfully with enhancements');
           } catch (imageDrawError) {
             console.error('Error drawing user image:', imageDrawError);
             // Continue without user image placement
@@ -367,7 +365,9 @@ const SharePoster = () => {
         
         try {
           // Add tagline at the top
-          const tagline = userData.tagline || 'I transform businesses with innovation and expertise';
+          // Remove any leftover asterisks before processing the tagline
+          let tagline = userData.tagline || 'I transform businesses with innovation and expertise';
+          // Keep asterisks for highlighting in drawTextWithBoldedWords function
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
@@ -416,29 +416,38 @@ const SharePoster = () => {
           
           // Function to handle drawing text with certain words in bold
           const drawTextWithBoldedWords = (line, x, y, keywords) => {
-            // Measure total width for proper spacing calculations
-            const words = line.split(' ');
+            // Process the text to handle asterisk-highlighted words
+            // First, split the line into segments (words and possibly with asterisks)
+            const segments = line.split(' ');
             let currentX = x;
             
-            words.forEach((word, index) => {
-              // Check if this word is a keyword that should be bold
-              const isKeyword = keywords.some(keyword => 
-                word.toLowerCase().includes(keyword.toLowerCase()) ||
-                keyword.toLowerCase().includes(word.toLowerCase())
+            segments.forEach((segment, index) => {
+              // Check if this segment has asterisks for highlighting
+              const hasAsterisks = segment.includes('*');
+              
+              // Clean up the segment (remove asterisks) for display
+              const cleanSegment = segment.replace(/\*/g, '');
+              
+              // Determine if word should be bold (either contains asterisks or matches keywords)
+              const isKeyword = hasAsterisks || keywords.some(keyword => 
+                cleanSegment.toLowerCase().includes(keyword.toLowerCase()) ||
+                keyword.toLowerCase().includes(cleanSegment.toLowerCase())
               );
               
               // Set appropriate font weight
               if (isKeyword) {
                 ctx.font = 'bold 45.5px Poppins, sans-serif';
+                ctx.fillStyle = '#000000'; // Ensure bold text is dark black
               } else {
                 ctx.font = '45.5px Poppins, sans-serif';
+                ctx.fillStyle = '#1A1A1A'; // Slightly lighter for non-bold text
               }
               
-              // Draw the word
-              ctx.fillText(word, currentX, y);
+              // Draw the cleaned word (without asterisks)
+              ctx.fillText(cleanSegment, currentX, y);
               
               // Move x position for next word (add space width)
-              const wordWidth = ctx.measureText(word).width;
+              const wordWidth = ctx.measureText(cleanSegment).width;
               const spaceWidth = ctx.measureText(' ').width;
               currentX += wordWidth + spaceWidth;
             });
@@ -449,8 +458,8 @@ const SharePoster = () => {
             drawTextWithBoldedWords(line, 60, taglineStartY + (index * taglineLineHeight), selectedKeywords);
           });
           
-          // Position for company info circles
-          const circleY = canvas.height * 0.38;
+          // Position for company info circles - pushed up to match logo alignment
+          const circleY = canvas.height * 0.30; // Reduced from 0.38 to push elements up
           
           // Draw user icon circles (yellow background)
           ctx.beginPath();

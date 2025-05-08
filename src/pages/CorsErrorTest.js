@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { sendOtp, verifyOtp } from '../services/OtpService';
+import { sendOtp, verifyOtp } from '../services/otpService';
 import '../styles/pages/OtpVerification.css';
 import Loader from '../components/Loader';
 

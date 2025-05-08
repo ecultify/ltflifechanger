@@ -1,7 +1,7 @@
 /* Add Details Page Styles */
 .details-page {
   display: flex;
-  min-height: calc(100vh - 120px); /* Reduced height as requested */
+  min-height: calc(100vh - 150px); /* Further reduced height */
   width: 100%;
   font-family: 'Poppins', sans-serif;
 }
@@ -46,7 +46,7 @@
 }
 
 .left-logo-image {
-  max-width: 250px; /* Increased size for bigger logo */
+  max-width: 320px; /* Further increased size from 250px to 320px */
 }
 
 /* Group image container and image */

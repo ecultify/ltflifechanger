@@ -33,8 +33,8 @@
 /* Logo styling */
 .left-section-logo {
   position: absolute;
-  top: 10px; /* Moved up by 20px from 30px to 10px */
-  left: -45px; /* Moved further left by 20px from -25px to -45px */
+  top: 5px; /* Moved up by 20px from 30px to 10px */
+  left: -65px; /* Moved further left by 20px from -25px to -45px */
   width: 450px; /* Maintained the same size */
   z-index: 3;
 }

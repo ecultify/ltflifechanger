@@ -24,11 +24,11 @@
 
 /* Adjusted positioning for logo and Group15183 image */
 .left-logo-container {
-  top: 25px !important; /* Brought back up to make visible */
+  top: 15px !important; /* Moved up to reduce spacing */
 }
 
 .left-group-container {
-  top: 280px !important; /* Pushed down to match inline style */
+  top: 200px !important; /* Moved up to reduce space between logo and group image */
 }
 
 /* Add space above the Generate Tagline section */
@@ -47,8 +47,8 @@
 }
 
 .left-people-image {
-  max-height: 75% !important; /* Reduced from 90% */
-  max-width: 95% !important; /* Increased to prevent cutting off */
+  max-height: 65% !important; /* Further reduced from 75% to 65% */
+  max-width: 95% !important; /* Maintained width */
   margin: 0 auto !important;
   position: relative !important;
 }

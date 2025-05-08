@@ -288,27 +288,38 @@ const AddDetails = () => {
         // headers['OpenAI-Organization'] = 'your-org-id';
       }
       
-      // Enhanced prompt to fix spacing issues and ensure ALL keywords are included
+      // Significantly enhanced prompt for more meaningful and contextual taglines
       const requestData = {
         model: "gpt-4o",
           messages: [
             {
               role: "system",
-            content: `You are a world-class marketing expert specializing in creating memorable business taglines. Your task is to create a tagline that MUST include ALL of the following keywords: ${keywords.join(", ")}. Follow these strict requirements:
-1. Create a first-person tagline between 8-10 words total
-2. Include EVERY keyword provided (mandatory)
-3. Ensure proper spacing between ALL words (no run-on words)
-4. Make the tagline relevant to the ${industry || "business"} industry
-5. The tagline must be concise, impactful, and easy to read
-6. Do not use quotation marks or punctuation in your response
-7. Return ONLY the final tagline with proper spacing`
+            content: `You are a world-class marketing expert specializing in creating meaningful and impactful business taglines. Your task is to create a COHERENT and PROFESSIONALLY MEANINGFUL tagline that incorporates the following keywords organically: ${keywords.join(", ")}.
+
+Follow these strict requirements:
+1. Create a first-person tagline (I/my/we/our) between 7-10 words total
+2. Include as many of the provided keywords as possible while maintaining NATURAL FLOW
+3. Keywords must be integrated MEANINGFULLY - not just forced into the tagline
+4. Make the tagline specifically relevant to the "${industry || "business"}" industry - research actual taglines in this industry first
+5. The tagline must convey ACTUAL VALUE PROPOSITION, not just generic statements
+6. Create something that sounds like a real business would use - professional and meaningful
+7. No quotation marks or punctuation in your response
+8. Return ONLY the final tagline with proper spacing`
             },
             {
               role: "user",
-            content: `Create a powerful first-person tagline for my ${industry || "business"}. The tagline MUST incorporate ALL of these keywords: ${keywords.join(", ")}. The keywords are non-negotiable and must all appear in the tagline. Every word must be properly spaced from adjacent words. Return only the final tagline.`
+            content: `Create a powerful, meaningful first-person tagline for my ${industry || "business"} business. The tagline should incorporate these keywords organically: ${keywords.join(", ")}.
+
+The tagline must:
+- Feel natural and professionally written
+- Have a clear value proposition related to ${industry || "business"}
+- Express a benefit or quality that makes sense in my industry
+- Be something a real business would actually use
+
+Return only the final tagline text with no added punctuation or quotation marks.`
             }
           ],
-        temperature: 0.5, // Lower temperature for more controlled output
+        temperature: 0.7, // Slightly higher temperature for more creative but still controlled output
         max_tokens: 75
       };
       
@@ -353,47 +364,105 @@ const AddDetails = () => {
 
   // Fallback tagline generation in case API doesn't work
   const generateFallbackTagline = () => {
+    // Enhanced industry-specific tagline templates with placeholders for keywords
     const industryTaglines = {
-      manufacturing: "I craft precision with innovation and reliability setting new industry standards.",
-      retail: "I deliver trusted value and exceptional quality to customers every single day.",
-      services: "I provide seamless solutions with professional expertise and client-focused dedication.",
-      food: "I serve fresh authentic flavors that nourish souls with passion and care.",
-      construction: "I build durable spaces with vision, reliability and attention to every detail.",
-      healthcare: "I care for your health with compassion expertise and advanced medical solutions.",
-      agriculture: "I grow sustainable harvests from nature's bounty with organic farming methods.",
-      education: "I inspire lifelong learning and empower bright futures through knowledge and guidance.",
-      transport: "I connect journeys efficiently on-time with safety and reliability every time.",
-      technology: "I transform businesses with innovative digital solutions and cutting-edge technological expertise.",
-      tourism: "I create memorable journeys and luxurious experiences that last beyond the vacation.",
-      fashion: "I design your unique style with trend-setting pieces that express your personality.",
-      events: "I create magical moments worth remembering forever with attention to every detail.",
-      ecommerce: "I deliver digital convenience and trusted online value with secure shopping experiences.",
-      printing: "I bring your designs to life with vibrant precision and outstanding craftsmanship.",
-      beauty: "I revitalize your natural glow with pure care products and expert treatments.",
-      automotive: "I keep your engines running with reliable service and expert mechanical knowledge.",
-      media: "I amplify your message with creative bold campaigns that reach your target audience.",
-      cleaning: "I restore spotless spaces with safe green methods that protect your environment.",
-      handicrafts: "I preserve cultural heritage through handmade treasures created with traditional techniques.",
-      other: "I deliver excellence through passion, dedication and commitment to outstanding service quality."
+      manufacturing: {
+        templates: [
+          "I craft {keyword1} products with {keyword2} and unparalleled expertise",
+          "I engineer {keyword1} solutions with {keyword2} and precision manufacturing",
+          "I deliver {keyword1} manufacturing with {keyword2} and exceptional quality"
+        ]
+      },
+      retail: {
+        templates: [
+          "I provide {keyword1} shopping experiences with {keyword2} customer service",
+          "I offer {keyword1} products with {keyword2} and personalized attention",
+          "I create {keyword1} retail environments with {keyword2} and satisfaction guaranteed"
+        ]
+      },
+      services: {
+        templates: [
+          "I deliver {keyword1} services with {keyword2} and professional expertise",
+          "I provide {keyword1} solutions with {keyword2} and client-focused dedication",
+          "I offer {keyword1} support with {keyword2} and customized approaches"
+        ]
+      },
+      finance: {
+        templates: [
+          "I secure {keyword1} futures with {keyword2} financial strategies",
+          "I build {keyword1} portfolios with {keyword2} and expert guidance",
+          "I create {keyword1} financial plans with {keyword2} and personalized solutions"
+        ]
+      },
+      technology: {
+        templates: [
+          "I transform businesses with {keyword1} technology and {keyword2} solutions",
+          "I develop {keyword1} systems with {keyword2} and cutting-edge innovation",
+          "I deliver {keyword1} digital experiences with {keyword2} technical expertise"
+        ]
+      },
+      // Default templates for other industries
+      default: {
+        templates: [
+          "I deliver {keyword1} results with {keyword2} and professional expertise",
+          "I provide {keyword1} solutions with {keyword2} and exceptional quality",
+          "I create {keyword1} experiences with {keyword2} and dedicated service"
+        ]
+      }
     };
 
-    // Get a generic tagline based on industry or use the default
-    let generatedTagline = industryTaglines[industry] || "I deliver excellence with passion and quality service that exceeds your expectations.";
+    // Function to fill template with actual keywords
+    const fillTemplate = (template, keywordsToUse) => {
+      let result = template;
+      keywordsToUse.forEach((keyword, index) => {
+        result = result.replace(`{keyword${index + 1}}`, keyword);
+      });
+      return result;
+    };
+
+    // If no keywords are available, use these generic ones
+    const genericKeywords = [
+      "innovative", "reliable", "professional", "quality", "trusted",
+      "expert", "dedicated", "exceptional", "customized", "comprehensive"
+    ];
     
-    // Try to incorporate at least one of the user's keywords if available
+    // Get appropriate templates for the industry or use default
+    const templateSet = industryTaglines[industry] || industryTaglines.default;
+    const templates = templateSet.templates;
+    
+    // Choose a random template
+    const selectedTemplate = templates[Math.floor(Math.random() * templates.length)];
+    
+    // Determine how many keywords are needed in this template
+    const keywordPlaceholderCount = (selectedTemplate.match(/{keyword\d+}/g) || []).length;
+    
+    // Prepare keywords to use (either user selected or generics if needed)
+    let keywordsToUse = [];
+    
     if (keywords.length > 0) {
-      // Get a random keyword from the user's selection
-      const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
-      
-      // Check if the keyword is already in the tagline
-      if (!generatedTagline.toLowerCase().includes(randomKeyword.toLowerCase())) {
-        // Try to insert the keyword at a natural position
-        const words = generatedTagline.split(' ');
-        const insertPosition = Math.floor(words.length / 2);
-        words.splice(insertPosition, 0, randomKeyword.toLowerCase());
-        generatedTagline = words.join(' ');
+      // Use all user keywords if possible
+      if (keywords.length >= keywordPlaceholderCount) {
+        // Shuffle the keywords and pick the needed amount
+        const shuffled = [...keywords].sort(() => 0.5 - Math.random());
+        keywordsToUse = shuffled.slice(0, keywordPlaceholderCount);
+      } else {
+        // Use all available user keywords
+        keywordsToUse = [...keywords];
+        
+        // Fill remaining slots with generic keywords
+        const remainingSlots = keywordPlaceholderCount - keywords.length;
+        const shuffledGeneric = [...genericKeywords].sort(() => 0.5 - Math.random());
+        const additionalKeywords = shuffledGeneric.slice(0, remainingSlots);
+        keywordsToUse = [...keywordsToUse, ...additionalKeywords];
       }
+    } else {
+      // No user keywords, use only generic ones
+      const shuffled = [...genericKeywords].sort(() => 0.5 - Math.random());
+      keywordsToUse = shuffled.slice(0, keywordPlaceholderCount);
     }
+    
+    // Generate the final tagline
+    const generatedTagline = fillTemplate(selectedTemplate, keywordsToUse);
     
     setTagline(generatedTagline);
     setIsTaglineGenerated(true);

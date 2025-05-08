@@ -4,7 +4,7 @@ import '../styles/pages/StepColorOverrides.css'; // Added step color overrides
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
-import { sendOtp, verifyOtp } from '../services/otpService';
+import { sendOtp, verifyOtp } from '../services/OtpService';
 
 const OtpVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState('');

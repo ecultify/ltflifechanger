@@ -819,8 +819,20 @@ const UploadPhoto = () => {
       sessionStorage.setItem('userData', JSON.stringify(userData));
       sessionStorage.setItem('processedImage', finalImage || processedImage);
 
+      // Force scroll to top before navigation
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      
       // Navigate to poster creation page
       navigate('/share-poster');
+      
+      // Also attempt to scroll after navigation with a slight delay
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }, 50);
     } catch (error) {
       console.error('Error submitting data:', error);
       setError('Failed to submit data. Please try again.');

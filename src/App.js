@@ -7,10 +7,13 @@ import OtpVerification from './pages/OtpVerification';
 import AddDetails from './pages/AddDetails';
 import UploadPhoto from './pages/UploadPhoto';
 import SharePoster from './pages/SharePoster';
+import CorsErrorTest from './pages/CorsErrorTest';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="App">
         <Header />
         <Routes>
@@ -41,6 +44,12 @@ function App() {
           <Route path="/" element={
             <main className="main-content">
               <LandingPage />
+            </main>
+          } />
+          
+          <Route path="/cors-test" element={
+            <main className="main-content">
+              <CorsErrorTest />
             </main>
           } />
         </Routes>

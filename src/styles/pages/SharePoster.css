@@ -28,7 +28,7 @@
 }
 
 .header-logo {
-  width: 180px;
+  width: 150px;
   height: auto;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -46,6 +46,7 @@
   gap: 30px; /* Reduced from 80px to 30px to bring controls closer to poster */
   align-items: flex-start;
   box-sizing: border-box; /* Include gaps in width calculation */
+  margin-left: 40px; /* Move the entire content 40px to the right */
 }
 
 /* Left side - Poster template */

@@ -36,13 +36,14 @@ html, body {
 
 /* Logo styling */
 .hero-logo {
-  position: absolute;
-  top: -60px; /* Maintained top position */
-  left: -110px; /* Maintained left position */
-  width: 580px; /* Increased from 520px to 580px for larger logo */
-  transform: rotate(0deg); /* Maintained no rotation/tilt */
-  z-index: 2;
-  animation: slideInLeft 0.8s ease-out;
+  position: absolute !important;
+  top: -10px !important; /* Pushed down by 30px (from -60px to -30px) */
+  left: 30px !important; /* Pushed right by 40px more (from -60px to -20px) */
+  width: 240px !important; /* Further reduced size from 280px to 240px */
+  max-width: 240px !important; /* Updated max-width constraint */
+  transform: rotate(0deg) !important; /* Maintained no rotation/tilt */
+  z-index: 2 !important;
+  animation: slideInLeft 0.8s ease-out !important;
 }
 
 .group-30a-image {

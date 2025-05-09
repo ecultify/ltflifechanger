@@ -1,7 +1,7 @@
 /* Fixed Right Column Stepper Styles */
 .fixed-stepper-container {
   position: absolute;
-  top: 10px;
+  top: 60px; /* Further increased from 40px to 60px for more space at top */
   width: 100%;
   z-index: 10;
   display: flex;

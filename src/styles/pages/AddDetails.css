@@ -15,6 +15,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  min-height: 100vh; /* Ensure it takes up full viewport height */
+  max-width: 50%; /* Set maximum width on larger screens */
 }
 
 /* Default image for mobile */
@@ -85,16 +87,46 @@
   flex: 1;
   background-color: white;
   display: flex;
-  align-items: center; /* Center aligned vertically */
+  align-items: flex-start; /* Changed from center to flex-start to anchor at top */
   justify-content: center;
-  padding: 30px;
+  padding: 40px 30px 80px 30px; /* Increased bottom padding to 80px */
   margin-top: 0; /* Removed negative margin */
+  min-height: 100vh; /* Increased to full viewport height */
+  overflow-y: auto; /* Add scrolling if needed */
+}
+
+@media (min-width: 769px) {
+  /* Desktop-only padding adjustment */
+  .right-content {
+    padding-top: 0; /* Removed top padding */
+    margin-top: 30px; /* Use margin instead of padding to position relative to stepper */
+  }
+  
+  /* Position stepper at top */
+  .progress-tracker {
+    margin-bottom: 30px !important; /* Reduced margin below stepper */
+    margin-top: 0 !important; /* Fixed at top */
+    position: fixed !important; /* Fixed at top of form area */
+    width: 100% !important;
+    max-width: 500px !important;
+    background-color: white !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    z-index: 10 !important;
+  }
+  
+  /* Add more space above form title on desktop */
+  .form-title {
+    margin-top: 50px !important; /* Increased from 30px to 50px to clear fixed stepper */
+    padding-top: 0 !important; /* Removed padding */
+  }
 }
 
 .right-content {
   max-width: 500px;
   width: 100%;
-  margin-top: 0; /* Removed negative margin for equal spacing */
+  margin-top: 30px; /* Top margin to push from fixed stepper */
+  padding-bottom: 60px; /* Significantly increased bottom padding for more space */
 }
 
 /* Progress tracker */
@@ -102,7 +134,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 35px; /* Increased from 15px to 35px for more separation */
   position: relative;
 }
 
@@ -160,7 +192,7 @@
 .form-title {
   font-size: 28px;
   font-weight: 700;
-  margin: 0 0 12px 0;
+  margin: 5px 0 10px 0; /* Reduced from 10px 0 12px 0 */
   color: #0a1a34;
 }
 
@@ -171,8 +203,17 @@
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 10px; /* Reduced from 15px to 10px */
   width: 100%;
+}
+
+/* Reserve space for keywords group and suggestions */
+.form-group.keywords-group {
+  margin-bottom: 15px; /* Maintain original spacing */
+  min-height: 150px; /* Reserve more fixed space for keywords + suggestions */
+  max-height: 150px; /* Cap the height */
+  overflow: visible; /* Allow suggestions to be visible */
+  position: relative; /* For absolute positioning of suggestions */
 }
 
 .form-row .form-group {
@@ -189,11 +230,12 @@ label {
 
 .form-input {
   width: 100%;
-  padding: 8px 12px;
+  padding: 6px 10px; /* Reduced padding from 8px 12px to 6px 10px */
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 13px; /* Reduced from 14px to 13px */
   box-sizing: border-box;
+  height: 34px; /* Added specific height */
 }
 
 /* Border blue class for blue borders */
@@ -222,12 +264,13 @@ label {
 
 .form-select {
   width: 100%;
-  padding: 12px 15px;
+  padding: 6px 10px; /* Reduced padding from 12px 15px to 6px 10px */
   border: none;
   background: transparent;
   appearance: none;
-  font-size: 16px;
+  font-size: 13px; /* Reduced from 16px to 13px */
   cursor: pointer;
+  height: 34px; /* Added specific height */
 }
 
 /* Keywords input */
@@ -236,36 +279,45 @@ label {
   border-radius: 4px;
   padding: 6px 10px;
   background-color: white;
+  /* Use normal height, not fixed */
+  display: flex;
+  flex-direction: column;
 }
 
 .keywords-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
+  gap: 3px; /* Further reduced gap */
+  align-items: flex-start;
+  margin-bottom: 3px; /* Reduced from 6px */
+  min-height: 28px; /* Minimum height for at least one row of tags */
 }
 
 .keyword-tag {
   background-color: #e9f5fb;
   color: #0083B5;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 2px 6px; /* Further reduced padding */
+  border-radius: 3px;
+  font-size: 11px; /* Further reduced font size */
   display: inline-flex;
   align-items: center;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  margin: 2px;
+  max-width: calc(100% - 10px); /* Ensure chips don't overflow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .remove-tag {
   background: none;
   border: none;
   color: #0083B5;
-  font-size: 16px;
-  margin-left: 5px;
+  font-size: 14px; /* Reduced from 16px to 14px */
+  margin-left: 3px; /* Reduced from 5px to 3px */
   cursor: pointer;
   line-height: 1;
-  padding: 0 0 0 5px;
+  padding: 0 0 0 3px; /* Reduced from 5px to 3px */
   transition: all 0.2s;
 }
 
@@ -278,27 +330,37 @@ label {
   border: none;
   flex: 1;
   min-width: 100px;
-  padding: 8px 0;
-  font-size: 14px;
+  padding: 4px 0; /* Reduced from 8px to 4px */
+  font-size: 13px; /* Reduced from 14px */
   outline: none;
+  margin-bottom: 0;
 }
 
+/* Position the suggested keywords in the existing space */
 .suggested-keywords {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 0; /* Removed space between input and suggestions */
+  padding-top: 3px;
+  border-top: 1px dashed #eee; /* Light separator */
+  max-height: 80px; /* Increased max height for suggestions */
+  overflow-y: auto; /* Add scrolling if needed */
+  position: absolute; /* Position within the reserved space */
+  width: calc(100% - 2px); /* Match container width */
+  background: white; /* Ensure background matches */
 }
 
 .suggested-keyword {
   background-color: #f5f5f5;
   color: #666;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 14px;
+  border-radius: 3px;
+  padding: 3px 6px; /* Reduced padding */
+  font-size: 11px; /* Reduced font size to match keyword tags */
   cursor: pointer;
   transition: all 0.2s;
+  margin: 2px;
 }
 
 .suggested-keyword:hover {
@@ -318,6 +380,12 @@ select {
 .tagline-input-container {
   width: 100%;
   margin-bottom: 0;
+  min-height: 120px; /* Fixed height to prevent expansion */
+  max-height: 120px; /* Fixed height to prevent expansion */
+  overflow-y: auto; /* Add scrolling if content exceeds height */
+  position: relative; /* For positioning generated taglines */
+  display: flex;
+  flex-direction: column;
 }
 
 .tagline-input-container .input-and-button {
@@ -325,6 +393,7 @@ select {
   align-items: center;
   gap: 10px;
   width: 100%;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .tagline-input-container .form-input {
@@ -333,19 +402,23 @@ select {
 }
 
 .tagline-options {
-  margin-top: 10px;
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px; /* Reduced from 10px to 6px */
+  overflow-y: auto; /* Enable scrolling for overflow */
+  max-height: 70px; /* Limit height */
 }
 
 .tagline-option {
   background-color: #f9f9f9;
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 12px;
+  padding: 6px 10px; /* Reduced from 12px to 6px 10px */
   cursor: pointer;
   transition: all 0.2s;
+  font-size: 13px; /* Smaller font size */
+  line-height: 1.3; /* Tighter line height */
 }
 
 .tagline-option:hover {
@@ -448,13 +521,92 @@ select {
   }
 }
 
+/* Responsive breakpoints */
+
+/* Large screens (1200px and above) */
+@media (min-width: 1200px) {
+  .left-section {
+    max-width: 50%; /* Cap the width on large screens */
+  }
+  
+  .left-logo-image {
+    max-width: 450px; /* Larger logo on big screens */
+  }
+}
+
+/* Medium sized screens (992px to 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .left-section {
+    max-width: 45%; /* Slightly smaller proportion */
+  }
+  
+  .left-logo-image {
+    max-width: 400px;
+  }
+  
+  .left-logo-container {
+    top: 80px; /* Adjust logo position */
+  }
+}
+
+/* Smaller screens and tablets (768px to 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .left-section {
+    max-width: 40%;
+  }
+  
+  .left-logo-image {
+    max-width: 350px;
+  }
+  
+  .left-logo-container {
+    top: 70px;
+  }
+  
+  /* Adjust the content that appears in the left-section */
+  .left-section-background {
+    object-position: left center; /* Focus on important part of background */
+  }
+}
+
+/* Mobile phones (below 768px) */
 @media (max-width: 768px) {
+  /* Restructure the page layout */
+  .details-page {
+    flex-direction: column; /* Stack sections vertically */
+  }
+  
+  .left-section {
+    max-width: 100%; /* Full width on mobile */
+    min-height: 40vh; /* Reduced height */
+    position: absolute; /* Position as background */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Send to back */
+  }
+  
+  /* Adjust logo size and position for mobile */
+  .left-logo-container {
+    top: 30px;
+    z-index: 10; /* Ensure logo is visible above form */
+  }
+  
+  .left-logo-image {
+    max-width: 250px; /* Smaller logo on mobile */
+  }
+  
+  /* Form-related mobile styles */
   .right-section {
     padding: 20px 15px;
     align-items: flex-start;
     overflow-x: hidden; /* Prevent horizontal scrolling */
     padding-top: 110px; /* Increased by 10px as requested */
     background-color: transparent; /* Ensure background is transparent to show the image */
+    position: relative;
+    z-index: 1; /* Above the left-section background */
+    width: 100%;
   }
   
   .form-title {
@@ -548,6 +700,22 @@ select {
     width: 40px;
   }
   
+  /* Make the background image more visible */
+  .left-section {
+    min-height: 30vh; /* Further reduced height */
+    opacity: 0.9; /* Slightly more visible */
+  }
+  
+  /* Adjust logo for very small screens */
+  .left-logo-image {
+    max-width: 200px;
+  }
+  
+  /* Tighter padding for small screens */
+  .form-container {
+    padding: 15px 12px;
+  }
+  
   .form-title {
     font-size: 22px;
   }
@@ -573,5 +741,43 @@ select {
   /* Adjust tagline input and button for mobile */
   .tagline-input-container .form-input {
     padding-right: 80px; /* Further reduce padding for smallest screens */
+  }
+}
+
+/* Landscape orientation for mobile devices */
+@media (max-width: 768px) and (orientation: landscape) {
+  .details-page {
+    flex-direction: row; /* Switch back to horizontal layout */
+    min-height: 100vh;
+  }
+  
+  .left-section {
+    position: relative;
+    max-width: 40%;
+    min-height: 100vh;
+    height: auto;
+  }
+  
+  .right-section {
+    width: 60%;
+    padding-top: 20px; /* Reduced padding for landscape */
+    max-height: 100vh;
+    overflow-y: auto; /* Allow scrolling in landscape */
+  }
+  
+  /* Move the logo to a more appropriate position */
+  .left-logo-container {
+    top: 20px;
+  }
+  
+  .left-logo-image {
+    max-width: 180px; /* Smaller in landscape */
+  }
+  
+  /* Adjust form for landscape */
+  .form-container {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding: 15px;
   }
 }

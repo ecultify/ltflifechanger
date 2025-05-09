@@ -183,18 +183,20 @@
   }
 }
 
-.form-title {
-  font-size: 32px;
+h2.form-title, h2.form-subtitle {
+  font-size: 36px; /* Increased and made identical */
   font-weight: 700;
-  margin: 20px 0 3px 0; /* Reduced top margin from 60px to 20px to accommodate stepper */
   color: #0a1a34;
+  line-height: 1; /* Tight line height */
+  font-family: 'Poppins', sans-serif;
 }
 
-.form-subtitle {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 5px 0 20px 0; /* Added top margin for more spacing */
-  color: #0a1a34;
+h2.form-title {
+  margin: 20px 0 -2px 0; /* Modified from -5px to -2px to increase spacing by 3px */
+}
+
+h2.form-subtitle {
+  margin: 0 0 20px 0; /* Maintained zero top margin */
 }
 
 .form-description {

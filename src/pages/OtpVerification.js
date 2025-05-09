@@ -53,9 +53,9 @@ const OtpVerification = () => {
     setCountryCode(e.target.value);
   };
 
-  // Handle consent checkbox change
-  const handleConsentChange = (e) => {
-    setConsentChecked(e.target.checked);
+  // Handle consent checkbox change (used with custom checkbox)
+  const handleConsentChange = () => {
+    setConsentChecked(!consentChecked);
   };
 
   // Open consent modal
@@ -262,7 +262,7 @@ const OtpVerification = () => {
           {isMobile && (
             <div className="logo-container">
               <img 
-                src="/images/LOGO.png" 
+                src="/images/logo.png" 
                 alt="L&T Finance Logo" 
                 className="logo"
               />
@@ -303,7 +303,7 @@ const OtpVerification = () => {
               </div>
             )}
             
-            <h1 className="form-title">Game on.</h1>
+            <h2 className="form-title">Game on.</h2>
             <h2 className="form-subtitle">First delivery's yours!</h2>
             
             <p className="form-description">
@@ -448,15 +448,38 @@ const OtpVerification = () => {
               </div>
             )}
             
-            <div className="consent-container">
-              <input 
-                type="checkbox" 
-                id="consent" 
-                checked={consentChecked}
-                onChange={handleConsentChange}
-                disabled={isLoading || showOtpInput}
-              />
-              <label htmlFor="consent">
+            <div className="consent-container" style={{display: 'flex', alignItems: 'flex-start', margin: '10px 0'}}>
+              <div style={{display: 'flex', alignItems: 'flex-start'}}>
+                {/* Single custom checkbox implementation */}
+                <div 
+                  onClick={() => !isLoading && !showOtpInput && handleConsentChange()}
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    minWidth: '10px',
+                    border: '1px solid #999',
+                    borderRadius: '2px',
+                    marginRight: '8px',
+                    marginTop: '3px',
+                    backgroundColor: consentChecked ? '#0a1a34' : 'white',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: isLoading || showOtpInput ? 'default' : 'pointer',
+                    opacity: isLoading || showOtpInput ? 0.5 : 1
+                  }}
+                >
+                  {consentChecked && (
+                    <div style={{
+                      width: '4px',
+                      height: '6px',
+                      borderRight: '2px solid white',
+                      borderBottom: '2px solid white',
+                      transform: 'rotate(45deg) translate(-1px, -1px)'
+                    }} />
+                  )}
+                </div>
+                <span style={{fontSize: '12px', lineHeight: '1.3'}}>
                 {isMobile ? (
                   <>
                     I agree to the <a href="#" onClick={openConsentModal}>Terms & Conditions</a>
@@ -466,7 +489,8 @@ const OtpVerification = () => {
                     I hereby consent to L&T Finance Limited and its affiliates to use, edit, reproduce, and publish the photographs, videos, audio recordings, contact numbers, and any AI-generated or campaign-related content featuring me or submitted by me, for marketing, promotional, and other commercial purposes related to the "Bumrah X You" campaign, across any media platforms including digital, print, outdoor, or broadcast, without any compensation or further approval.
                   </>
                 )}
-              </label>
+                </span>
+              </div>
             </div>
             
             {/* Consent Modal for Mobile */}

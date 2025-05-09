@@ -5,7 +5,7 @@ import '../styles/pages/MobileResponsiveOverrides.css'; // Added mobile responsi
 
 // Image paths - using direct relative paths from the public folder
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';
-const LOGO_IMAGE_PATH = '/images/section1/LOGO copy.png';
+const LOGO_IMAGE_PATH = '/images/Logo.png';
 const CAROUSEL_IMAGE_PATHS = [
   '/Landingpage.jpg',
   '/Landingpage-1.jpg',
@@ -13,9 +13,9 @@ const CAROUSEL_IMAGE_PATHS = [
   '/Landingpage-3.jpg',
 ];
 const SECTION2_BG_IMAGE_PATH = '/images/section2/video-bg.png';
-const SECTION3_BG_IMAGE = '/images/section3/section3bgnew.jpg';
+const SECTION3_BG_IMAGE = '/images/section3/section3bg.jpg';
 const SECTION3_MOBILE_BG_IMAGE = '/images/section3/section3bgwithoutimage.jpg';
-const SECTION3_DESKTOP_IMAGE = '/images/section3/desktopimage.png';
+const SECTION3_DESKTOP_IMAGE = '/images/section3/model-copy.png';
 const GROUP_30A_IMAGE = '/images/section1/Group 30a (1).png';
 const FRAME_162422_IMAGE = '/images/section1/Frame 162422.png';
 const PROFILE_IMAGES = [
@@ -162,6 +162,7 @@ const LandingPage = () => {
             src={LOGO_IMAGE_PATH} 
             alt="Business Loan Game Changer" 
             className="hero-logo" 
+            style={{ alignSelf: 'flex-start', marginLeft: '-35px' }}
           />
           
           <div className="hero-text-container">
@@ -184,13 +185,13 @@ const LandingPage = () => {
               Business Poster
             </div>
             
-            <Link to="/otp-verification" className="btn-neo poster-btn">
-              Make My Poster Now <span>&gt;</span>
+            <Link to="/otp-verification" className="btn-neo poster-btn" style={{ alignSelf: 'flex-start', marginLeft: '45px' }}>
+              <strong>Make My Poster Now</strong> <span>&gt;</span>
             </Link>
           </div>
           
           {!isMobile ? (
-            <div className="testimonial-container">
+            <div className="testimonial-container" style={{ marginBottom: '20px' }}>
               {/* Group 30a image above the 4th card */}
               <img 
                 src={GROUP_30A_IMAGE} 
@@ -223,19 +224,26 @@ const LandingPage = () => {
                 />
               </div>
               
-              {/* Horizontally scrollable carousel */}
+              {/* Auto-scrolling carousel with one card per view */}
               <div className="testimonial-container">
-                <div className="testimonial-wrapper">
-                  {CAROUSEL_IMAGE_PATHS.map((path, index) => (
-                    <div 
-                      key={index} 
-                      className="testimonial-card" 
-                      style={{ backgroundImage: `url(${path})` }}
-                    >
-                      <div className="neo-extension"></div>
-                    </div>
-                  ))}
+                {/* Show only the active card */}
+                <div 
+                  className="testimonial-card active"
+                  style={{ backgroundImage: `url(${CAROUSEL_IMAGE_PATHS[activeIndex]})` }}
+                >
+                  <div className="neo-extension"></div>
                 </div>
+              </div>
+              
+              {/* Separate container for dots below the testimonial card */}
+              <div className="carousel-dots-container">
+                {CAROUSEL_IMAGE_PATHS.map((_, index) => (
+                  <div 
+                    key={index}
+                    className={`carousel-dot ${index === activeIndex ? 'active' : ''}`}
+                    onClick={() => goToSlide(index)}
+                  />
+                ))}
               </div>
             </>
           )}
@@ -246,7 +254,7 @@ const LandingPage = () => {
       <section className="section-2" style={section2Style}>
         <div className="container">
           <div className="section-2-title-container">
-            <h2 className="section-2-title">Make Your Poster in 2 easy Steps</h2>
+            <h2 className="section-2-title">Make Your Poster in 2 Easy Steps</h2>
           </div>
           
           <div className="video-container">
@@ -256,7 +264,7 @@ const LandingPage = () => {
           </div>
           
           <div className="start-button-container">
-            <Link to="/otp-verification" className="btn-neo start-btn">
+            <Link to="/otp-verification" className="btn-neo start-btn" style={{ fontSize: '1.5em', padding: '15px 30px', fontWeight: 'bold' }}>
               Start Creating <span>&gt;</span>
             </Link>
           </div>
@@ -268,24 +276,26 @@ const LandingPage = () => {
         className="section-3" 
         style={{
           ...section3Style,
-          backgroundImage: `url(${isMobile ? SECTION3_MOBILE_BG_IMAGE : SECTION3_BG_IMAGE})`
+          backgroundImage: `url(${isMobile ? SECTION3_MOBILE_BG_IMAGE : '/images/section3/section3bg.jpg'})`
         }}
       >
         <div className="container">
           <div className="section-3-content">
             <div className="loan-disbursement-container">
-              <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" />
+              <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" style={{ alignSelf: 'flex-start', marginLeft: '-150px' }} />
               
               <div className="loan-text-carousel">
                 <h2 
-                  className={`loan-title ${loanTextIndex === 4 ? 'bold-title' : ''}`} 
+                  className="loan-title" 
                   key={`title-${loanTextIndex}`}
+                  style={{ fontWeight: 400 }}
                 >
                   {loanTextContent[loanTextIndex].topLine}
                 </h2>
                 <h3 
                   className="in-minutes" 
                   key={`minutes-${loanTextIndex}`}
+                  style={{ fontWeight: 700 }}
                 >
                   {loanTextContent[loanTextIndex].bottomLine}
                 </h3>

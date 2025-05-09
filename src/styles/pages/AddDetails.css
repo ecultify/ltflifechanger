@@ -380,12 +380,10 @@ select {
 .tagline-input-container {
   width: 100%;
   margin-bottom: 0;
-  min-height: 120px; /* Fixed height to prevent expansion */
-  max-height: 120px; /* Fixed height to prevent expansion */
-  overflow-y: auto; /* Add scrolling if content exceeds height */
-  position: relative; /* For positioning generated taglines */
-  display: flex;
-  flex-direction: column;
+  height: 130px; /* Increased fixed height to accommodate 2 lines */
+  max-height: 130px; /* Ensure maximum height constraint */
+  overflow: visible; /* Allow content to be visible */
+  position: relative; /* For positioning inner content */
 }
 
 .tagline-input-container .input-and-button {
@@ -393,7 +391,42 @@ select {
   align-items: center;
   gap: 10px;
   width: 100%;
-  flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Two-line tagline display area */
+.tagline-display-area {
+  height: 80px !important; /* Increased for 2 lines */
+  min-height: 80px !important; /* Increased for 2 lines */
+  max-height: 80px !important; /* Increased for 2 lines */
+  overflow: hidden !important; /* Hide overflow */
+  margin-bottom: 10px !important; /* Consistent spacing */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+/* Two-line tagline display box */
+.tagline-display {
+  height: 80px !important; /* Increased for 2 lines */
+  min-height: 80px !important; /* Increased for 2 lines */
+  max-height: 80px !important; /* Increased for 2 lines */
+  overflow: hidden !important; /* Hide overflow instead of scroll */
+  padding: 10px 15px !important; /* Consistent padding */
+  line-height: 1.5 !important; /* Increased for better readability */
+  align-items: center !important; /* Center content vertically */
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-content: center !important; /* Center content vertically */
+  word-break: break-word !important; /* Break words to fit box */
+}
+
+/* Ensure buttons container has consistent height */
+.tagline-buttons {
+  height: 40px !important; /* Fixed height */
+  overflow: visible !important; /* Ensure buttons are visible */
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .tagline-input-container .form-input {
@@ -402,23 +435,19 @@ select {
 }
 
 .tagline-options {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Reduced from 10px to 6px */
-  overflow-y: auto; /* Enable scrolling for overflow */
-  max-height: 70px; /* Limit height */
+  gap: 10px;
 }
 
 .tagline-option {
   background-color: #f9f9f9;
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 6px 10px; /* Reduced from 12px to 6px 10px */
+  padding: 12px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 13px; /* Smaller font size */
-  line-height: 1.3; /* Tighter line height */
 }
 
 .tagline-option:hover {
@@ -702,8 +731,14 @@ select {
   
   /* Make the background image more visible */
   .left-section {
-    min-height: 30vh; /* Further reduced height */
+    min-height: 100vh; /* Ensure full height coverage */
+    height: 100%; /* Full height */
     opacity: 0.9; /* Slightly more visible */
+    position: fixed; /* Keep fixed position consistent with other styles */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 0;
   }
   
   /* Adjust logo for very small screens */
@@ -752,10 +787,12 @@ select {
   }
   
   .left-section {
-    position: relative;
-    max-width: 40%;
+    position: fixed; /* Keep fixed position for background */
+    max-width: 100%; /* Full width background */
     min-height: 100vh;
-    height: auto;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
   }
   
   .right-section {

@@ -615,7 +615,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         )}
       </div>
       
-      <div className="right-section">
+      <div className="right-section" style={isMobile ? { backgroundColor: 'white', marginTop: '180px', marginBottom: '30px', padding: '20px', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)', position: 'relative', zIndex: 5, width: 'calc(100% - 40px)', marginLeft: 'auto', marginRight: 'auto' } : {}}>
         {/* Fixed position stepper in right column */}
         <div className="fixed-stepper-container">
           <div className="fixed-stepper">
@@ -637,7 +637,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         </div>
         {/* Removed old background image div */}
         <div className="right-content" style={isMobile ? { marginTop: '0' } : {}}>
-          <div className="form-container" style={isMobile ? { borderTopLeftRadius: '20px', borderTopRightRadius: '20px', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px', boxShadow: '0 -5px 15px rgba(0,0,0,0.1)' } : {}}>
+          <div className="form-container">
             {/* Added stepper indicator for mobile view inside form container */}
             {isMobile && (
               <div className="mobile-stepper-container form-stepper">

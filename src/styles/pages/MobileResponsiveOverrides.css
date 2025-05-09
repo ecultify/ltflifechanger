@@ -566,17 +566,62 @@
             display: none !important;
         }
         
-        /* Style for mobile stepper in upload photo page */
-        .form-container .fixed-stepper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 320px;
-            padding: 5px 10px;
-            margin: 10px auto 20px;
-            background-color: #fff;
-            border-radius: 8px;
+        /* Use UploadPhoto background for entire AddDetails page */
+        .details-page {
+            background-image: url('../../../public/images/adddetails/UploadPhoto+AddDetails.png') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            min-height: 100vh !important;
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow-y: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        /* Hide original left section background */
+        .details-page .left-section {
+            display: none !important; /* Hide the left section completely on mobile */
+        }
+        
+        /* Form container with rounded corners on all sides */
+        .details-page .right-section {
+            border-radius: 25px !important;
+            margin: 160px 15px 20px 15px !important; /* Top margin to position below the logo and images */
+            padding: 0 !important; /* Remove padding to let the form container handle it */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+            position: relative !important;
+            z-index: 5 !important;
+            background-color: transparent !important; /* Make transparent so form container shows */
+            overflow-y: visible !important;
+            width: calc(100% - 30px) !important; /* Account for margins */
+            display: block !important;
+        }
+        
+        /* Additional rounded corners fix for the form container */
+        .details-page .right-section .form-container {
+            border-radius: 20px !important; /* Increased from 15px to 20px */
+            overflow: hidden !important; /* Ensure content doesn't overflow rounded corners */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            margin-bottom: 15px !important;
+            background-color: white !important;
+            padding: 15px !important;
+        }
+        
+        /* Style for mobile stepper in upload photo and add details pages */
+        .form-container .fixed-stepper,
+        .details-page .right-section .fixed-stepper {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            padding: 5px 10px !important;
+            margin: 10px auto 20px !important;
+            background-color: #fff !important;
+            border-radius: 8px !important;
         }
         
         /* Mobile camera container styles */
@@ -673,29 +718,93 @@
             border: 2px solid #4CAF50;
         }
         
-        .form-container .progress-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        .form-container .progress-step,
+        .details-page .right-section .progress-step {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            position: relative !important;
         }
         
-        .form-container .step-circle {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 4px;
+        .form-container .step-circle,
+        .details-page .right-section .step-circle {
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: bold !important;
+            font-size: 12px !important;
+            margin-bottom: 4px !important;
         }
         
-        .form-container .step-label {
-            font-size: 10px;
-            text-align: center;
-            white-space: nowrap;
+        .form-container .step-label,
+        .details-page .right-section .step-label {
+            font-size: 10px !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+        
+        /* Mobile optimized keyword container for Add Details */
+        .details-page .right-section .keywords-input-container {
+            padding: 6px 8px !important;
+            min-height: auto !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+        
+        /* Mobile optimized keyword tags */
+        .details-page .right-section .keyword-tag {
+            padding: 2px 5px !important;
+            font-size: 10px !important;
+            margin: 1px !important;
+        }
+        
+        /* Mobile optimized tagline container */
+        .details-page .right-section .tagline-input-container {
+            height: auto !important;
+            max-height: none !important;
+            margin-bottom: 10px !important;
+        }
+        
+        /* Mobile optimized tagline display */
+        .details-page .right-section .tagline-display-area {
+            height: 60px !important;
+            min-height: 60px !important;
+            max-height: 60px !important;
+        }
+        
+        .details-page .right-section .tagline-display {
+            font-size: 12px !important;
+            height: 60px !important;
+            min-height: 60px !important;
+            max-height: 60px !important;
+            padding: 8px 10px !important;
+        }
+        
+        /* Smaller form labels and inputs for mobile */
+        .details-page .right-section label {
+            font-size: 12px !important;
+            margin-bottom: 3px !important;
+        }
+        
+        .details-page .right-section .form-input,
+        .details-page .right-section .form-select {
+            font-size: 12px !important;
+            padding: 5px 8px !important;
+            height: 30px !important;
+        }
+        
+        /* Tighter vertical spacing between form groups */
+        .details-page .right-section .form-group {
+            margin-bottom: 8px !important;
+        }
+        
+        /* Form title mobile adjustments */
+        .details-page .right-section .form-title {
+            font-size: 20px !important;
+            margin-bottom: 8px !important;
         }
         
         .form-container .progress-line {

@@ -65,12 +65,81 @@
 
 /* Mobile rounded corners for form container */
 @media (max-width: 768px) {
+  /* Reset all previous styles that might be causing conflicts */
+  .details-page,
+  .details-page .left-section,
+  .details-page .right-section,
+  .details-page .right-content,
+  .details-page .form-container {
+    position: static !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  /* Main page container */
+  .details-page {
+    display: block !important;
+    min-height: 100vh !important;
+    background-image: url('../../../public/images/adddetails/UploadPhoto+AddDetails.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    padding-bottom: 50px !important;
+    overflow-y: auto !important;
+  }
+
+  /* Hide left section completely */
+  .details-page .left-section {
+    display: none !important;
+  }
+
+  /* Right section containing the form */
+  .details-page .right-section {
+    width: 100% !important;
+    padding: 15px !important;
+    margin-top: 300px !important; /* More space for logo to show from background */
+    background-color: transparent !important;
+  }
+  
+  /* Right content wrapper */
+  .details-page .right-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  /* Form container styling */
   .details-page .form-container,
   body .details-page .form-container,
   html body .details-page .form-container {
-    border-radius: 20px 20px 0 0 !important;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1) !important;
-    overflow: hidden !important;
+    background-color: white !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    display: block !important;
+    width: 100% !important;
+    z-index: 10 !important;
+  }
+
+  /* Ensure forms and inputs are displayed properly */
+  .details-page .form-group {
+    margin-bottom: 15px !important;
+    display: block !important;
+  }
+
+  /* Make form input fields clearly visible */
+  .details-page .form-input,
+  .details-page .form-select {
+    display: block !important;
+    width: 100% !important;
+    padding: 10px !important;
+    background-color: white !important;
+    border: 1px solid #ccc !important;
   }
 }
 

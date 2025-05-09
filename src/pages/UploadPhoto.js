@@ -352,7 +352,7 @@ const UploadPhoto = () => {
   const simulateCharacterGeneration = async (imageFile) => {
     try {
       // Simulate processing time
-      setProcessingStep('Simulating character generation (fallback mode)...');
+      setProcessingStep('Generating your poster...');
 
       // Wait to simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -438,7 +438,7 @@ const UploadPhoto = () => {
       // For debugging - write to console that we are starting
       console.log('===== Starting Segmind character generation process =====');
 
-      setProcessingStep('Preparing your image...');
+      setProcessingStep('Generating your poster...');
       setLoadingProgress(10);
 
       // Convert the uploaded image to base64
@@ -467,7 +467,7 @@ const UploadPhoto = () => {
       });
       console.log('Pose image converted to base64, length:', poseImageBase64.length);
 
-      setProcessingStep('Creating your consistent character...');
+      setProcessingStep('Generating your poster...');
       setLoadingProgress(30);
 
       // Prepare the request to Segmind API
@@ -477,7 +477,7 @@ const UploadPhoto = () => {
       // Check if API key is valid
       if (!apiKey || !apiKey.startsWith('SG_')) {
         console.error('Invalid Segmind API key format');
-        setProcessingStep('API key validation failed, using fallback mode...');
+        setProcessingStep('Generating your poster...');
         return simulateCharacterGeneration(imageFile);
       }
 
@@ -490,7 +490,7 @@ const UploadPhoto = () => {
         samples: 1
       };
 
-      setProcessingStep('Generating your character (this may take up to 30 seconds)...');
+      setProcessingStep('Generating your poster...');
 
       // Start simulating gradual progress during the main Segmind processing
       // This will gradually increase from 30% to 65% over 30 seconds
@@ -518,7 +518,7 @@ const UploadPhoto = () => {
         const responseBlob = await fetchResponse.blob();
         console.log('Fetch API succeeded, blob size:', responseBlob.size);
 
-        setProcessingStep('Processing generated image...');
+        setProcessingStep('Generating your poster...');
         setLoadingProgress(70);
 
         // Convert the blob response to a URL for preview if needed
@@ -527,7 +527,7 @@ const UploadPhoto = () => {
         // Clean up the URL object to prevent memory leaks
         URL.revokeObjectURL(generatedImageUrl);
 
-        setProcessingStep('Removing background...');
+        setProcessingStep('Generating your poster...');
         setLoadingProgress(75);
 
         // Convert the blob to a file for background removal
@@ -648,7 +648,7 @@ const UploadPhoto = () => {
       // Try direct base64 API handling with Remove.bg
       try {
         console.log('Trying base64 approach for background removal...');
-        setProcessingStep('Removing background with alternative method...');
+        setProcessingStep('Generating your poster...');
 
         // Using XMLHttpRequest for better binary data handling
         const removeResult = await new Promise((resolve, reject) => {
@@ -1295,7 +1295,7 @@ const UploadPhoto = () => {
         <div className="processing-modal-overlay">
           <div className="processing-modal">
             <div className="processing-content">
-              <Loader fullScreen={false} message={processingStep || 'Processing your image...'} />
+              <Loader fullScreen={false} message={'Generating your poster...'} />
               <div className="progress-bar">
                 <div
                   className="progress-fill"

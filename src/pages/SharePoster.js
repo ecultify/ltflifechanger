@@ -17,7 +17,7 @@ const SharePoster = () => {
   const [generatedPoster, setGeneratedPoster] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [loadingStatus, setLoadingStatus] = useState('Loading data...');
+  const [loadingStatus, setLoadingStatus] = useState('Generating your poster...');
   const canvasRef = useRef(null);
   const preloadedTemplateRef = useRef(null); // Ref to store preloaded image
   

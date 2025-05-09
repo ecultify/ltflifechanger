@@ -29,6 +29,8 @@ const SharePoster = () => {
     { id: 'banner4', name: '4copy.png' },
     { id: 'banner5', name: '5copy.png' }
   ]);
+  
+  // Note: isMobile state is declared further down in the component
 
   // Preload the template image when component mounts
   useEffect(() => {
@@ -99,7 +101,7 @@ const SharePoster = () => {
     }, 15000); // 15 seconds timeout
     
     try {
-      setLoadingStatus('Setting up poster...');
+      setLoadingStatus('Generating your poster...');
       // Create a canvas to combine the template and user's image
       const canvas = canvasRef.current;
       if (!canvas) {
@@ -128,7 +130,7 @@ const SharePoster = () => {
       
       try {
         // Load user's image
-        setLoadingStatus('Loading your image...');
+        setLoadingStatus('Generating your poster...');
         const userImg = new Image();
         userImg.crossOrigin = 'anonymous';
         userImg.src = processedImage;
@@ -139,7 +141,7 @@ const SharePoster = () => {
           
         console.log(`Using template: ${templateSrc}`);
         
-        setLoadingStatus('Loading template image...');
+        setLoadingStatus('Generating your poster...');
         let templateImg;
         
         // Use preloaded template image if available
@@ -181,7 +183,7 @@ const SharePoster = () => {
         }
         
         // Wait for all images to load with timeout
-        setLoadingStatus('Processing images...');
+        setLoadingStatus('Generating your poster...');
         try {
           await Promise.race([
             Promise.all([
@@ -219,7 +221,7 @@ const SharePoster = () => {
         }
         
         // Draw the template (Bumrah image) as background
-        setLoadingStatus('Creating your poster...');
+        setLoadingStatus('Generating your poster...');
         if (templateImg.complete && templateImg.naturalHeight !== 0) {
           try {
             // Draw the template on the full canvas
@@ -303,19 +305,20 @@ const SharePoster = () => {
             // Using the full template height (with some small margins)
             const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
             
-            // Calculate scale to make user image 75% of Bumrah's height, preserving aspect ratio
-            const heightScale = (bumrahHeight * 0.75) / userImgHeight; // Make user image 75% of Bumrah's height (reduced from 90%)
+            // Calculate scale to make user image match Bumrah's height (100%), preserving aspect ratio
+            const heightScale = bumrahHeight / userImgHeight; // Make user image the same height as Bumrah
             const scaledWidth = userImgWidth * heightScale;
-            const scaledHeight = bumrahHeight * 0.75; // 75% of Bumrah's height
+            const scaledHeight = bumrahHeight; // 100% of Bumrah's height
             
             console.log('Scaling to match Bumrah height:', { heightScale, scaledWidth, scaledHeight });
             
             // Position to place user on the left side of Bumrah
-            // Position is adjusted to push the image further to the left (35px more than before)
-            const userX = (canvas.width * 0.08) - 115; // Left position (moved 35px more to the left)
+            // Position is adjusted to account for proper placement
+            const userX = (canvas.width * 0.08) - 95; // Moved 45px more to the right
             
             // Position vertically to align with Bumrah with adjusted height
-            const userY = (canvas.height - scaledHeight) + 110; // Adjusted position for smaller image
+            // Pushing the image down by 55px more from previous position
+            const userY = (canvas.height - scaledHeight) + 110 - 18 + 30 + 55; // Adjusted position pushed down by 85px in total
             
             // Apply the calculated placement
             console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
@@ -367,7 +370,7 @@ const SharePoster = () => {
           }
         }
         
-        setLoadingStatus('Adding text elements...');
+        setLoadingStatus('Generating your poster...');
         
         try {
           // Add tagline at the top
@@ -619,7 +622,7 @@ const SharePoster = () => {
         }
         
         // Convert canvas to image
-        setLoadingStatus('Finalizing your poster...');
+        setLoadingStatus('Generating your poster...');
         try {
           const posterUrl = canvas.toDataURL('image/png');
           if (posterUrl) {
@@ -637,7 +640,7 @@ const SharePoster = () => {
         // Fallback to simpler layout if rendering fails
         
         try {
-          setLoadingStatus('Creating simplified poster...');
+          setLoadingStatus('Generating your poster...');
           // Clear canvas and start with a plain background
           ctx.fillStyle = '#333333';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -750,7 +753,7 @@ const SharePoster = () => {
 
   useEffect(() => {
     // Load data from sessionStorage when component mounts
-    setLoadingStatus('Loading your data...');
+    setLoadingStatus('Generating your poster...');
     
     // Ensure Poppins font is loaded
     const ensurePoppinsFont = () => {
@@ -836,14 +839,22 @@ const SharePoster = () => {
 
   // Check if we're on mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  
-  // Add resize listener to update mobile state
+
+  // Add enhanced resize listener to update mobile state
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      console.log('SharePoster - Window resized, isMobile:', mobile, 'Width:', window.innerWidth);
     };
 
     window.addEventListener('resize', handleResize);
+    
+    // Call once to ensure state is accurate on initial render
+    handleResize();
+    
+    console.log('SharePoster - Initial isMobile state:', window.innerWidth <= 768, 'Width:', window.innerWidth);
+    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 

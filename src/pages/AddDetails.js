@@ -72,7 +72,7 @@ const AddDetails = () => {
   const [isGeneratingTagline, setIsGeneratingTagline] = useState(false);
   const [industryKeywords, setIndustryKeywords] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [needCallback, setNeedCallback] = useState(false);
+  // Callback option removed as requested
   
   // Add resize listener to update mobile state
   useEffect(() => {
@@ -500,7 +500,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     sessionStorage.setItem('industry', industry);
     sessionStorage.setItem('businessVintage', businessVintage);
     sessionStorage.setItem('turnover', turnover);
-    sessionStorage.setItem('needCallback', needCallback.toString());
+    // Callback option removed
     sessionStorage.setItem('tagline', tagline);
     
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
@@ -929,23 +929,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               </div>
             </div>
             
-            {/* Request callback checkbox at the bottom */}
-            <div className="form-row">
-              <div className="form-group" style={{ width: '100%', marginTop: '15px' }}>
-                <div className="checkbox-wrapper">
-                  <label className="checkbox-label">
-                    <input 
-                      type="checkbox" 
-                      id="needCallback"
-                      className="checkbox-input"
-                      checked={needCallback}
-                      onChange={() => setNeedCallback(!needCallback)}
-                    />
-                    <span className="checkbox-text">Request a call back</span>
-                  </label>
-                </div>
-              </div>
-            </div>
+            {/* Callback option removed as requested */}
             
             <button className="next-btn" onClick={handleNext} style={yellowButtonStyle}>
               Next

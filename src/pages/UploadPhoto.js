@@ -887,8 +887,8 @@ const UploadPhoto = () => {
               />
             </div>
 
-            {/* Bumrah and You image below logo, center-aligned and moved down */}
-            <div className="left-bumrah-container" style={{ top: '225px' }} /* Pushed down by 40px */>
+            {/* Bumrah and You image below logo, center-aligned and positioned */}
+            <div className="left-bumrah-container" style={{ top: '170px' }} /* Adjusted down by 10px from 160px */>
               <img
                 src="/images/uploadphoto/bumraahandu.png"
                 alt="Bumrah and You"
@@ -898,7 +898,7 @@ const UploadPhoto = () => {
             </div>
 
             {/* Two DOS images side by side below Bumrah+YOU */}
-            <div className="left-dos-container" style={{ top: '390px' }} /* Pushed down by 50px */>
+            <div className="left-dos-container" style={{ top: '320px' }} /* Moved up by 50px more from 370px */>
               <img
                 src="/images/uploadphoto/dos1.png"
                 alt="Do's 1"
@@ -920,6 +920,16 @@ const UploadPhoto = () => {
               alt="Background"
               className="left-section-background"
             />
+
+            {/* Logo at the top */}
+            <div className="left-logo-container">
+              <img
+                src="/images/LOGO.png"
+                alt="Logo"
+                className="left-logo-image"
+                style={{ maxWidth: '160px' }}
+              />
+            </div>
 
             {/* Logo at the top */}
             <div className="left-logo-container">
@@ -955,65 +965,158 @@ const UploadPhoto = () => {
       </div>
 
       <div className="right-section">
-        {/* Fixed position stepper in right column */}
-        <div className="fixed-stepper-container">
-          <div className="fixed-stepper">
-            <div className="progress-step completed">
-              <div className="step-circle">1</div>
-              <div className="step-label">OTP</div>
-            </div>
-            <div className="progress-line active"></div>
-            <div className="progress-step completed">
-              <div className="step-circle">2</div>
-              <div className="step-label">Add Details</div>
-            </div>
-            <div className="progress-line active"></div>
-            <div className="progress-step active">
-              <div className="step-circle">3</div>
-              <div className="step-label">Upload</div>
+        {/* Fixed position stepper in right column - only visible on desktop */}
+        {!isMobile && (
+          <div className="fixed-stepper-container">
+            <div className="fixed-stepper">
+              <div className="progress-step completed">
+                <div className="step-circle">1</div>
+                <div className="step-label">OTP</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step completed">
+                <div className="step-circle">2</div>
+                <div className="step-label">Add Details</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step active">
+                <div className="step-circle">3</div>
+                <div className="step-label">Upload</div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {isMobile && (
           <div className="right-content" style={{ marginTop: '20px' }}>
+            {/* Logo image at the top */}
+            <div className="mobile-logo-container" style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <img
+                src="/images/LOGO.png"
+                alt="Logo"
+                className="mobile-logo-image"
+                style={{ maxWidth: '200px' }}  /* Bigger logo */
+              />
+            </div>
 
-            <h2 className="form-title">Upload Your Photo</h2>
+            {/* Bumrah and You image */}
+            <div className="mobile-bumrah-container" style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <img
+                src="/images/uploadphoto/bumraahandu.png"
+                alt="Bumrah and You"
+                className="mobile-bumrah-image"
+                style={{ maxWidth: '240px' }}
+              />
+            </div>
+
+            {/* DOS1 image */}
+            <div className="mobile-dos-container" style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <img
+                src="/images/uploadphoto/dos1.png"
+                alt="Do's 1"
+                className="mobile-dos-image"
+                style={{ maxWidth: '240px' }}
+              />
+            </div>
 
             <div className="form-container" style={{ textAlign: 'center' }}>
-              <div className="upload-area" onDragOver={handleDragOver} onDrop={handleDrop}>
-                <p>Drag your file to start uploading</p>
-                <div className="upload-divider"><span>or</span></div>
-
-                <div className="upload-buttons">
-                  <button
-                    className="upload-btn blue-btn"
-                    onClick={() => activateCamera(false)}
-                  >
-                    <i className="fa fa-camera"></i> Take a photo
-                  </button>
-
-                  <button
-                    className="upload-btn orange-btn"
-                    onClick={() => activateCamera(true)}
-                  >
-                    <i className="fa fa-user"></i> Take a selfie
-                  </button>
-
-                  <button
-                    className="browse-button"
-                    onClick={() => document.getElementById('file-input').click()}
-                  >
-                    <i className="fa fa-folder-open"></i> Browse for photo
-                  </button>
-                  <input
-                    type="file"
-                    id="file-input"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                  />
+              {/* Mobile stepper indicator directly in form container */}
+              <div className="fixed-stepper">
+                <div className="progress-step completed">
+                  <div className="step-circle">1</div>
+                  <div className="step-label">OTP</div>
+                </div>
+                <div className="progress-line active"></div>
+                <div className="progress-step completed">
+                  <div className="step-circle">2</div>
+                  <div className="step-label">Add Details</div>
+                </div>
+                <div className="progress-line active"></div>
+                <div className="progress-step active">
+                  <div className="step-circle">3</div>
+                  <div className="step-label">Upload</div>
                 </div>
               </div>
+              
+              {/* Title after stepper indicator */}
+              <h2 className="form-title">Upload Your Photo</h2>
+              
+              {isCameraActive ? (
+                /* Camera preview for mobile */
+                <div className="mobile-camera-container">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="camera-video"
+                  ></video>
+                  <div className={`person-outline-overlay ${isSelfieMode ? 'selfie-mode' : ''} ${faceInPosition ? 'face-in-position' : faceDetected ? 'face-detected' : ''}`}>
+                    <img
+                      src="/images/face-outline.svg"
+                      alt="Face outline"
+                      className="outline-image"
+                    />
+                    <div className="positioning-guide">
+                      {faceInPosition ?
+                        "Perfect! Hold still and take the photo." :
+                        faceDetected ?
+                          "Move closer and center your face in the outline" :
+                          isSelfieMode ?
+                            "Position your face within the outline and look at the camera" :
+                            "Position your face in the outline, hold camera at eye level"
+                      }
+                    </div>
+                  </div>
+                  <div className="camera-controls">
+                    <button
+                      className={`camera-btn ${faceInPosition ? 'active' : 'disabled'}`}
+                      onClick={takePhoto}
+                      disabled={!faceInPosition}
+                    >
+                      <i className="fas fa-camera"></i>
+                    </button>
+                    <button className="camera-btn cancel" onClick={stopCamera}>
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+                </div>
+              ) : (
+                /* Normal upload area */
+                <div className="upload-area" onDragOver={handleDragOver} onDrop={handleDrop}>
+                  <p>Drag your file to start uploading</p>
+                  <div className="upload-divider"><span>or</span></div>
+
+                  <div className="upload-buttons">
+                    <button
+                      className="upload-btn blue-btn"
+                      onClick={() => activateCamera(false)}
+                    >
+                      <i className="fa fa-camera"></i> Take a photo
+                    </button>
+
+                    <button
+                      className="upload-btn orange-btn"
+                      onClick={() => activateCamera(true)}
+                    >
+                      <i className="fa fa-user"></i> Take a selfie
+                    </button>
+
+                    <button
+                      className="browse-button"
+                      onClick={() => document.getElementById('file-input').click()}
+                    >
+                      <i className="fa fa-folder-open"></i> Browse for photo
+                    </button>
+                    <input
+                      type="file"
+                      id="file-input"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      style={{ display: 'none' }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

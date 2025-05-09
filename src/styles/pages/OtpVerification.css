@@ -91,17 +91,19 @@
 .bumrah-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 10px; /* Reduced to make more of the form visible */
+  margin-bottom: 0; /* Removed bottom margin */
   overflow: hidden;
-  margin-top: 40px; /* Push it down by 40px */
+  margin-top: 40px; /* Decreased from 130px to 100px to push it up */
+  position: relative; /* Added position relative */
+  z-index: 1; /* Lower z-index to position behind form */
 }
 
 .bumrah-image {
-  max-width: 220px; /* Increased size */
+  max-width: 420px; /* Maintained size */
   height: auto;
-  max-height: 200px; /* Limited height to show more of the form */
+  max-height: 390px; /* Maintained size */
   object-fit: contain;
-  margin-bottom: -30px;
+  margin-bottom: 0; /* Removed negative margin */
 }
 
 /* Progress tracker */
@@ -168,7 +170,7 @@
   padding: 25px;
   box-shadow: none;
   box-sizing: border-box;
-  margin: 0 auto;
+  margin: 0 auto; /* Removed top margin to allow overlap with image */
 }
 
 /* Only set position relative and z-index for mobile */
@@ -176,20 +178,22 @@
   .form-container {
     position: relative;
     z-index: 3; /* Ensure it's above Bumrah image but below modals */
+    margin-top: -160px; /* Increased negative margin from -80px to -120px to push form up more */
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1); /* Add shadow for better separation */
   }
 }
 
 .form-title {
   font-size: 32px;
   font-weight: 700;
-  margin: 0 0 3px 0; /* Reduced spacing */
+  margin: 20px 0 3px 0; /* Reduced top margin from 60px to 20px to accommodate stepper */
   color: #0a1a34;
 }
 
 .form-subtitle {
   font-size: 24px;
   font-weight: 600;
-  margin: 0 0 20px 0; /* Reduced spacing */
+  margin: 5px 0 20px 0; /* Added top margin for more spacing */
   color: #0a1a34;
 }
 
@@ -312,6 +316,21 @@
     padding: 20px 15px;
     overflow-x: hidden; /* Prevent horizontal scrolling */
   }
+  
+  /* Adjust mobile stepper for smaller screens */
+  .mobile-stepper .step-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  
+  .mobile-stepper .step-label {
+    font-size: 9px;
+  }
+  
+  .mobile-stepper .progress-line {
+    width: 30px;
+  }
 }
 
 @media (max-width: 400px) {
@@ -348,6 +367,21 @@
     height: 32px;
     font-size: 14px;
     padding: 0;
+  }
+  
+  /* Further adjust mobile stepper for very small screens */
+  .mobile-stepper .step-circle {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+  
+  .mobile-stepper .step-label {
+    font-size: 8px;
+  }
+  
+  .mobile-stepper .progress-line {
+    width: 20px;
   }
 }
 
@@ -386,7 +420,7 @@
 
 /* Simple OTP Container for desktop */
 .simple-otp-container {
-  margin: 25px 0 20px;
+  margin: 0 0 20px; /* Removed top margin to prevent upward expansion */
   width: 100%;
   box-sizing: border-box;
 }
@@ -430,7 +464,7 @@
 .otp-modal-content {
   background: white;
   border-radius: 20px 20px 0 0;
-  padding: 30px;
+  padding: 25px 30px; /* Reduced top padding slightly to fit stepper better */
   width: 100%;
   max-width: 500px;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
@@ -439,6 +473,72 @@
   overflow-x: hidden; /* Prevent horizontal scrolling */
   margin: 0 15px; /* Increased margin to prevent edge touching */
   width: calc(100% - 30px); /* Account for increased margins */
+}
+
+/* Mobile stepper inside OTP modal and form container */
+.mobile-stepper-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Specific styling for stepper inside form container */
+.form-stepper {
+  margin-bottom: 15px;
+  margin-top: -5px;
+}
+
+.mobile-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-stepper .progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.mobile-stepper .step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #ddd;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.mobile-stepper .step-label {
+  margin-top: 5px;
+  font-size: 10px;
+  color: #333;
+  font-weight: 500;
+}
+
+.mobile-stepper .progress-line {
+  width: 40px;
+  height: 2px;
+  background-color: #ddd;
+  margin: 0 5px;
+  position: relative;
+  top: -15px; /* Align with the middle of circles */
+}
+
+.mobile-stepper .progress-step.active .step-circle {
+  background-color: #0a1a34;
+  color: white;
+}
+
+.mobile-stepper .progress-step.active .step-label {
+  color: #0a1a34;
+  font-weight: 600;
 }
 
 /* Specific styling for OTP container in modal */
@@ -460,7 +560,7 @@
 .otp-modal-title {
   font-size: 20px;
   font-weight: 700;
-  margin: 0 0 10px 0;
+  margin: 5px 0 10px 0; /* Added top margin to create space after stepper */
   color: #0a1a34;
   text-align: center;
 }
@@ -702,13 +802,16 @@
   }
   
   .bumrah-container {
-    margin-bottom: 15px;
-    margin-top: 40px; /* Push it down by 40px */
+    margin-bottom: 0;
+    margin-top: 130px; /* Push it down by 130px */
+    position: relative;
+    z-index: 1;
   }
   
   .bumrah-image {
-    max-width: 220px; /* Increased size */
-    margin-bottom: -30px;
+    max-width: 420px; /* Increased size to 1.5x */
+    max-height: 390px;
+    margin-bottom: 0;
   }
   
   /* For mobile, reduce progress tracker margin */
@@ -788,8 +891,9 @@
   }
   
   .bumrah-image {
-    max-width: 400px; /* Doubled the size as requested */
-    margin-bottom: -25px;
+    max-width: 420px; /* Consistent with our main style */
+    max-height: 390px;
+    margin-bottom: 0;
   }
 
   /* Ensure OTP modal doesn't overflow */
@@ -801,7 +905,8 @@
 
 @media (max-width: 375px) {
   .bumrah-image {
-    max-width: 180px;
+    max-width: 380px; /* Still large but slightly reduced for very small screens */
+    max-height: 350px;
   }
 
   .logo {

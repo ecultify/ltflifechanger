@@ -22,7 +22,13 @@ const SharePoster = () => {
   const preloadedTemplateRef = useRef(null); // Ref to store preloaded image
   
   // This will be replaced with actual banner data in the future
-  const [ctaBanners, setCtaBanners] = useState([]);
+  const [ctaBanners, setCtaBanners] = useState([
+    { id: 'banner1', name: '1copy.png' },
+    { id: 'banner2', name: '2copy.png' },
+    { id: 'banner3', name: '3copy.png' },
+    { id: 'banner4', name: '4copy.png' },
+    { id: 'banner5', name: '5copy.png' }
+  ]);
 
   // Preload the template image when component mounts
   useEffect(() => {
@@ -406,12 +412,12 @@ const SharePoster = () => {
           }
           
           // Tagline styling - using Poppins font and increased font size by 3.5
-          ctx.fillStyle = 'white';
+          ctx.fillStyle = 'white'; // Always use white color for tagline text
           ctx.font = 'bold 45.5px Poppins, sans-serif'; // Increased from 42px to 45.5px (42 + 3.5)
           ctx.textAlign = 'left';
           
-          // Calculate vertical spacing for taglines
-          const taglineStartY = canvas.height * 0.15;
+          // Calculate vertical spacing for taglines - moved up by 50px total
+          const taglineStartY = canvas.height * 0.10; // Further reduced from 0.12 to move up by another 20px
           const taglineLineHeight = 55;
           
           // Function to handle drawing text with certain words in bold
@@ -437,10 +443,10 @@ const SharePoster = () => {
               // Set appropriate font weight
               if (isKeyword) {
                 ctx.font = 'bold 45.5px Poppins, sans-serif';
-                ctx.fillStyle = '#000000'; // Ensure bold text is dark black
+                ctx.fillStyle = 'white'; // Changed to white for better visibility
               } else {
                 ctx.font = '45.5px Poppins, sans-serif';
-                ctx.fillStyle = '#1A1A1A'; // Slightly lighter for non-bold text
+                ctx.fillStyle = 'white'; // Changed to white for better visibility
               }
               
               // Draw the cleaned word (without asterisks)
@@ -458,8 +464,8 @@ const SharePoster = () => {
             drawTextWithBoldedWords(line, 60, taglineStartY + (index * taglineLineHeight), selectedKeywords);
           });
           
-          // Position for company info circles - pushed up to match logo alignment
-          const circleY = canvas.height * 0.30; // Reduced from 0.38 to push elements up
+          // Position for company info circles - pushed further up to match logo alignment
+          const circleY = canvas.height * 0.28; // Further reduced from 0.30 to move up by 10px equivalent
           
           // Draw user icon circles (yellow background)
           ctx.beginPath();
@@ -473,25 +479,43 @@ const SharePoster = () => {
           ctx.fill();
           
           // Draw person icon in the first circle
-          ctx.fillStyle = 'black';
+          ctx.fillStyle = 'black'; // Set icon color to black
           ctx.font = 'bold 24px Arial';
           ctx.textAlign = 'center';
           ctx.fillText('👤', 80, circleY + 8); // Centered the icon
           
-          // Draw phone icon in the second circle
-          ctx.fillText('📞', 80, circleY + 93); // Centered the icon
+          // Draw phone icon in the second circle - using a black phone icon instead of emoji
+          ctx.fillStyle = '#000000'; // Pure black hexadecimal color
+          ctx.font = 'bold 24px Arial';
+          ctx.textAlign = 'center';
+          
+          // Draw a custom black phone icon instead of the emoji
+          const phoneX = 80;
+          const phoneY = circleY + 85;
+          
+          // Draw phone handset shape
+          ctx.beginPath();
+          // Phone receiver
+          ctx.moveTo(phoneX - 10, phoneY - 8);
+          ctx.lineTo(phoneX - 5, phoneY - 12);
+          ctx.lineTo(phoneX + 5, phoneY - 2);
+          ctx.lineTo(phoneX + 10, phoneY - 7);
+          ctx.lineTo(phoneX + 5, phoneY + 3);
+          ctx.lineTo(phoneX - 5, phoneY - 7);
+          ctx.closePath();
+          ctx.fill();
           
           // Draw company info text - properly aligned vertically with icons
           ctx.fillStyle = 'white';
           ctx.font = 'bold 28px Arial';
           ctx.textAlign = 'left';
           
-          // Company name - moved up but still aligned with its icon
-          ctx.fillText(userData.companyName || 'Your Company Name', 130, circleY - 5); // Moved up from circleY + 8
+          // Display user's name (previously showed company name)
+          ctx.fillText(userData.name || 'Your Name', 130, circleY - 5); // Moved up from circleY + 8
           
-          // Industry - moved up along with company name
+          // Display company name (previously showed industry)
           ctx.font = '22px Arial';
-          ctx.fillText(userData.industry || 'Your Business Type', 130, circleY + 25); // Moved up from circleY + 40
+          ctx.fillText(userData.companyName || 'Your Company Name', 130, circleY + 25); // Moved up from circleY + 40
           
           // Phone number - vertically centered with its icon
           // Format phone number to remove +91 if present
@@ -503,20 +527,54 @@ const SharePoster = () => {
           ctx.font = 'bold 28px Arial';
           ctx.fillText(phoneNumber, 130, circleY + 93); // Kept the same position
           
+          // Add vertical white line 190px away from contact details (additional 50px) and 5px higher
+          const lineX = 130 + 190 + ctx.measureText(phoneNumber).width; // Position 190px after the longest text (increased by another 50px)
+          const lineStartY = circleY - 30; // Start 5px higher than before (from -25 to -30)
+          const lineEndY = circleY + 110; // End 5px higher than before (from 115 to 110)
+          
+          // Draw the white vertical line
+          ctx.beginPath();
+          ctx.moveTo(lineX, lineStartY);
+          ctx.lineTo(lineX, lineEndY);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+          
           // Name at bottom removed as requested
         } catch (textError) {
           console.error('Error adding text to poster:', textError);
         }
         
-        // Add black strip at the bottom with URL as requested by the client
+        // Add yellow strip at the bottom with URL as requested by the client
         try {
-          // Create black strip at bottom
+          // Create yellow strip at bottom with reduced width and rounded corners
           const stripHeight = 40; // Height of the strip in pixels
-          ctx.fillStyle = '#000000'; // Black color
-          ctx.fillRect(0, canvas.height - stripHeight, canvas.width, stripHeight);
+          const stripMargin = 100; // Margin from each side (increased from 70px to 100px as requested)
+          const cornerRadius = 10; // Radius for rounded corners
+          
+          ctx.fillStyle = '#FFC107'; // Yellow color
+          
+          // Draw rounded rectangle for the strip
+          ctx.beginPath();
+          // Start from top-left corner with radius
+          ctx.moveTo(stripMargin + cornerRadius, canvas.height - stripHeight);
+          // Top edge
+          ctx.lineTo(canvas.width - stripMargin - cornerRadius, canvas.height - stripHeight);
+          // Top-right corner
+          ctx.arcTo(canvas.width - stripMargin, canvas.height - stripHeight, canvas.width - stripMargin, canvas.height - stripHeight + cornerRadius, cornerRadius);
+          // Right edge
+          ctx.lineTo(canvas.width - stripMargin, canvas.height);
+          // Bottom-right corner (no rounding)
+          ctx.lineTo(stripMargin, canvas.height);
+          // Bottom-left corner (no rounding)
+          ctx.lineTo(stripMargin, canvas.height - stripHeight + cornerRadius);
+          // Top-left corner
+          ctx.arcTo(stripMargin, canvas.height - stripHeight, stripMargin + cornerRadius, canvas.height - stripHeight, cornerRadius);
+          ctx.closePath();
+          ctx.fill();
           
           // Add URL text to the strip
-          ctx.fillStyle = '#FFFFFF'; // White text
+          ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
           ctx.font = '22px Arial';
           ctx.textAlign = 'center';
           ctx.fillText('Visit – www.ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
@@ -592,15 +650,36 @@ const SharePoster = () => {
           ctx.font = 'bold 36px Arial';
           ctx.fillText('L&T Finance', canvas.width / 2, canvas.height - 100);
           
-          // Add black strip at the bottom with URL
+          // Add yellow strip at the bottom with URL
           try {
-            // Create black strip at bottom
+            // Create yellow strip at bottom with reduced width and rounded corners
             const stripHeight = 40; // Height of the strip in pixels
-            ctx.fillStyle = '#000000'; // Black color
-            ctx.fillRect(0, canvas.height - stripHeight, canvas.width, stripHeight);
+            const stripMargin = 100; // Margin from each side (increased from 70px to 100px as requested)
+            const cornerRadius = 10; // Radius for rounded corners
+            
+            ctx.fillStyle = '#FFC107'; // Yellow color
+            
+            // Draw rounded rectangle for the strip
+            ctx.beginPath();
+            // Start from top-left corner with radius
+            ctx.moveTo(stripMargin + cornerRadius, canvas.height - stripHeight);
+            // Top edge
+            ctx.lineTo(canvas.width - stripMargin - cornerRadius, canvas.height - stripHeight);
+            // Top-right corner
+            ctx.arcTo(canvas.width - stripMargin, canvas.height - stripHeight, canvas.width - stripMargin, canvas.height - stripHeight + cornerRadius, cornerRadius);
+            // Right edge
+            ctx.lineTo(canvas.width - stripMargin, canvas.height);
+            // Bottom-right corner (no rounding)
+            ctx.lineTo(stripMargin, canvas.height);
+            // Bottom-left corner (no rounding)
+            ctx.lineTo(stripMargin, canvas.height - stripHeight + cornerRadius);
+            // Top-left corner
+            ctx.arcTo(stripMargin, canvas.height - stripHeight, stripMargin + cornerRadius, canvas.height - stripHeight, cornerRadius);
+            ctx.closePath();
+            ctx.fill();
             
             // Add URL text to the strip
-            ctx.fillStyle = '#FFFFFF'; // White text
+            ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
             ctx.font = '22px Arial';
             ctx.textAlign = 'center';
             ctx.fillText('Visit – www.ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
@@ -721,6 +800,19 @@ const SharePoster = () => {
     navigate('/add-details');
   };
 
+  // Check if we're on mobile
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  
+  // Add resize listener to update mobile state
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="share-poster-page" style={{ backgroundImage: 'url("/images/BG.png")' }}>
       {isLoading ? (
@@ -738,51 +830,62 @@ const SharePoster = () => {
           </button>
         </div>
       ) : (
-        <div className="share-poster-content">
-          {/* Left side - Poster with base template image */}
-          <div className="poster-container">
-            <div className="poster-frame">
-              <div className="content-area">
-                {generatedPoster ? (
-                  <img 
-                    src={generatedPoster} 
-                    alt="Your Poster" 
-                    className="generated-poster"
-                  />
-                ) : (
-                  <div className="poster-placeholder">
-                    <p>Creating your poster...</p>
-                  </div>
-                )}
+        <>
+          <div className="share-poster-content">
+            {/* Left side - Poster with base template image */}
+            <div className="poster-container">
+              <div className="poster-frame">
+                <div className="content-area">
+                  {generatedPoster ? (
+                    <img 
+                      src={generatedPoster} 
+                      alt="Your Poster" 
+                      className="generated-poster"
+                    />
+                  ) : (
+                    <div className="poster-placeholder">
+                      <p>Creating your poster...</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Right side - Controls section */}
+            <div className="controls-section">
+              <h1 className="section-title">Here's Your Gamechanger Moment!</h1>
+              <p className="section-subtitle">
+                Your poster featuring your image is ready to share, print, flex, and go viral.
+              </p>
+              
+              <button className="download-btn" onClick={handleDownload}>
+                <i className="fas fa-download"></i> Download
+              </button>
+              
+              <div className="another-shot">
+                <p className="another-shot-text">Wanna give it another shot?</p>
+                <button className="make-another-btn" onClick={handleMakeAnother}>
+                  <i className="fas fa-redo-alt"></i> Make Another One
+                </button>
               </div>
             </div>
           </div>
           
-          {/* Right side - Controls section */}
-          <div className="controls-section">
-            <h1 className="section-title">Here's Your Gamechanger Moment!</h1>
-            <p className="section-subtitle">
-              Your poster featuring your image is ready to share, print, flex, and go viral.
-            </p>
-            
-            <button className="download-btn" onClick={handleDownload}>
-              <i className="fas fa-download"></i> Download
-            </button>
-            
-            <div className="another-shot">
-              <p className="another-shot-text">Wanna give it another shot?</p>
-              <button className="make-another-btn" onClick={handleMakeAnother}>
-                <i className="fas fa-redo-alt"></i> Make Another One
-              </button>
+          {/* Mobile CTA banners without white container */}
+          {isMobile && (
+            <div className="mobile-cta-section">
+              <CTABannerCarousel banners={ctaBanners} />
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
       
-      {/* Half-cut white container with CTA banners */}
-      <div className="cta-container">
-        <CTABannerCarousel banners={ctaBanners} />
-      </div>
+      {/* Half-cut white container with CTA banners - only for desktop */}
+      {!isMobile && (
+        <div className="cta-container">
+          <CTABannerCarousel banners={ctaBanners} />
+        </div>
+      )}
       
       {/* Hidden canvases for poster generation */}
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>

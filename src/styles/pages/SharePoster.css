@@ -24,7 +24,7 @@
   display: flex;
   width: 100%;
   max-width: 1200px;
-  gap: 80px;
+  gap: 30px; /* Reduced from 80px to 30px to bring controls closer to poster */
   align-items: flex-start;
   box-sizing: border-box; /* Include gaps in width calculation */
 }
@@ -33,7 +33,7 @@
 .poster-container {
   flex: 1;
   max-width: 380px;
-  margin-right: 20px;
+  margin-right: 0; /* Removed margin to bring controls closer to poster */
   position: relative;
   z-index: 10; /* Ensure poster is above any overlapping elements */
   box-sizing: border-box; /* Include margin in width calculation */
@@ -170,7 +170,8 @@
 .controls-section {
   flex: 1;
   max-width: 400px;
-  padding-left: 30px;
+  padding-left: 20px; /* Added 20px spacing between poster and content */
+  padding-top: 25px; /* Push content down by 25px */
   box-sizing: border-box; /* Include padding in width calculation */
 }
 
@@ -271,6 +272,7 @@
   
   .controls-section {
     padding-left: 0;
+    padding-top: 25px; /* Maintain vertical spacing in tablet view */
     max-width: 380px;
     text-align: center;
     width: 100%;
@@ -281,26 +283,38 @@
   .share-poster-page {
     padding: 30px 20px;
     overflow-x: hidden; /* Additional prevention for horizontal scrolling */
+    min-height: 100vh; /* Increase section height to fit content */
+    flex-direction: column;
   }
   
   .share-poster-content {
-    gap: 50px;
+    gap: 20px; /* Reduced from 50px to push content up closer to template */
     max-width: 100%;
+    flex-direction: column;
   }
   
   .poster-container {
     max-width: 320px;
     width: 100%;
+    margin-bottom: 10px; /* Reduced from 40px to bring controls closer */
+  }
+  
+  .controls-section {
+    max-width: 320px;
+    width: 100%;
+    padding-top: 0; /* Remove top padding to push content up */
   }
   
   .section-title {
-    font-size: 28px;
+    font-size: 24px;
     text-align: center;
+    margin-bottom: 10px; /* Reduced from 15px to compress space */
   }
   
   .section-subtitle {
     text-align: center;
     font-size: 15px;
+    margin-bottom: 15px; /* Reduced from 25px to compress space */
   }
   
   .download-btn, .make-another-btn {
@@ -308,8 +322,79 @@
     padding: 12px;
   }
   
+  .another-shot {
+    margin-top: 15px; /* Reduced from 25px */
+  }
+  
   .another-shot-text {
     text-align: center;
+    margin-bottom: 8px; /* Reduced from 10px */
+  }
+  
+  /* Hide the white container on mobile */
+  .cta-container {
+    display: none;
+  }
+  
+  /* Add mobile CTA banner section without white container */
+  .mobile-cta-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    overflow: hidden;
+    height: 380px; /* Further increased to 380px to prevent image cutoff */
+    max-width: 100vw;
+  }
+  
+  /* Ensure mobile CTA carousel fills container */
+  .mobile-cta-section .cta-carousel {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Set banners in a single row with auto scroll for mobile */
+  .mobile-cta-section .banners-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity; /* Changed from mandatory to proximity for smoother scrolling */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    scrollbar-width: none;
+    gap: 0; /* Remove gap between items */
+  }
+  
+  /* Banner items in a single row for mobile */
+  .mobile-cta-section .cta-banner {
+    flex: 0 0 auto;
+    width: 100%; /* Take up full width */
+    min-width: 300px;
+    height: 100%; /* Use full height of container */
+    scroll-snap-align: center;
+    padding: 10px; /* Added padding around the banner */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
+  }
+  
+  /* Ensure mobile banner images are properly displayed without cutoff */
+  .mobile-cta-section .cta-banner img {
+    max-width: 100%;
+    max-height: 360px; /* Match container height minus padding */
+    width: auto; /* Let width be determined by height to maintain aspect ratio */
+    height: auto; /* Let height be determined by width to maintain aspect ratio */
+    object-fit: contain; /* Ensure the image is fully visible */
+    margin: 0 auto; /* Center image horizontally */
+    display: block; /* Remove any inline spacing issues */
+    object-position: center; /* Ensure image is centered */
   }
 }
 
@@ -322,6 +407,7 @@
   .poster-container {
     max-width: 280px;
     width: 100%;
+    margin-bottom: 5px; /* Further reduce spacing */
   }
   
   .poster-frame {
@@ -339,18 +425,28 @@
   }
   
   .section-title {
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  
+  .section-subtitle {
+    font-size: 14px;
+    margin-bottom: 12px;
   }
   
   .controls-section {
     max-width: 280px;
     width: 100%;
+    padding-top: 0;
   }
   
   .download-btn, .make-another-btn {
     font-size: 14px;
     padding: 10px;
+  }
+  
+  .another-shot {
+    margin-top: 12px;
   }
 }
 
@@ -452,13 +548,13 @@
 .cta-container {
   position: absolute;
   right: 0;
-  top: 240px; /* Increased from 140px to 240px (100px more from top) */
-  bottom: 240px; /* Increased from 140px to 240px (100px more from bottom) */
-  width: 360px; /* Increased from 320px to 360px */
+  top: 150px; /* Further reduced from 180px to 150px to make container even taller */
+  bottom: 150px; /* Further reduced from 180px to 150px to make container even taller */
+  width: 450px; /* Increased from 400px to 450px for better visibility */
   background-color: #ffffff;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
-  overflow: hidden;
+  overflow: hidden; /* Changed back to hidden to ensure proper auto-scrolling */
   z-index: 100;
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
 }
@@ -469,15 +565,16 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Center content vertically */
   padding: 15px 0;
   box-sizing: border-box;
 }
 
-/* Scrollable container for banners */
+/* Scrollable container for banners with auto-scroll */
 .banners-container {
   width: 100%;
-  height: calc(100% - 20px); /* Account for scrollbar height */
-  overflow-x: auto; /* Enable horizontal scrolling */
+  height: 100%; /* Use full height since we're removing scrollbars */
+  overflow-x: hidden; /* Hide horizontal scrolling since it's automatic */
   overflow-y: hidden; /* Disable vertical scrolling */
   white-space: nowrap; /* Keep items in a row */
   scroll-behavior: smooth; /* Smooth scrolling */
@@ -486,14 +583,14 @@
   scroll-snap-type: x mandatory; /* Enable horizontal snap scrolling */
   scroll-padding-left: 0; /* Ensure scrolling starts at the first image */
   
-  /* Custom scrollbar styling */
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #999999 #e0e0e0; /* Firefox: thumb and track - more grayish */
+  /* Hide scrollbars completely */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* Webkit scrollbar styling (Chrome, Safari, Edge) */
+/* Hide Webkit scrollbar (Chrome, Safari, Edge) */
 .banners-container::-webkit-scrollbar {
-  height: 8px; /* Scrollbar height */
+  display: none; /* Hide scrollbar completely */
 }
 
 .banners-container::-webkit-scrollbar-track {
@@ -512,23 +609,25 @@
 
 /* Individual banner item */
 .cta-banner {
-  display: inline-block; /* Display inline but respect width/height */
+  display: flex; /* Changed to flex for better centering */
   min-width: 100%; /* Each banner takes full width of container */
   height: 100%;
   padding: 5px;
   box-sizing: border-box;
   text-align: center;
-  vertical-align: middle;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
   scroll-snap-align: start; /* Snap to start when scrolling */
 }
 
 .cta-banner img {
-  max-width: 98%;
-  max-height: 98%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   border-radius: 0; /* Removed rounded corners */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
+  transform: scale(1.15); /* Make images bigger by default */
 }
 
 .cta-banner img:hover {
@@ -551,14 +650,9 @@
   margin: 0 auto;
 }
 
-/* Scroll indicator text */
+/* Removed scroll indicator text */
 .scroll-indicator {
-  text-align: center;
-  color: #999;
-  font-size: 11px;
-  margin-top: 5px;
-  font-style: italic;
-  padding: 1px 0;
+  display: none; /* Hide the scroll indicator completely */
 }
 
 /* Media queries for responsive design */

@@ -7,13 +7,13 @@ import '../styles/pages/MobileResponsiveOverrides.css'; // Added mobile responsi
 const BG_IMAGE_PATH = '/images/section1/hero-bg.png';
 const LOGO_IMAGE_PATH = '/images/section1/LOGO copy.png';
 const CAROUSEL_IMAGE_PATHS = [
-  '/Frame15161.png',
-  '/Frame15162.png',
-  '/Frame15163.png',
-  '/Frame15164.png',
+  '/Landingpage.jpg',
+  '/Landingpage-1.jpg',
+  '/Landingpage-2.jpg',
+  '/Landingpage-3.jpg',
 ];
 const SECTION2_BG_IMAGE_PATH = '/images/section2/video-bg.png';
-const SECTION3_BG_IMAGE = '/images/Landingpage(2).jpg';
+const SECTION3_BG_IMAGE = '/images/section3/section3bgnew.jpg';
 const SECTION3_MOBILE_BG_IMAGE = '/images/section3/section3bgwithoutimage.jpg';
 const SECTION3_DESKTOP_IMAGE = '/images/section3/desktopimage.png';
 const GROUP_30A_IMAGE = '/images/section1/Group 30a (1).png';
@@ -291,9 +291,14 @@ const LandingPage = () => {
                 </h3>
               </div>
               
-              <Link to="/otp-verification" className="btn-neo start-btn">
+              <a 
+                href="https://ltfbusinessloans.ltfinance.com/?utm_source=PosterWebsite&utm_medium=Apply+now&utm_campaign=Poster+Website" 
+                className="btn-neo start-btn" 
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Apply Today <span>&gt;</span>
-              </Link>
+              </a>
             </div>
           </div>
           

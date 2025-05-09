@@ -24,8 +24,8 @@
 /* Logo loader wrapper */
 .logo-loader-wrapper {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 220px;
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,8 +34,8 @@
 
 /* Logo image container */
 .logo-image-container {
-  width: 100px;
-  height: 100px;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,6 +49,10 @@
   height: auto;
   filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
   animation: pulse 1.5s infinite alternate;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Outline container */
@@ -107,8 +111,8 @@
 /* Pulsing effect behind logo */
 .logo-pulse {
   position: absolute;
-  width: 120px;
-  height: 120px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(253, 195, 35, 0.8) 0%, rgba(253, 195, 35, 0) 70%);
   animation: pulse-grow 2s infinite alternate;

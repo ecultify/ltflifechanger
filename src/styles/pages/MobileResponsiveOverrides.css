@@ -1,80 +1,591 @@
 /* Mobile Responsive Overrides for Landing Page */
 
+
 /* Fix reduced tilt and alignment of the three text lines */
+
 @media (max-width: 768px) {
-  .hero-subtitle {
-    font-size: 20px;
-    margin-bottom: 5px;
-    text-align: left;
-    margin-top: 25px;
-    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
-    transform-origin: bottom left;
-    margin-left: 20px; /* Same position as other text lines */
-  }
-  
-  .poster-text {
-    font-size: 32px !important; /* Increased size */
-    display: inline-block;
-    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
-    transform-origin: bottom left;
-    margin-bottom: 5px;
-    margin-top: 0;
-  }
-  
-  .neo-highlight.poster-text:first-of-type {
-    margin-left: 20px; /* Push to the left, centered with tilt */
-    transform: rotate(-3deg) !important; /* Reduced tilt to match desktop */
-    transform-origin: bottom left !important;
-    margin-bottom: 10px;
-    margin-top: 5px;
-    text-align: left; /* Ensure text alignment */
-  }
-  
-  .poster-text:nth-child(3) {
-    margin-left: 20px; /* Push to the left, centered with tilt */
-    transform: rotate(-3deg) !important; /* Reduced tilt only */
-    transform-origin: bottom left;
-    margin-bottom: 20px;
-    margin-top: -5px;
-    text-align: left; /* Ensure text alignment */
-  }
-  
-  /* Reduced height of the Make My Poster button and shadow color */
-  .poster-btn {
-    margin-left: 30px !important; /* Push to the left to match desktop */
-    margin-top: 35px;
-    margin-bottom: 15px;
-    font-size: 16px;
-    padding: 8px 20px !important; /* Reduced height */
-    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #264E72 !important; /* Changed shadow color to #264E72 */
-  }
-  
-  /* Adjust images in mobile view */
-  .mobile-frame-container {
-    min-height: 180px !important; /* Decreased height for better proportions */
-    align-items: center !important;
-    margin-top: 20px !important; /* Push down images by 20px */
-  }
-  
-  .mobile-frame-container .profile-image-container {
-    transform: translateY(0) !important; /* Reset vertical positioning */
-    width: 200px !important; /* Increase size compared to Group image */
-  }
-  
-  .mobile-frame-container .group-30a-image {
-    position: relative !important;
-    top: auto !important;
-    width: 150px !important; /* Reduced size to make it smaller than profile image */
-    height: auto !important;
-  }
-  
-  /* Make testimonial cards bigger height-wise */
-  .testimonial-card {
-    min-width: 100% !important;
-    height: 450px !important; /* Increased height from 380px to 450px */
-  }
-  
-  .testimonial-container {
-    height: 470px !important; /* Increased container height to match card height */
-  }
+    /* Reset any transforms that might be interfering */
+    .hero-section * {
+        box-sizing: border-box !important;
+    }
+    /* Make logo bigger on mobile */
+    .hero-section .hero-logo {
+        width: 500px !important;
+        /* Further increased size for mobile */
+        top: -40px !important;
+        /* Pushed up further */
+        left: calc(50% + 25px) !important;
+        /* Center horizontally + 25px to the right */
+        transform: translateX(-50%) !important;
+        /* Center alignment */
+        z-index: 2 !important;
+        position: absolute !important;
+    }
+    /* Center the text elements - using more specific selector */
+    .hero-section .hero-content .hero-text-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        margin: 0 auto !important;
+        padding-top: 0 !important;
+        /* Remove top padding */
+        margin-top: -100px !important;
+        /* Adjusted to create more space between logo and text */
+        width: 100% !important;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+        /* Reset any transforms first */
+    }
+    .hero-section .hero-content .hero-text-container .hero-subtitle {
+        font-size: 22px !important;
+        margin-bottom: 10px !important;
+        text-align: center !important;
+        margin-top: 300px !important;
+        /* Pushed down by 55px from 120px */
+        margin-left: 0 !important;
+        /* Center alignment */
+        width: 100% !important;
+        display: block !important;
+        position: relative !important;
+        left: calc(50% - 60px) !important;
+        /* Move 70px to the left from center */
+        transform: translateX(-50%) rotate(-5deg) !important;
+        right: 0 !important;
+    }
+    .hero-section .hero-content .hero-text-container .poster-text {
+        font-size: 32px !important;
+        /* Increased size */
+        display: block !important;
+        transform: rotate(-5deg) !important;
+        /* Tilt with right top corner going up */
+        margin-bottom: 5px !important;
+        margin-top: 0 !important;
+        text-align: center !important;
+        width: 100% !important;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    .hero-section .hero-content .hero-text-container .neo-highlight.poster-text {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        transform: rotate(-5deg) !important;
+        /* Tilt with right top corner going up */
+        margin-bottom: 10px !important;
+        margin-top: 5px !important;
+        text-align: center !important;
+        width: auto !important;
+        display: block !important;
+        max-width: 320px !important;
+        /* Increased width to match larger logo */
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+        white-space: nowrap !important;
+        /* Prevent text from wrapping */
+    }
+    /* Specific style for "Free Personalised" line */
+    .hero-section .hero-content .hero-text-container .neo-highlight.poster-text.line-1 {
+        white-space: nowrap !important;
+        /* Prevent text from wrapping */
+        font-size: 30px !important;
+        /* Larger font to match bigger logo */
+        left: calc(50% - 60px) !important;
+        /* Move 70px to the left from center */
+        transform: translateX(-50%) rotate(-5deg) !important;
+        /* Center perfectly with logo while maintaining tilt */
+    }
+    /* Specific style for "Business Poster" line */
+    .hero-section .hero-content .hero-text-container .neo-highlight.poster-text.line-2 {
+        white-space: nowrap !important;
+        /* Prevent text from wrapping */
+        font-size: 30px !important;
+        /* Larger font to match bigger logo */
+        left: calc(50% - 70px) !important;
+        /* Move 70px to the left from center */
+        transform: translateX(-50%) rotate(-5deg) !important;
+        /* Center perfectly with logo while maintaining tilt */
+    }
+    /* Improved Make My Poster button */
+    .hero-section .hero-content .hero-text-container .poster-btn,
+    .hero-section .hero-content .hero-text-container .btn-neo.poster-btn {
+        margin-left: auto !important;
+        /* Center alignment */
+        margin-right: auto !important;
+        /* Center alignment */
+        margin-top: 20px !important;
+        margin-bottom: 30px !important;
+        font-size: 20px !important;
+        /* Larger text */
+        font-weight: 700 !important;
+        /* Bolder text */
+        padding: 8px 28px !important;
+        /* Reduced height but wider */
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #264E72 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transform: rotate(0deg) !important;
+        /* No tilt as requested */
+        position: relative !important;
+        z-index: 5 !important;
+        /* Ensure button is above other elements */
+        left: 0 !important;
+        right: 0 !important;
+        width: auto !important;
+        max-width: 80% !important;
+    }
+    /* Make the arrow icon bigger */
+    .poster-btn span {
+        font-size: 24px !important;
+        /* Bigger arrow */
+        margin-left: 8px !important;
+        font-weight: 700 !important;
+    }
+    /* Adjust images in mobile view */
+    .mobile-frame-container {
+        min-height: 200px !important;
+        /* Increased height for better proportions */
+        align-items: flex-end !important;
+        /* Align items to bottom */
+        margin-top: 30px !important;
+        /* Push down images */
+        margin-bottom: 0 !important;
+        /* Closer to testimonials */
+        justify-content: space-between !important;
+        position: relative !important;
+        z-index: 1 !important;
+        /* Put behind testimonial cards */
+    }
+    .mobile-frame-container .profile-image-container {
+        transform: translateY(0) !important;
+        /* Reset vertical positioning */
+        width: 300px !important;
+        /* Doubled width of changing images */
+        height: 300px !important;
+        /* Doubled height from the bottom */
+        overflow: hidden !important;
+        /* Hide overflow */
+        position: relative !important;
+        margin-bottom: 0 !important;
+        /* Align to bottom */
+        border: none !important;
+        /* Remove border to prevent cutoff */
+        box-shadow: none !important;
+        /* Remove shadow */
+        background-color: transparent !important;
+        /* Make background transparent */
+        padding: 0 !important;
+        /* Remove padding */
+    }
+    .mobile-frame-container .profile-carousel-image {
+        position: relative !important;
+        /* Changed from absolute to relative */
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 300px !important;
+        /* Doubled height from the bottom */
+        object-fit: contain !important;
+        /* Changed from cover to contain */
+        object-position: bottom !important;
+    }
+    .mobile-frame-container .group-30a-image {
+        position: relative !important;
+        top: auto !important;
+        width: 300px !important;
+        /* Doubled width of constant image */
+        height: 300px !important;
+        /* Doubled height to match profile container */
+        object-fit: contain !important;
+        object-position: bottom !important;
+        margin-bottom: 0 !important;
+        /* Align to bottom */
+    }
+    /* Fix testimonial container positioning */
+    .testimonial-container {
+        margin-top: -5px !important;
+        position: relative !important;
+        z-index: 2 !important;
+        /* Put in front of the images */
+        padding-top: 0 !important;
+    }
+    /* Make testimonial cards bigger height-wise */
+    .testimonial-card {
+        min-width: 100% !important;
+        height: 459px !important;
+        /* Increased by 4.5px from 450px */
+    }
+    .testimonial-container {
+        height: 479px !important;
+        /* Increased by 4.5px to match new card height */
+    }
+    /* Fix for section 2 title to appear on one line in mobile */
+    .section-2-title {
+        white-space: nowrap !important;
+        font-size: 18px !important;
+        /* Further reduced font size */
+        width: 100% !important;
+        text-align: center !important;
+        overflow: visible !important;
+        transform: rotate(-2deg) skew(0deg, 8deg) !important;
+        /* Increased skew to pull down bottom right corner more */
+        display: inline-block !important;
+        padding: 5px 15px !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+    .section-2-title-container {
+        width: 100% !important;
+        text-align: center !important;
+        margin: 0 auto !important;
+        position: relative !important;
+        left: -20px !important; /* Move headline to the left by 20px */
+    }
+    /* Increase Start Creating button size */
+    .section-2 .start-btn {
+        font-size: 20px !important;
+        padding: 12px 30px !important;
+        font-weight: 700 !important;
+        margin: 20px auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .section-2 .start-btn span {
+        font-size: 24px !important;
+        margin-left: 8px !important;
+        font-weight: 700 !important;
+    }
+    /* Section 3 improvements */
+    .section-3 {
+        min-height: 650px !important; /* Significantly increased section height */
+        padding-bottom: 50px !important;
+    }
+    
+    .section-3 .loan-disbursement-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 20px !important;
+        margin-top: -30px !important;
+        /* Push everything up by 30px */
+        min-height: 350px !important; /* Increased container height */
+    }
+    .section-3 .logo-image {
+        width: 350px !important;
+        /* Further increased logo size */
+        margin: 0 auto 20px auto !important;
+        /* Reduced bottom margin to push content up */
+        display: block !important;
+    }
+    .section-3 .loan-text-carousel {
+        margin-bottom: 25px !important;
+        /* Added space below text */
+        text-align: center !important;
+        width: 100% !important;
+    }
+    .section-3 .start-btn {
+        font-size: 20px !important;
+        /* Larger text */
+        padding: 12px 30px !important;
+        /* Larger button */
+        font-weight: 700 !important;
+        /* Bolder text */
+        margin: -15px auto 20px auto !important; /* Push button up by 35px */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .section-3 .start-btn span {
+        font-size: 24px !important;
+        /* Bigger arrow */
+        margin-left: 8px !important;
+        font-weight: 700 !important;
+    }
+    
+    /* OTP Verification page mobile improvements */
+    @media (max-width: 768px) {
+        /* Push up the Bumrah image container */
+        .otp-page .bumrah-container {
+            margin-top: -5px !important; /* Reduced from 40px to push it up by 45px */
+        }
+        
+        /* Push up the form container */
+        .otp-page .form-container {
+            margin-top: -45px !important; /* Negative margin to push it up */
+            position: relative !important;
+            z-index: 2 !important; /* Ensure it's above the image */
+        }
+    }
+    
+    /* AddDetails page mobile improvements */
+    @media (max-width: 768px) {
+        /* Hide desktop stepper */
+        .details-page .fixed-stepper-container,
+        .right-section .fixed-stepper-container {
+            display: none !important;
+        }
+        
+        /* Style for mobile stepper in upload photo page */
+        .form-container .fixed-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 320px;
+            padding: 5px 10px;
+            margin: 10px auto 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        
+        /* Mobile camera container styles */
+        .mobile-camera-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .mobile-camera-container .camera-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .mobile-camera-container .person-outline-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .mobile-camera-container .outline-image {
+            width: 80%;
+            max-width: 250px;
+            opacity: 0.8;
+        }
+        
+        .mobile-camera-container .positioning-guide {
+            position: absolute;
+            bottom: 70px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        
+        .mobile-camera-container .camera-controls {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .mobile-camera-container .camera-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mobile-camera-container .camera-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .mobile-camera-container .camera-btn.disabled {
+            background-color: #cccccc;
+            color: #666666;
+        }
+        
+        .mobile-camera-container .camera-btn.cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* Styles for face detection status */
+        .mobile-camera-container .person-outline-overlay.face-detected .outline-image {
+            border: 2px solid yellow;
+        }
+        
+        .mobile-camera-container .person-outline-overlay.face-in-position .outline-image {
+            border: 2px solid #4CAF50;
+        }
+        
+        .form-container .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .form-container .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .form-container .step-label {
+            font-size: 10px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        .form-container .progress-line {
+            height: 2px;
+            flex-grow: 1;
+            margin: 0 5px;
+            position: relative;
+            top: -8px;
+        }
+        
+        /* Remove the current background image div */
+        .details-page .right-section > div[style*="backgroundImage"] {
+            display: none !important;
+        }
+        
+        /* Reset the margin-top of the right-content */
+        .details-page .right-content {
+            margin-top: 0 !important;
+        }
+        
+        /* Style the left section for mobile view */
+        .details-page .left-section {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            height: auto !important;
+            padding: 15px 0 0 0 !important;
+            margin-bottom: 0 !important;
+            overflow: visible !important;
+            position: relative !important;
+        }
+        
+        /* Adjust the form container to connect with the image */
+        .details-page .right-section .right-content .form-container,
+        body .details-page .form-container {
+            position: relative !important;
+            padding-top: 50px !important; /* Add space for the stepper */
+            margin-top: -35px !important; /* Pushed up by 25px to touch Layer1 image */
+            border-radius: 20px 20px 0 0 !important; /* Explicit rounded top corners */
+            border-top-left-radius: 20px !important;
+            border-top-right-radius: 20px !important;
+            background-color: white !important;
+            z-index: 2 !important;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1) !important; /* Add shadow for depth */
+            overflow: hidden !important; /* Ensure content respects the rounded corners */
+        }
+        
+        /* Directly target any possible selector that might have flat corners */
+        .details-page.form-container,
+        .details-page .form-container,
+        .details-page > .form-container,
+        .form-container,
+        #root .details-page .form-container {
+            border-radius: 20px 20px 0 0 !important;
+        }
+        
+        /* Additionally ensure the right-section background doesn't override form styles */
+        .details-page .right-section {
+            background: transparent !important;
+        }
+        
+        /* Make sure the right-content container allows the form to have rounded corners */
+        .details-page .right-content {
+            background: transparent !important;
+            overflow: visible !important;
+        }
+        
+        /* Container for all three images */
+        .details-page .mobile-left-images {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* Logo image at the top */
+        .details-page .mobile-logo-image {
+            width: 100% !important; /* Use percentage for better responsive centering */
+            max-width: 640px !important; /* Maximum width limit */
+            margin: -15px auto 20px auto !important; /* Pushed up by 25px and centered */
+            display: block !important;
+            position: relative !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important; /* Perfect centering */
+        }
+        
+        /* Group image in the middle */
+        .details-page .mobile-group-image {
+            width: 220px !important; /* Increased size from 180px to 220px */
+            margin: -25px auto 30px auto !important; /* Pushed up by 25px */
+            display: block !important;
+        }
+        
+        /* People image at the bottom */
+        .details-page .mobile-people-image {
+            width: 100% !important;
+            max-height: 180px !important;
+            object-fit: contain !important;
+            object-position: bottom center !important;
+            margin-bottom: -40px !important; /* Increased negative margin to ensure it touches the form container top */
+            display: block !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        /* Add stepper indicator inside the form container */
+        .details-page .form-container {
+            position: relative !important;
+            padding-top: 30px !important; /* Reduced from 50px to 30px to push content up */
+        }
+        
+        /* Move the stepper up by 20px */
+        .details-page .mobile-stepper-container {
+            margin-top: -20px !important;
+            margin-bottom: 10px !important;
+            position: relative !important;
+        }
+        
+        /* Hide desktop stepper */
+        .details-page .fixed-stepper-container {
+            display: none !important;
+        }
+    }
 }

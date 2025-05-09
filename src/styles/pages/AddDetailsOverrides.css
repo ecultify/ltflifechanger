@@ -25,7 +25,7 @@
 
 /* Adjusted positioning for logo and Group15183 image */
 .left-logo-container {
-  top: 45px !important; /* Pushed down by 50px from -5px */
+  top: -5px !important; /* Moved up by 50px from 45px */
 }
 
 .left-logo-image {
@@ -33,11 +33,16 @@
 }
 
 .left-group-container {
-  top: 300px !important; /* Pushed down by an additional 25px from 275px */
+  top: 250px !important; /* Moved up by 50px from 300px */
 }
 
 .left-group-image {
-  max-width: 300px !important; /* Further reduced size from 340px to 300px */
+  max-width: 350px !important; /* Increased size from 300px to 350px */
+}
+
+/* Add spacing between Group15183 and Layer1 images */
+.left-group-container {
+  margin-bottom: 20px !important; /* Adding 20px spacing */
 }
 
 /* Ensure the Group15183 image stays center-aligned */
@@ -55,7 +60,18 @@
 
 /* Two-column form layout for better space utilization */
 .form-container {
-  margin-top: -30px !important; /* Maintained */
+  margin-top: 15px !important; /* Changed from -30px to 15px to push form down */
+}
+
+/* Mobile rounded corners for form container */
+@media (max-width: 768px) {
+  .details-page .form-container,
+  body .details-page .form-container,
+  html body .details-page .form-container {
+    border-radius: 20px 20px 0 0 !important;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden !important;
+  }
 }
 
 /* Add space between top and stepper indicator */

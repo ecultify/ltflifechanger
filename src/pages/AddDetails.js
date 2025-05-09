@@ -572,7 +572,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                 <img 
                   src="/images/adddetails/Group15183.png" 
                   alt="Group" 
-                  style={{ width: '300px' }} /* Further reduced size from 450px to 300px */
+                  style={{ width: '350px', marginBottom: '20px' }} /* Increased size from 300px to 350px and added spacing */
                 />
               </div>
             </div>
@@ -588,13 +588,30 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
           </>
         )}
         
-        {/* Keep the original image for mobile view */}
+        {/* Mobile view with all three images stacked */}
         {isMobile && (
-          <img 
-            src="/images/adddetails pageimage.jpg" 
-            alt="L&T Finance Add Details" 
-            className="left-section-image"
-          />
+          <div className="mobile-left-images">
+            {/* Logo at the top */}
+            <img 
+              src="/images/adddetails/LOGO.png" 
+              alt="L&T Finance Logo" 
+              className="mobile-logo-image"
+            />
+            
+            {/* Group15183 in the middle */}
+            <img 
+              src="/images/adddetails/Group15183.png" 
+              alt="Group Image" 
+              className="mobile-group-image"
+            />
+            
+            {/* Layer1 at the bottom */}
+            <img 
+              src="/images/adddetails/Layer1.png" 
+              alt="People Image" 
+              className="mobile-people-image"
+            />
+          </div>
         )}
       </div>
       
@@ -618,26 +635,30 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             </div>
           </div>
         </div>
-        {isMobile && (
-          <div style={{
-            position: 'absolute',
-            top: '80px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '100%',
-            maxWidth: '700px',
-            height: '600px', // Further increased height to show full image
-            backgroundImage: 'url("/images/Group_15198(1).png")',
-            marginTop: '10px', // Push down by 10px
-            backgroundSize: '100%', // Reduced size to fit better
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-            zIndex: 0
-          }}></div>
-        )}
-        <div className="right-content" style={isMobile ? { marginTop: '600px' } : {}}>
-          <div className="form-container">
-
+        {/* Removed old background image div */}
+        <div className="right-content" style={isMobile ? { marginTop: '0' } : {}}>
+          <div className="form-container" style={isMobile ? { borderTopLeftRadius: '20px', borderTopRightRadius: '20px', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px', boxShadow: '0 -5px 15px rgba(0,0,0,0.1)' } : {}}>
+            {/* Added stepper indicator for mobile view inside form container */}
+            {isMobile && (
+              <div className="mobile-stepper-container form-stepper">
+                <div className="mobile-stepper">
+                  <div className="progress-step completed">
+                    <div className="step-circle">1</div>
+                    <div className="step-label">OTP</div>
+                  </div>
+                  <div className="progress-line active"></div>
+                  <div className="progress-step active">
+                    <div className="step-circle">2</div>
+                    <div className="step-label">Add Details</div>
+                  </div>
+                  <div className="progress-line"></div>
+                  <div className="progress-step">
+                    <div className="step-circle">3</div>
+                    <div className="step-label">Upload</div>
+                  </div>
+                </div>
+              </div>
+            )}
             
             <h1 className="form-title">Add your Details</h1>
             
@@ -751,7 +772,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                       </div>
                     ))}
                     <div className="keywords-input" style={{ ...inputStyle, fontStyle: 'italic', color: '#999' }}>
-                      Select keywords from below
+                      Select keywords
                     </div>
                   </div>
                 </div>

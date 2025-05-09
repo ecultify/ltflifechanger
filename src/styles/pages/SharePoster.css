@@ -19,6 +19,25 @@
   position: relative; /* For absolute positioning of the half-cut container */
 }
 
+/* Logo container styles */
+.logo-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100; /* Ensure logo appears above other elements */
+}
+
+.header-logo {
+  width: 180px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+}
+
 /* Main content container */
 .share-poster-content {
   display: flex;

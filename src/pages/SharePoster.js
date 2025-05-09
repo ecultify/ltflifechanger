@@ -32,6 +32,22 @@ const SharePoster = () => {
   
   // Note: isMobile state is declared further down in the component
 
+  // Preload images including phone icon when component mounts
+  const preloadedPhoneIconRef = useRef(null);
+
+  useEffect(() => {
+    // Preload the phone icon to ensure it's available
+    const phoneIcon = new Image();
+    phoneIcon.src = '/images/PhoneIcon.png';
+    phoneIcon.onload = () => {
+      console.log('Phone icon preloaded successfully');
+      preloadedPhoneIconRef.current = phoneIcon;
+    };
+    phoneIcon.onerror = (err) => {
+      console.error('Failed to preload phone icon:', err);
+    };
+  }, []);
+
   // Preload the template image when component mounts
   useEffect(() => {
     const preloadTemplateImage = async () => {
@@ -499,39 +515,48 @@ const SharePoster = () => {
           const phoneX = 80;
           const phoneY = circleY + 85;
           
-          // Use the PhoneIcon.png image for the phone icon
-          const phoneImage = new Image();
-          phoneImage.src = '/images/PhoneIcon.png';
-          
-          // Set up the drawing of the phone icon
-          const drawPhoneIcon = () => {
+          // Use the preloaded phone icon if available, otherwise create a new one
+          if (preloadedPhoneIconRef.current) {
+            // Use the preloaded icon which is guaranteed to be loaded
+            console.log('Using preloaded phone icon');
             const iconSize = 32; // Size for the icon
             ctx.drawImage(
-              phoneImage, 
+              preloadedPhoneIconRef.current,
               phoneX - iconSize/2, // Center horizontally
               phoneY - iconSize/2, // Center vertically
               iconSize,
               iconSize
             );
-          };
-          
-          // Draw the phone icon image
-          if (phoneImage.complete) {
-            // If image is already loaded/cached, draw it immediately
-            drawPhoneIcon();
           } else {
-            // If image is not yet loaded, set up event handlers
-            phoneImage.onload = drawPhoneIcon;
+            // Fallback if preloaded icon is not available
+            console.warn('Preloaded icon not available, drawing fallback');
+            // Draw a yellow circle with phone symbol as fallback
+            ctx.beginPath();
+            ctx.fillStyle = '#FFD700'; // Yellow background
+            ctx.arc(phoneX, phoneY, 16, 0, Math.PI * 2);
+            ctx.fill();
             
-            // Fallback in case image fails to load
-            phoneImage.onerror = () => {
-              console.error('Failed to load phone icon from: /images/PhoneIcon.png');
-              // Draw a yellow circle with phone symbol as fallback
-              ctx.beginPath();
-              ctx.fillStyle = '#FFD700'; // Yellow background
-              ctx.arc(phoneX, phoneY, 16, 0, Math.PI * 2);
-              ctx.fill();
-            };
+            // Draw phone handset in black
+            ctx.fillStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            // Earpiece (top circle)
+            ctx.beginPath();
+            ctx.arc(phoneX - 5, phoneY - 3, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Mouthpiece (bottom circle)
+            ctx.beginPath();
+            ctx.arc(phoneX + 5, phoneY + 3, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Connect the two parts with a line
+            ctx.beginPath();
+            ctx.strokeStyle = '#000000';
+            ctx.moveTo(phoneX - 5, phoneY - 3);
+            ctx.lineTo(phoneX + 5, phoneY + 3);
+            ctx.stroke();
           }
           
           // Draw company info text - properly aligned vertically with icons
@@ -692,16 +717,13 @@ const SharePoster = () => {
           const iconX = canvas.width / 2 - ctx.measureText(phoneNumber).width / 2 - 30;
           const iconY = 350;
           
-          // Use the PhoneIcon.png image for the phone icon in fallback poster
-          const fallbackPhoneImage = new Image();
-          fallbackPhoneImage.src = '/images/PhoneIcon.png';
-          
-          // Function to draw the phone number with icon
-          const drawPhoneNumberWithIcon = () => {
-            // Draw the icon
+          // Draw phone icon using preloaded image if available
+          if (preloadedPhoneIconRef.current) {
+            console.log('Using preloaded phone icon in fallback poster');
             const iconSize = 24; // Smaller size for fallback poster
+            // Draw the icon
             ctx.drawImage(
-              fallbackPhoneImage,
+              preloadedPhoneIconRef.current,
               iconX - iconSize/2,
               iconY - iconSize/2 - 8, // Adjust vertical position to align with text
               iconSize,
@@ -710,19 +732,11 @@ const SharePoster = () => {
             
             // Draw the phone number text next to icon
             ctx.fillText(phoneNumber, canvas.width / 2, iconY);
-          };
-          
-          // Draw the phone icon and number
-          if (fallbackPhoneImage.complete) {
-            drawPhoneNumberWithIcon();
           } else {
-            fallbackPhoneImage.onload = drawPhoneNumberWithIcon;
-            
-            // If image fails to load, just show the phone number without an icon
-            fallbackPhoneImage.onerror = () => {
-              console.error('Failed to load phone icon in fallback poster');
-              ctx.fillText(phoneNumber, canvas.width / 2, iconY);
-            };
+            // Fallback if preloaded icon is not available
+            console.warn('Preloaded icon not available in fallback poster, using text only');
+            // Just show the phone number without an icon
+            ctx.fillText(phoneNumber, canvas.width / 2, iconY);
           }
           
           // Add tagline with Poppins font
@@ -922,6 +936,13 @@ const SharePoster = () => {
 
   return (
     <div className="share-poster-page" style={{ backgroundImage: 'url("/images/BG.png")' }}>
+      {/* Logo in top left corner with redirect to home */}
+      <div className="logo-container">
+        <a href="/" title="Go to Home Page">
+          <img src="/images/LOGO.png" alt="L&T Finance Logo" className="header-logo" />
+        </a>
+      </div>
+      
       {isLoading ? (
         <div className="loading-overlay">
           <Loader message={loadingStatus} />

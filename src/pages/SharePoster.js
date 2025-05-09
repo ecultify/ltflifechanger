@@ -685,8 +685,45 @@ const SharePoster = () => {
             phoneNumber = phoneNumber.replace('+91', '').trim();
           }
           
+          // Draw phone number with icon
           ctx.font = '24px Arial';
-          ctx.fillText(phoneNumber, canvas.width / 2, 350);
+          
+          // Set up position for phone icon and text
+          const iconX = canvas.width / 2 - ctx.measureText(phoneNumber).width / 2 - 30;
+          const iconY = 350;
+          
+          // Use the PhoneIcon.png image for the phone icon in fallback poster
+          const fallbackPhoneImage = new Image();
+          fallbackPhoneImage.src = '/images/PhoneIcon.png';
+          
+          // Function to draw the phone number with icon
+          const drawPhoneNumberWithIcon = () => {
+            // Draw the icon
+            const iconSize = 24; // Smaller size for fallback poster
+            ctx.drawImage(
+              fallbackPhoneImage,
+              iconX - iconSize/2,
+              iconY - iconSize/2 - 8, // Adjust vertical position to align with text
+              iconSize,
+              iconSize
+            );
+            
+            // Draw the phone number text next to icon
+            ctx.fillText(phoneNumber, canvas.width / 2, iconY);
+          };
+          
+          // Draw the phone icon and number
+          if (fallbackPhoneImage.complete) {
+            drawPhoneNumberWithIcon();
+          } else {
+            fallbackPhoneImage.onload = drawPhoneNumberWithIcon;
+            
+            // If image fails to load, just show the phone number without an icon
+            fallbackPhoneImage.onerror = () => {
+              console.error('Failed to load phone icon in fallback poster');
+              ctx.fillText(phoneNumber, canvas.width / 2, iconY);
+            };
+          }
           
           // Add tagline with Poppins font
           ctx.font = 'italic 31.5px Poppins, sans-serif'; // Increased from 28px to 31.5px (28 + 3.5)

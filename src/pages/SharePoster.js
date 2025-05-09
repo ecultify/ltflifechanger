@@ -388,7 +388,7 @@ const SharePoster = () => {
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 45; // Increased significantly to provide ample space for the tagline
+          const maxLineLength = 36; // Slightly decreased to reduce tagline width
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines
@@ -499,15 +499,13 @@ const SharePoster = () => {
           const phoneX = 80;
           const phoneY = circleY + 85;
           
-          // Preload the phone icon image to ensure it's available when needed
-          const phoneIconPath = '/images/PhoneIcon.png';
+          // Use the PhoneIcon.png image for the phone icon
           const phoneImage = new Image();
-          phoneImage.src = phoneIconPath;
+          phoneImage.src = '/images/PhoneIcon.png';
           
-          // We need to make sure the image is loaded before using it
-          if (phoneImage.complete) {
-            // If image is already cached, draw it immediately
-            const iconSize = 32; // Size for the icon (adjust as needed)
+          // Set up the drawing of the phone icon
+          const drawPhoneIcon = () => {
+            const iconSize = 32; // Size for the icon
             ctx.drawImage(
               phoneImage, 
               phoneX - iconSize/2, // Center horizontally
@@ -515,25 +513,22 @@ const SharePoster = () => {
               iconSize,
               iconSize
             );
+          };
+          
+          // Draw the phone icon image
+          if (phoneImage.complete) {
+            // If image is already loaded/cached, draw it immediately
+            drawPhoneIcon();
           } else {
-            // If image is not yet loaded, wait for it
-            phoneImage.onload = () => {
-              const iconSize = 32; // Size for the icon (adjust as needed)
-              ctx.drawImage(
-                phoneImage, 
-                phoneX - iconSize/2, // Center horizontally
-                phoneY - iconSize/2, // Center vertically
-                iconSize,
-                iconSize
-              );
-            };
+            // If image is not yet loaded, set up event handlers
+            phoneImage.onload = drawPhoneIcon;
             
-            // In case of error, fallback to a colored circle
+            // Fallback in case image fails to load
             phoneImage.onerror = () => {
-              console.error('Failed to load phone icon from:', phoneIconPath);
-              // Draw a yellow circle with a simple phone shape as fallback
+              console.error('Failed to load phone icon from: /images/PhoneIcon.png');
+              // Draw a yellow circle with phone symbol as fallback
               ctx.beginPath();
-              ctx.fillStyle = '#FFD700'; // Yellow color
+              ctx.fillStyle = '#FFD700'; // Yellow background
               ctx.arc(phoneX, phoneY, 16, 0, Math.PI * 2);
               ctx.fill();
             };

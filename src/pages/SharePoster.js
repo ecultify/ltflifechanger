@@ -303,10 +303,10 @@ const SharePoster = () => {
             // Using the full template height (with some small margins)
             const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
             
-            // Calculate scale to make user image 90% of Bumrah's height, preserving aspect ratio
-            const heightScale = (bumrahHeight * 0.9) / userImgHeight; // Make user image 90% of Bumrah's height
+            // Calculate scale to make user image 75% of Bumrah's height, preserving aspect ratio
+            const heightScale = (bumrahHeight * 0.75) / userImgHeight; // Make user image 75% of Bumrah's height (reduced from 90%)
             const scaledWidth = userImgWidth * heightScale;
-            const scaledHeight = bumrahHeight * 0.9; // 90% of Bumrah's height
+            const scaledHeight = bumrahHeight * 0.75; // 75% of Bumrah's height
             
             console.log('Scaling to match Bumrah height:', { heightScale, scaledWidth, scaledHeight });
             
@@ -314,8 +314,8 @@ const SharePoster = () => {
             // Position is adjusted to push the image to the left
             const userX = (canvas.width * 0.08) - 80; // Left position
             
-            // Position vertically to align with Bumrah and push up by 3px as requested
-            const userY = (canvas.height - scaledHeight) + 90 - 3; // Base position + 90px adjustment - 3px (push up)
+            // Position vertically to align with Bumrah with adjusted height
+            const userY = (canvas.height - scaledHeight) + 110; // Adjusted position for smaller image
             
             // Apply the calculated placement
             console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });

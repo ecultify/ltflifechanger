@@ -613,7 +613,7 @@ const UploadPhoto = () => {
         const formDataResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
           method: 'POST',
           headers: {
-            'X-Api-Key': 'nqiyHVpjEo7HST37aokUDUVZ',
+            'X-Api-Key': 'YqX5aCLQjcw3QuC9qqhVfc6X',
           },
           body: formData
         });
@@ -654,7 +654,7 @@ const UploadPhoto = () => {
         const removeResult = await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           xhr.open('POST', 'https://api.remove.bg/v1.0/removebg', true);
-          xhr.setRequestHeader('X-Api-Key', 'nqiyHVpjEo7HST37aokUDUVZ');
+          xhr.setRequestHeader('X-Api-Key', 'YqX5aCLQjcw3QuC9qqhVfc6X');
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.responseType = 'blob';
 

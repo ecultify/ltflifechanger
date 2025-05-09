@@ -146,7 +146,7 @@ const UploadPhoto = () => {
         const yTolerancePercent = isSelfieMode ? 15 : 20; // % of screen height from center
 
         // Calculate acceptable minimum face size as percentage of screen width
-        const minFaceSizePercent = isSelfieMode ? 25 : 15; // Face should take up at least this % of screen width
+        const minFaceSizePercent = isSelfieMode ? 15 : 15; // Reduced from 25% to 15% for selfie mode to encourage taking photos from a distance
 
         // Check if face is within acceptable position with different criteria for selfie mode
         let inPosition = false;

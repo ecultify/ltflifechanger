@@ -311,8 +311,8 @@ const SharePoster = () => {
             console.log('Scaling to match Bumrah height:', { heightScale, scaledWidth, scaledHeight });
             
             // Position to place user on the left side of Bumrah
-            // Position is adjusted to push the image to the left
-            const userX = (canvas.width * 0.08) - 80; // Left position
+            // Position is adjusted to push the image further to the left (35px more than before)
+            const userX = (canvas.width * 0.08) - 115; // Left position (moved 35px more to the left)
             
             // Position vertically to align with Bumrah with adjusted height
             const userY = (canvas.height - scaledHeight) + 110; // Adjusted position for smaller image
@@ -484,25 +484,26 @@ const SharePoster = () => {
           ctx.textAlign = 'center';
           ctx.fillText('👤', 80, circleY + 8); // Centered the icon
           
-          // Draw phone icon in the second circle - using a black phone icon instead of emoji
-          ctx.fillStyle = '#000000'; // Pure black hexadecimal color
-          ctx.font = 'bold 24px Arial';
-          ctx.textAlign = 'center';
-          
-          // Draw a custom black phone icon instead of the emoji
+          // Draw phone icon in the second circle - improved drawing for better visibility
           const phoneX = 80;
           const phoneY = circleY + 85;
           
-          // Draw phone handset shape
+          // Draw a clear phone icon (black fill)
+          ctx.fillStyle = '#000000'; // Black color
+          
+          // Phone receiver base (handle)
           ctx.beginPath();
-          // Phone receiver
-          ctx.moveTo(phoneX - 10, phoneY - 8);
-          ctx.lineTo(phoneX - 5, phoneY - 12);
-          ctx.lineTo(phoneX + 5, phoneY - 2);
-          ctx.lineTo(phoneX + 10, phoneY - 7);
-          ctx.lineTo(phoneX + 5, phoneY + 3);
-          ctx.lineTo(phoneX - 5, phoneY - 7);
-          ctx.closePath();
+          ctx.roundRect(phoneX - 8, phoneY - 6, 16, 12, 3);
+          ctx.fill();
+          
+          // Phone receiver top part
+          ctx.beginPath();
+          ctx.arc(phoneX, phoneY - 9, 5, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Phone receiver bottom part
+          ctx.beginPath();
+          ctx.arc(phoneX, phoneY + 9, 5, 0, Math.PI * 2);
           ctx.fill();
           
           // Draw company info text - properly aligned vertically with icons
@@ -510,20 +511,53 @@ const SharePoster = () => {
           ctx.font = 'bold 28px Arial';
           ctx.textAlign = 'left';
           
-          // Display user's name (previously showed company name)
-          ctx.fillText(userData.name || 'Your Name', 130, circleY - 5); // Moved up from circleY + 8
+          // Get user name
+          const userName = userData.name || 'Your Name';
           
-          // Display company name (previously showed industry)
-          ctx.font = '22px Arial';
-          ctx.fillText(userData.companyName || 'Your Company Name', 130, circleY + 25); // Moved up from circleY + 40
-          
-          // Phone number - vertically centered with its icon
-          // Format phone number to remove +91 if present
+          // Get phone number to calculate maximum available width
           let phoneNumber = userData.phoneNumber || 'Your Phone Number';
           if (phoneNumber.includes('+91')) {
             phoneNumber = phoneNumber.replace('+91', '').trim();
           }
           
+          // Calculate maximum width for text elements before the white line
+          const maxTextWidth = canvas.width * 0.3; // Maximum 30% of canvas width for text
+          
+          // Check if name needs to be wrapped
+          const nameWidth = ctx.measureText(userName).width;
+          
+          if (nameWidth > maxTextWidth) {
+            // Name is too long, need to split it
+            const words = userName.split(' ');
+            let line1 = '';
+            let line2 = '';
+            let currentWidth = 0;
+            
+            // Distribute words between lines
+            for (const word of words) {
+              const wordWidth = ctx.measureText(word + ' ').width;
+              
+              if (currentWidth + wordWidth <= maxTextWidth) {
+                line1 += word + ' ';
+                currentWidth += wordWidth;
+              } else {
+                line2 += word + ' ';
+              }
+            }
+            
+            // Trim extra spaces
+            line1 = line1.trim();
+            line2 = line2.trim();
+            
+            // Draw the name in two lines
+            ctx.fillText(line1, 130, circleY - 5); // First line slightly higher
+            ctx.fillText(line2, 130, circleY + 25); // Second line below
+          } else {
+            // Name fits on a single line
+            ctx.fillText(userName, 130, circleY + 8); // Properly centered with the user icon
+          }
+          
+          // Phone number display - already processed above
           ctx.font = 'bold 28px Arial';
           ctx.fillText(phoneNumber, 130, circleY + 93); // Kept the same position
           

@@ -169,25 +169,28 @@
 /* Right side - Controls section */
 .controls-section {
   flex: 1;
-  max-width: 400px;
+  max-width: 350px;
   padding-left: 20px; /* Added 20px spacing between poster and content */
   padding-top: 25px; /* Push content down by 25px */
   box-sizing: border-box; /* Include padding in width calculation */
 }
 
+/* Controls Section Title */
 .section-title {
-  font-size: 32px;
+  font-size: 38px; /* Increased font size */
   font-weight: 700;
-  color: #fff;
-  margin-bottom: 15px;
-  width: 100%; /* Ensure title doesn't overflow */
+  color: #ffffff;
+  margin-bottom: 10px; /* Reduced margin to decrease line spacing */
+  line-height: 1.1; /* Reduced line height for tighter text */
+  max-width: 350px; /* Reduced width */
 }
 
 .section-subtitle {
   font-size: 16px;
   color: #e0e0e0;
-  margin-bottom: 25px;
-  width: 100%; /* Ensure subtitle doesn't overflow */
+  margin-bottom: 20px; /* Reduced spacing */
+  line-height: 1.3; /* Tighter line height */
+  max-width: 350px; /* Match title width */
 }
 
 .download-btn {
@@ -218,8 +221,8 @@
 }
 
 .another-shot {
-  margin-top: 25px;
-  width: 100%; /* Ensure full width */
+  margin-top: 20px;
+  max-width: 350px; /* Match other elements width */
 }
 
 .another-shot-text {
@@ -548,9 +551,9 @@
 .cta-container {
   position: fixed;
   right: 0;
-  top: 120px; /* Further reduced to give even more vertical space */
-  bottom: 120px; /* Further reduced to give even more vertical space */
-  width: 500px; /* Increased width for better visibility */
+  top: 150px; /* Adjusted for smaller container */
+  bottom: 150px; /* Adjusted for smaller container */
+  width: 420px; /* Reduced width to make container smaller */
   background-color: #ffffff;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
@@ -561,7 +564,7 @@
   flex-direction: column; /* Stack children vertically */
   opacity: 1; /* Ensure container is fully visible */
   transition: opacity 0.3s ease; /* Smooth transition for visibility */
-  padding: 20px; /* Increased padding to keep images away from edges */
+  padding: 15px; /* Adjusted padding for smaller container */
 }
 
 /* CTA Banner Carousel */
@@ -576,7 +579,7 @@
   position: relative;
 }
 
-/* Container for banners */
+/* Container for banners (auto-rotating functionality) */
 .banners-container {
   width: 100%;
   flex-grow: 1; /* Take up available space */
@@ -588,7 +591,47 @@
   min-height: 400px; /* Ensuring minimum height for banners container */
 }
 
-/* Individual banner item */
+/* Hidden auto-rotate container (maintains functionality while hidden) */
+.hidden-auto-rotate {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+/* Simple scrollable container for images */
+.simple-scroll-container {
+  width: 100%;
+  display: flex;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden; /* Disable vertical scrolling */
+  padding: 10px 0;
+  gap: 15px;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #aaa #f0f0f0; /* Firefox: thumb and track color */
+}
+
+/* Custom horizontal scrollbar */
+.simple-scroll-container::-webkit-scrollbar {
+  height: 8px; /* Height for horizontal scrollbar */
+  background-color: transparent;
+}
+
+.simple-scroll-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.simple-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
+}
+
+/* Individual banner item for auto-rotation */
 .cta-banner {
   position: absolute;
   top: 0;
@@ -603,6 +646,25 @@
   text-align: center;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
+}
+
+/* Simple image styling in carousel */
+.simple-scroll-container a {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 350px;
+  transition: opacity 0.3s ease;
+}
+
+.simple-scroll-container .active-image {
+  position: relative;
+}
+
+/* Removing the yellow dot indicator */
+.simple-scroll-container .active-image::after {
+  display: none;
 }
 
 /* Active banner styling */
@@ -620,35 +682,18 @@
   transform: scale(1); /* Reset scale to prevent overflow */
 }
 
+/* Simple image styling */
+.simple-scroll-container img {
+  height: 330px;
+  width: auto;
+  object-fit: contain;
+}
+
 .cta-banner img:hover {
   transform: scale(1.05); /* Reduced hover scale to prevent overflow */
 }
 
-/* Carousel indicators */
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-  padding: 5px 0;
-  width: 100%;
-}
-
-.indicator {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #ccc;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.indicator.active {
-  background-color: #FFC72C; /* L&T Finance gold/yellow color */
-  transform: scale(1.2);
-}
+/* No indicators needed as we're using horizontal scrolling */
 
 /* Placeholder styling */
 .cta-placeholder {

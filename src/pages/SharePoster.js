@@ -642,9 +642,9 @@ const SharePoster = () => {
           
           // Add URL text to the strip
           ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
-          ctx.font = '22px Arial';
+          ctx.font = 'bold 30px Arial'; // Significantly increased font size for better visibility
           ctx.textAlign = 'center';
-          ctx.fillText('Visit – www.ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
+          ctx.fillText('Visit – ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
           
           console.log('Added URL strip to poster');
         } catch (stripError) {
@@ -747,9 +747,9 @@ const SharePoster = () => {
             
             // Add URL text to the strip
             ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
-            ctx.font = '22px Arial';
+            ctx.font = 'bold 40px Arial'; // Further increased font size for better visibility
             ctx.textAlign = 'center';
-            ctx.fillText('Visit – www.ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
+            ctx.fillText('Visit – ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
           } catch (stripError) {
             console.error('Error adding URL strip to fallback poster:', stripError);
           }

@@ -60,44 +60,44 @@ const CTABannerCarousel = ({ banners = [] }) => {
     timerRef.current = setInterval(rotateNext, 3000);
   };
   
+  // Ref for scrollable container to implement auto-scrolling
+  const scrollContainerRef = useRef(null);
+  
+  // Update scroll position when active index changes
+  useEffect(() => {
+    if (scrollContainerRef.current && displayBanners.length > 0) {
+      const container = scrollContainerRef.current;
+      const children = Array.from(container.children);
+      
+      if (children[activeIndex]) {
+        // Scroll the active banner into view smoothly
+        children[activeIndex].scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
+    }
+  }, [activeIndex, displayBanners.length]);
+  
   return (
     <div className="cta-carousel" ref={carouselRef}>
-      <div className="banners-container">
+      {/* Simple scrollable image container with auto-scrolling */}
+      <div className="simple-scroll-container" ref={scrollContainerRef}>
         {displayBanners.map((banner, index) => (
-          <div 
-            className={`cta-banner ${index === activeIndex ? 'active' : ''}`} 
+          <a 
             key={banner.id || index}
-            style={{
-              display: index === activeIndex ? 'flex' : 'none',
-              opacity: index === activeIndex ? 1 : 0,
-              transition: 'opacity 0.5s ease-in-out'
-            }}
+            href="https://ltfbusinessloans.ltfinance.com/?utm_source=PosterWebsite&utm_medium=Apply+now&utm_campaign=Poster+Website"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={index === activeIndex ? 'active-image' : ''}
           >
-            <a 
-              href="https://ltfbusinessloans.ltfinance.com/?utm_source=PosterWebsite&utm_medium=Apply+now&utm_campaign=Poster+Website"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Apply now for LTF Business Loans"
-            >
-              <img 
-                src={`/images/cta/${banner.name}`} 
-                alt={`CTA Banner ${index + 1}`} 
-                draggable="false"
-              />
-            </a>
-          </div>
-        ))}
-      </div>
-      
-      {/* Carousel indicators */}
-      <div className="carousel-indicators">
-        {displayBanners.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`indicator ${index === activeIndex ? 'active' : ''}`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
+            <img 
+              src={`/images/cta/${banner.name}`} 
+              alt={`CTA Banner ${index + 1}`} 
+              draggable="false"
+            />
+          </a>
         ))}
       </div>
     </div>

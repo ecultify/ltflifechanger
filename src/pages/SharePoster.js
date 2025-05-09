@@ -375,12 +375,20 @@ const SharePoster = () => {
         try {
           // Add tagline at the top
           // Remove any leftover asterisks before processing the tagline
-          let tagline = userData.tagline || 'I transform businesses with innovation and expertise';
+          // Ensure tagline is properly retrieved and preserved
+          let tagline = '';
+          if (userData && userData.tagline) {
+            tagline = userData.tagline.trim();
+            console.log('Using tagline from userData:', tagline);
+          } else {
+            tagline = 'I transform businesses with innovation and expertise';
+            console.log('Using default tagline');
+          }
           // Keep asterisks for highlighting in drawTextWithBoldedWords function
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 29; // Reduced slightly to accommodate larger font
+          const maxLineLength = 45; // Increased significantly to provide ample space for the tagline
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines
@@ -491,23 +499,45 @@ const SharePoster = () => {
           const phoneX = 80;
           const phoneY = circleY + 85;
           
-          // Draw a clear phone icon (black fill)
-          ctx.fillStyle = '#000000'; // Black color
+          // Preload the phone icon image to ensure it's available when needed
+          const phoneIconPath = '/images/PhoneIcon.png';
+          const phoneImage = new Image();
+          phoneImage.src = phoneIconPath;
           
-          // Phone receiver base (handle)
-          ctx.beginPath();
-          ctx.roundRect(phoneX - 8, phoneY - 6, 16, 12, 3);
-          ctx.fill();
-          
-          // Phone receiver top part
-          ctx.beginPath();
-          ctx.arc(phoneX, phoneY - 9, 5, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Phone receiver bottom part
-          ctx.beginPath();
-          ctx.arc(phoneX, phoneY + 9, 5, 0, Math.PI * 2);
-          ctx.fill();
+          // We need to make sure the image is loaded before using it
+          if (phoneImage.complete) {
+            // If image is already cached, draw it immediately
+            const iconSize = 32; // Size for the icon (adjust as needed)
+            ctx.drawImage(
+              phoneImage, 
+              phoneX - iconSize/2, // Center horizontally
+              phoneY - iconSize/2, // Center vertically
+              iconSize,
+              iconSize
+            );
+          } else {
+            // If image is not yet loaded, wait for it
+            phoneImage.onload = () => {
+              const iconSize = 32; // Size for the icon (adjust as needed)
+              ctx.drawImage(
+                phoneImage, 
+                phoneX - iconSize/2, // Center horizontally
+                phoneY - iconSize/2, // Center vertically
+                iconSize,
+                iconSize
+              );
+            };
+            
+            // In case of error, fallback to a colored circle
+            phoneImage.onerror = () => {
+              console.error('Failed to load phone icon from:', phoneIconPath);
+              // Draw a yellow circle with a simple phone shape as fallback
+              ctx.beginPath();
+              ctx.fillStyle = '#FFD700'; // Yellow color
+              ctx.arc(phoneX, phoneY, 16, 0, Math.PI * 2);
+              ctx.fill();
+            };
+          }
           
           // Draw company info text - properly aligned vertically with icons
           ctx.fillStyle = 'white';

@@ -6,21 +6,22 @@ const Footer = () => {
     <footer className="footer">
       <div className="container">
         <div className="copyright">
-          © L&T Finance Limited (formerly known as L&T Finance Holdings Limited) | CIN: L67120MH2008PLC181833
+          <span className="company-name">© L&T Finance Limited (formerly known as L&T Finance Holdings Limited) |</span>
+          <span className="cin-number">CIN: L67120MH2008PLC181833</span>
         </div>
         <div className="social">
           <p>Connect with us</p>
           <div className="social-icons">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+            <a href="https://www.facebook.com/LnTFS" target="_blank" rel="noopener noreferrer" className="social-icon">
               <i className="fab fa-facebook-f"></i>
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+            <a href="https://www.instagram.com/lntfinance/?hl=en" target="_blank" rel="noopener noreferrer" className="social-icon">
               <i className="fab fa-instagram"></i>
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+            <a href="https://x.com/LnTFinance" target="_blank" rel="noopener noreferrer" className="social-icon">
               <i className="fab fa-twitter"></i>
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+            <a href="https://www.youtube.com/@ltfinance" target="_blank" rel="noopener noreferrer" className="social-icon">
               <i className="fab fa-youtube"></i>
             </a>
           </div>

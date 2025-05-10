@@ -8,6 +8,17 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-image: url('../../../public/images/otpverfication/otpverfifcationbg.png');
+  overscroll-behavior: none; /* Prevent scroll bouncing */
+}
+
+html, body {
+  overscroll-behavior: none; /* Prevent bouncing/overscrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  position: relative;
+  height: auto; /* Allow content to determine height */
+  margin: 0;
+  padding: 0;
 }
 
 /* Left side with new design */
@@ -59,19 +70,34 @@
   padding: 40px;
   width: 100%; /* Ensure it takes full width */
   box-sizing: border-box; /* Include padding in width calculation */
+  padding-top: 15px; /* Reduce top padding to pull up form */
 }
 
 .right-section.mobile-view {
   background-color: transparent;
   padding: 20px;
-  margin-top: auto;
+  margin-top: 0;
   margin-bottom: 0;
-  align-items: flex-end;
+  align-items: center !important; /* Changed to center */
+  justify-content: flex-start;
+  min-height: 100vh;
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .right-content {
   max-width: 500px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: -25px; /* Pull up the entire right content by 25px */
 }
 
 /* Logo container - only for mobile */
@@ -79,12 +105,17 @@
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  width: 100%; /* Added width to ensure full container width */
+  position: relative; /* Add position relative for absolute positioning */
 }
 
 .logo {
-  max-width: 240px; /* Increased size to make it bigger and let it breathe */
+  max-width: 240px; /* Maintained size */
   height: auto;
-  margin: 10px 0; /* Added vertical margin to let it breathe */
+  margin: 10px auto; /* Changed from 10px 0 to 10px auto to center properly */
+  transform: rotate(0deg) !important; /* Ensure no rotation */
+  position: relative; /* Added position relative */
+  left: 0; /* Removed left offset */
 }
 
 /* Bumrah image container */
@@ -92,7 +123,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 0; /* Removed bottom margin */
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to visible */
   margin-top: 40px; /* Decreased from 130px to 100px to push it up */
   position: relative; /* Added position relative */
   z-index: 1; /* Lower z-index to position behind form */
@@ -104,6 +135,8 @@
   max-height: 390px; /* Maintained size */
   object-fit: contain;
   margin-bottom: 0; /* Removed negative margin */
+  display: block; /* Ensure image is displayed */
+  opacity: 1; /* Ensure image is fully visible */
 }
 
 /* Progress tracker */
@@ -165,21 +198,176 @@
 /* Form styles */
 .form-container {
   width: 100%;
+  max-width: 450px; /* Increased max-width */
   background-color: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: none;
   box-sizing: border-box;
-  margin: 0 auto; /* Removed top margin to allow overlap with image */
+  margin: 0 auto; /* Centered container */
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 10 !important;
+  backdrop-filter: none; /* Remove backdrop filter */
+}
+
+/* Desktop-specific styles for form container */
+@media (min-width: 769px) {
+  .right-section {
+    flex: 1;
+    background-color: white;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 0;
+  }
+  
+  .right-content {
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: -50px;
+  }
+  
+  /* Fixed stepper on desktop */
+  .fixed-stepper-container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    z-index: 20;
+    background-color: white;
+  }
+  
+  .fixed-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .fixed-stepper .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .fixed-stepper .step-label {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+    display: block;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .fixed-stepper .progress-step.active .step-label {
+    color: #0a1a34;
+    font-weight: 600;
+    display: block;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .form-container {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    max-width: 550px;
+    margin-top: 30px;
+  }
+  
+  /* Left align text in form for desktop */
+  h2.form-title, 
+  h2.form-subtitle, 
+  .form-description {
+    text-align: left !important;
+  }
+  
+  .otp-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+  }
+  
+  .remaining-time {
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
+  
+  .resend-link {
+    justify-content: flex-start;
+  }
+  
+  /* Text inputs should be left-aligned in desktop */
+  .phone-input, 
+  .country-code-select,
+  .message-box,
+  .consent-container span {
+    text-align: left;
+  }
 }
 
 /* Only set position relative and z-index for mobile */
 @media (max-width: 768px) {
   .form-container {
     position: relative;
-    z-index: 3; /* Ensure it's above Bumrah image but below modals */
-    margin-top: -160px; /* Increased negative margin from -80px to -120px to push form up more */
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1); /* Add shadow for better separation */
+    z-index: 10 !important; /* Increased z-index */
+    margin-top: -30px; /* Increased negative margin for more overlap */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important; /* Stronger shadow */
+    background-color: white !important; /* Solid white */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    border: 1px solid #ddd;
+    width: 100%;
+    max-width: 450px;
+  }
+  
+  /* Fix mobile bumrah container */
+  .bumrah-container {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: -20px !important; /* Pushed up by 25px from the original value */
+    position: relative !important;
+    width: 100% !important;
+    min-height: 180px !important;
+    z-index: 1 !important;
+    overflow: visible !important;
+  }
+  
+  .bumrah-image {
+    max-width: 100% !important;
+    width: 300px !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    object-fit: contain !important;
+  }
+  
+  .logo {
+    max-width: 220px; /* Increased size */
+    margin: 10px auto;
+    left: 0;
+  }
+  
+  /* Center text for mobile view */
+  h2.form-title, 
+  h2.form-subtitle, 
+  .form-description {
+    text-align: center;
   }
 }
 
@@ -205,6 +393,7 @@ h2.form-subtitle {
   margin-bottom: 15px; /* Reduced spacing */
   line-height: 1.4; /* Slightly reduced line height */
   width: 100%; /* Ensure text doesn't overflow */
+  text-align: center; /* Center aligned for mobile */
 }
 
 .phone-input-group {
@@ -387,94 +576,175 @@ h2.form-subtitle {
   }
 }
 
+/* Fix the OTP info layout to place "Didn't get the code" and "Resend" on the same line */
 .otp-info {
-  display: flex;
-  justify-content: space-between;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
   margin-bottom: 20px;
-  font-size: 12px;
-  width: 100%; /* Ensure full width */
 }
 
 .remaining-time {
-  color: #666;
+  margin-bottom: 10px;
+  color: #0a1a34;
+  font-weight: 500;
 }
 
 .resend-link {
-  color: #074E84;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  color: #666;
 }
 
 .resend-btn {
   background: none;
   border: none;
-  color: #074E84;
-  text-decoration: none;
-  font-weight: 600;
+  color: #0a1a34;
   cursor: pointer;
+  font-weight: 600;
   padding: 0;
-  font-size: 12px;
   margin-left: 5px;
+  font-size: 14px;
+  text-decoration: underline;
 }
 
 .resend-btn:disabled {
   color: #999;
   cursor: not-allowed;
+  text-decoration: none;
 }
 
 /* Simple OTP Container for desktop */
 .simple-otp-container {
-  margin: 0 0 20px; /* Removed top margin to prevent upward expansion */
+  margin-top: 20px; /* Add some space between phone input and OTP fields */
   width: 100%;
-  box-sizing: border-box;
-}
-
-.desktop-otp-container .otp-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 10px 0;
-  color: #0a1a34;
-}
-
-.desktop-otp-container .otp-instruction {
-  font-size: 14px;
-  color: #666;
   margin-bottom: 20px;
+  margin-top: -15px; /* Adjusted from -35px to -15px to add space between phone and OTP fields */
 }
 
 .simple-otp-container .otp-container {
+  display: flex;
   justify-content: space-between;
-  padding: 0;
-  width: 100%;
-  max-width: 100%;
+  flex-wrap: wrap;
+  width: 100%; /* Ensure it takes full width of container */
+  margin-bottom: 20px;
+  gap: 8px; /* Add gap between OTP inputs */
+}
+
+/* Desktop view OTP info section - ensure expired and resend are on the same line */
+@media (min-width: 769px) {
+  .simple-otp-container .otp-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; /* Ensure items are properly spaced */
+    width: 100%; /* Make the container full width */
+    margin-bottom: 15px;
+  }
+  
+  .simple-otp-container .otp-info .remaining-time {
+    margin: 0;
+    flex: 0 1 auto; /* Don't stretch */
+    text-align: left;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .simple-otp-container .otp-info .resend-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align to the right */
+    gap: 5px;
+    flex: 0 1 auto; /* Don't stretch */
+  }
+  
+  /* Ensure both elements are aligned at the same level */
+  .simple-otp-container .remaining-time,
+  .simple-otp-container .resend-link {
+    line-height: 1.5;
+    position: relative;
+    top: 0;
+  }
+  
+  .simple-otp-container .otp-input {
+    width: calc(16.66% - 8px); /* Properly size OTP inputs with gap considered */
+    height: 60px; /* Maintain the height */
+    text-align: center;
+    font-size: 24px; /* Larger font size for digits */
+  }
+  
+  .simple-otp-container .otp-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+  }
 }
 
 /* OTP Modal Styles - Only for Mobile */
 .otp-modal {
   position: fixed;
+  top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 1000;
   width: 100%;
   height: 100%;
-  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* Ensure it's above everything else including footer */
 }
 
 .otp-modal-content {
-  background: white;
-  border-radius: 20px 20px 0 0;
-  padding: 25px 30px; /* Reduced top padding slightly to fit stepper better */
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 12px;
+  padding: 25px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
   animation: slideUp 0.3s ease-out;
-  box-sizing: border-box;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-  margin: 0 15px; /* Increased margin to prevent edge touching */
-  width: calc(100% - 30px); /* Account for increased margins */
+  position: relative;
+  z-index: 10000; /* Ensure it appears above the modal overlay */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure all OTP modal content elements appear on top */
+.otp-modal-content * {
+  position: relative;
+  z-index: 10002;
+}
+
+/* Make sure the verification button appears on top */
+.otp-modal-content .verify-btn {
+  margin-bottom: 20px; /* Add space at the bottom to ensure it's visible */
+}
+
+/* Mobile verification button */
+.otp-modal-content .verify-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #0083B5;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative; /* Ensure button is positioned properly */
+  z-index: 10002; /* Ensure button is above all content */
+}
+
+.otp-modal-content .verify-btn:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
 }
 
 /* Mobile stepper inside OTP modal and form container */
@@ -572,6 +842,29 @@ h2.form-subtitle {
   color: #666;
   margin-bottom: 20px;
   text-align: center;
+}
+
+/* Mobile OTP modal specific adjustments */
+.otp-modal-content .otp-info {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.otp-modal-content .remaining-time {
+  margin-bottom: 10px;
+  color: #0a1a34;
+  font-weight: 500;
+}
+
+.otp-modal-content .resend-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  color: #666;
 }
 
 /* Consent Modal Styles */
@@ -758,30 +1051,43 @@ h2.form-subtitle {
 
 @media (max-width: 768px) {
   .otp-page {
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh;
-    display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    min-height: 100vh;
+    height: auto;
+    background-size: cover;
+    background-position: top center;
+    padding-top: 0; /* No top padding needed */
+    justify-content: flex-start; /* Align content to the top */
   }
   
   .right-section {
-    padding: 20px;
-    background-color: transparent;
+    padding: 15px;
+    width: 100%;
   }
   
   .right-section.mobile-view {
-    padding: 15px;
-    margin-bottom: 0;
+    background-color: transparent;
+    padding: 20px;
+    margin-top: 0;
+    justify-content: flex-start;
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .right-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
   
   .form-container {
-    padding: 20px;
-    border-radius: 15px;
-    margin: 0 15px 30px 15px;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     background-color: rgba(255, 255, 255, 0.95);
-    width: calc(100% - 30px);
+    width: 100%;
+    max-width: 450px;
+    border-radius: 12px;
   }
   
   .form-title {
@@ -795,25 +1101,24 @@ h2.form-subtitle {
   }
   
   .logo-container {
-    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px; /* Reduced from 20px */
   }
   
-.logo {
-    width: 240px; /* Increased size to make it bigger and let it breathe */
-    margin: 10px 0; /* Added vertical margin to let it breathe */
+  .logo {
+    max-width: 180px; /* Reduced from 240px */
+    margin: 10px auto;
   }
   
   .bumrah-container {
-    margin-bottom: 0;
-    margin-top: 130px; /* Push it down by 130px */
-    position: relative;
-    z-index: 1;
+    margin-top: -20px !important; /* Adjust to push it up by 25px */
+    min-height: 180px !important;
   }
   
   .bumrah-image {
-    max-width: 420px; /* Increased size to 1.5x */
-    max-height: 390px;
-    margin-bottom: 0;
+    max-width: 300px !important; /* Reduced size */
+    width: 100% !important;
   }
   
   /* For mobile, reduce progress tracker margin */
@@ -949,4 +1254,40 @@ input::placeholder,
 select::placeholder {
   font-size: 14px;
   color: #999;
+}
+
+/* Make OTP inputs wider and more evenly spaced */
+@media (min-width: 769px) {
+  .simple-otp-container .otp-container {
+    display: flex;
+    justify-content: space-between; /* Changed from flex-start to space-between to spread out inputs */
+    gap: 10px; /* Reduced from 20px to allow inputs to be wider */
+    margin-bottom: 25px;
+    width: 100%;
+  }
+  
+  .simple-otp-container .otp-input {
+    width: calc(16.66% - 10px); /* Make each input take equal width with gap accounted for */
+    height: 60px;
+    font-size: 24px;
+  }
+}
+
+/* Mobile OTP modal fix */
+@media (max-width: 768px) {
+  .otp-modal {
+    align-items: center; /* Center the modal instead of bottom alignment */
+    z-index: 9999; /* Ensure it's above everything else including footer */
+  }
+  
+  .otp-modal-content {
+    border-radius: 12px; /* Rounded corners on all sides */
+    width: 90%;
+    max-width: 380px;
+    margin: 0 auto;
+    overflow-y: auto;
+    max-height: 95vh;
+    z-index: 10000; /* Ensure it appears above the modal overlay */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
 }

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/pages/UploadPhoto.css';
 import '../styles/pages/StepColorOverrides.css';
 import '../styles/components/FixedStepper.css';
+import '../styles/pages/UploadPhotoOverrides.css';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import * as faceapi from 'face-api.js';
@@ -595,103 +596,153 @@ const UploadPhoto = () => {
       setProcessingStep('Removing background...');
       console.log('Starting background removal process for file:', imageFile?.name, 'size:', imageFile?.size);
 
+      // Get API key from environment or use fallback
+      const segmindApiKey = process.env.REACT_APP_SEGMIND_API_KEY || 'SG_13f9868f102f0d83';
+      
       // Check if imageFile is valid
       if (!imageFile || !(imageFile instanceof File)) {
         console.error('Invalid image file for background removal:', imageFile);
         throw new Error('Invalid image file');
       }
 
-      // Try FormData approach first which is more reliable for camera photos
-      try {
-        console.log('Trying FormData approach for background removal...');
-        setProcessingStep('Removing background...');
-
-        const formData = new FormData();
-        formData.append('size', 'auto');
-        formData.append('image_file', imageFile);
-
-        const formDataResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
-          method: 'POST',
-          headers: {
-            'X-Api-Key': 'YqX5aCLQjcw3QuC9qqhVfc6X',
-          },
-          body: formData
-        });
-
-        if (!formDataResponse.ok) {
-          const errorText = await formDataResponse.text();
-          console.error(`FormData approach failed with status: ${formDataResponse.status}`, errorText);
-          throw new Error(`FormData API error: ${formDataResponse.status}`);
-        }
-
-        const blob = await formDataResponse.blob();
-        const processedImageUrl = URL.createObjectURL(blob);
-        console.log('FormData background removal successful');
-
-        setLoadingProgress(80);
-        return processedImageUrl;
-      } catch (formDataError) {
-        console.error('FormData approach failed:', formDataError);
-        // Continue to next method
-      }
-
-      // Convert the file to base64
+      // Convert the file to base64 for API
       let base64Image;
       try {
         base64Image = await fileToBase64(imageFile);
         console.log('Image converted to base64 for background removal, length:', base64Image.length);
+        
+        // Remove the data URI prefix for API
+        base64Image = base64Image.replace(/^data:image\/\w+;base64,/, "");
       } catch (base64Error) {
         console.error('Failed to convert image to base64:', base64Error);
         throw new Error('Failed to process image');
       }
 
-      // Try direct base64 API handling with Remove.bg
+      // Try different background removal approaches
+      let result = null;
+      
+      // First try: Segmind background-eraser API (newer endpoint)
       try {
-        console.log('Trying base64 approach for background removal...');
-        setProcessingStep('Generating your poster...');
-
-        // Using XMLHttpRequest for better binary data handling
-        const removeResult = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('POST', 'https://api.remove.bg/v1.0/removebg', true);
-          xhr.setRequestHeader('X-Api-Key', 'YqX5aCLQjcw3QuC9qqhVfc6X');
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.responseType = 'blob';
-
-          xhr.onload = function () {
-            if (this.status >= 200 && this.status < 300) {
-              resolve(this.response);
-            } else {
-              reject(new Error(`Remove.bg API error: ${this.status} ${this.statusText}`));
-            }
-          };
-
-          xhr.onerror = function () {
-            reject(new Error('Network error during Remove.bg API call'));
-          };
-
-          xhr.send(JSON.stringify({
-            image_file_b64: base64Image,
-            size: 'auto',
-            format: 'png',
-            type: 'auto'
-          }));
+        console.log('Trying Segmind background-eraser API...');
+        setProcessingStep('Removing background (method 1)...');
+        
+        const response = await fetch('https://api.segmind.com/v1/background-eraser', {
+          method: 'POST',
+          headers: {
+            'x-api-key': segmindApiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: base64Image,
+            return_mask: false,
+            invert_mask: false,
+            grow_mask: 0,
+            base64: false
+          })
         });
-
-        console.log('Remove.bg background removal successful');
-
-        // Create URL from blob
-        const processedImageUrl = URL.createObjectURL(removeResult);
-        setLoadingProgress(80);
-
-        return processedImageUrl;
-      } catch (removeError) {
-        console.error('All background removal methods failed:', removeError);
-        // If all API calls fail, we'll fall back to the original image
-        console.log('Using original image as fallback due to background removal failure');
-        setLoadingProgress(100); // Complete the progress bar
-        return previewUrl;
+        
+        if (!response.ok) {
+          throw new Error(`Background-eraser API responded with status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        if (!blob || blob.size === 0) {
+          throw new Error('Empty response from background-eraser API');
+        }
+        
+        result = URL.createObjectURL(blob);
+        console.log('Background-eraser API successful');
+        
+        // If we successfully got a result, return it
+        if (result) {
+          setLoadingProgress(80);
+          return result;
+        }
+      } catch (error) {
+        console.error('Background-eraser API failed:', error);
+        // Continue to next method
       }
+      
+      // Second try: Original bg-removal API
+      try {
+        console.log('Trying Segmind bg-removal API...');
+        setProcessingStep('Removing background (method 2)...');
+        
+        const response = await fetch('https://api.segmind.com/v1/bg-removal', {
+          method: 'POST',
+          headers: {
+            'x-api-key': segmindApiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: base64Image,
+            response_format: 'png',
+            method: 'object'
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Bg-removal API responded with status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        if (!blob || blob.size === 0) {
+          throw new Error('Empty response from bg-removal API');
+        }
+        
+        result = URL.createObjectURL(blob);
+        console.log('Bg-removal API successful');
+        
+        // If we successfully got a result, return it
+        if (result) {
+          setLoadingProgress(80);
+          return result;
+        }
+      } catch (error) {
+        console.error('Bg-removal API failed:', error);
+        // Continue to next method
+      }
+      
+      // Third try: FormData approach
+      try {
+        console.log('Trying formData approach...');
+        setProcessingStep('Removing background (method 3)...');
+        
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        
+        const response = await axios({
+          method: 'post',
+          url: 'https://api.segmind.com/v1/bg-removal',
+          data: formData,
+          headers: {
+            'x-api-key': segmindApiKey,
+            'Content-Type': 'multipart/form-data'
+          },
+          responseType: 'blob'
+        });
+        
+        if (!response.data || response.data.size === 0) {
+          throw new Error('Empty response from FormData approach');
+        }
+        
+        result = URL.createObjectURL(response.data);
+        console.log('FormData approach successful');
+        
+        // If we successfully got a result, return it
+        if (result) {
+          setLoadingProgress(80);
+          return result;
+        }
+      } catch (error) {
+        console.error('FormData approach failed:', error);
+        // Fall back to original image
+      }
+      
+      // If all methods failed, return original image
+      console.log('All background removal methods failed, using original image');
+      return previewUrl;
+      
     } catch (error) {
       console.error('Fatal error in background removal process:', error);
       setLoadingProgress(100);
@@ -878,27 +929,29 @@ const UploadPhoto = () => {
             />
 
             {/* Logo at the top left */}
-            <div className="left-logo-container" style={{ top: '70px' }}>
-              <img
-                src="/images/LOGO.png"
-                alt="Logo"
-                className="left-logo-image forced-small-logo"
-                style={{ width: '230px' }} /* Increased size slightly and pushed down with container fix */
-              />
+            <div className="left-logo-container">
+              <Link to="/">
+                <img
+                  src="/images/LOGO.png"
+                  alt="Logo"
+                  className="left-logo-image forced-small-logo"
+                  style={{ width: '230px' }}
+                />
+              </Link>
             </div>
 
             {/* Bumrah and You image below logo, center-aligned and positioned */}
-            <div className="left-bumrah-container" style={{ top: '170px' }} /* Adjusted down by 10px from 160px */>
+            <div className="left-bumrah-container">
               <img
                 src="/images/uploadphoto/bumraahandu.png"
                 alt="Bumrah and You"
                 className="left-bumrah-image"
-                style={{ maxWidth: '350px' }} /* Made bigger */
+                style={{ maxWidth: '350px' }}
               />
             </div>
 
             {/* Two DOS images side by side below Bumrah+YOU */}
-            <div className="left-dos-container" style={{ top: '320px' }} /* Moved up by 50px more from 370px */>
+            <div className="left-dos-container">
               <img
                 src="/images/uploadphoto/dos1.png"
                 alt="Do's 1"
@@ -912,7 +965,7 @@ const UploadPhoto = () => {
             </div>
           </>
         ) : (
-          // Mobile view
+          // Mobile view - restructured as a single vertical column with proper spacing
           <>
             {/* Background image */}
             <img
@@ -923,104 +976,37 @@ const UploadPhoto = () => {
 
             {/* Logo at the top */}
             <div className="left-logo-container">
-              <img
-                src="/images/LOGO.png"
-                alt="Logo"
-                className="left-logo-image"
-                style={{ maxWidth: '160px' }}
-              />
+              <Link to="/">
+                <img
+                  src="/images/LOGO.png"
+                  alt="Logo"
+                  className="left-logo-image"
+                />
+              </Link>
             </div>
 
-            {/* Logo at the top */}
-            <div className="left-logo-container">
-              <img
-                src="/images/LOGO.png"
-                alt="Logo"
-                className="left-logo-image"
-                style={{ maxWidth: '160px' }}
-              />
-            </div>
-
-            {/* Bumrah and You image below logo */}
+            {/* Bumrah and You image - 20px below logo */}
             <div className="left-bumrah-container">
               <img
                 src="/images/uploadphoto/bumraahandu.png"
                 alt="Bumrah and You"
                 className="left-bumrah-image"
-                style={{ maxWidth: '240px' }}
               />
             </div>
 
-            {/* DOS1 image */}
+            {/* DOS2 image only - 20px below Bumrah image */}
             <div className="left-dos-container">
               <img
-                src="/images/uploadphoto/dos1.png"
-                alt="Do's 1"
+                src="/images/uploadphoto/Dos2.png"
+                alt="Do's 2"
                 className="left-dos-image"
-                style={{ maxWidth: '240px' }}
-              />
-            </div>
-          </>
-        )}
-      </div>
-
-      <div className="right-section">
-        {/* Fixed position stepper in right column - only visible on desktop */}
-        {!isMobile && (
-          <div className="fixed-stepper-container">
-            <div className="fixed-stepper">
-              <div className="progress-step completed">
-                <div className="step-circle">1</div>
-                <div className="step-label">OTP</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step completed">
-                <div className="step-circle">2</div>
-                <div className="step-label">Add Details</div>
-              </div>
-              <div className="progress-line active"></div>
-              <div className="progress-step active">
-                <div className="step-circle">3</div>
-                <div className="step-label">Upload</div>
-              </div>
-            </div>
-          </div>
-        )}
-        {isMobile && (
-          <div className="right-content" style={{ marginTop: '20px' }}>
-            {/* Logo image at the top */}
-            <div className="mobile-logo-container" style={{ textAlign: 'center', marginBottom: '15px' }}>
-              <img
-                src="/images/LOGO.png"
-                alt="Logo"
-                className="mobile-logo-image"
-                style={{ maxWidth: '200px' }}  /* Bigger logo */
               />
             </div>
 
-            {/* Bumrah and You image */}
-            <div className="mobile-bumrah-container" style={{ textAlign: 'center', marginBottom: '15px' }}>
-              <img
-                src="/images/uploadphoto/bumraahandu.png"
-                alt="Bumrah and You"
-                className="mobile-bumrah-image"
-                style={{ maxWidth: '240px' }}
-              />
-            </div>
-
-            {/* DOS1 image */}
-            <div className="mobile-dos-container" style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <img
-                src="/images/uploadphoto/dos1.png"
-                alt="Do's 1"
-                className="mobile-dos-image"
-                style={{ maxWidth: '240px' }}
-              />
-            </div>
-
-            <div className="form-container" style={{ textAlign: 'center' }}>
-              {/* Mobile stepper indicator directly in form container */}
-              <div className="fixed-stepper">
+            {/* Form container - 20px below DOS2 image */}
+            <div className="form-container">
+              {/* Mobile stepper indicator - centered and integrated with form */}
+              <div className="fixed-stepper" style={{ boxShadow: 'none', background: 'transparent' }}>
                 <div className="progress-step completed">
                   <div className="step-circle">1</div>
                   <div className="step-label">OTP</div>
@@ -1118,19 +1104,40 @@ const UploadPhoto = () => {
                 </div>
               )}
             </div>
-          </div>
+          </>
         )}
+      </div>
 
-        {!isMobile && (
+      {/* Desktop-only right section */}
+      {!isMobile && (
+        <div className="right-section">
+          {/* Fixed position stepper in right column */}
+          <div className="fixed-stepper-container">
+            <div className="fixed-stepper">
+              <div className="progress-step completed">
+                <div className="step-circle">1</div>
+                <div className="step-label">OTP</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step completed">
+                <div className="step-circle">2</div>
+                <div className="step-label">Add Details</div>
+              </div>
+              <div className="progress-line active"></div>
+              <div className="progress-step active">
+                <div className="step-circle">3</div>
+                <div className="step-label">Upload</div>
+              </div>
+            </div>
+          </div>
+          
           <div className="right-content">
-
             <div className="upload-container">
               <h1 className="upload-title">Upload Your Photo</h1>
 
               {error && <div className="error-message">{error}</div>}
 
               <div className="upload-area-container">
-
                 {isCameraActive ? (
                   <div className="camera-container">
                     <video
@@ -1239,8 +1246,8 @@ const UploadPhoto = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Image Preview Modal */}
       {showPreviewModal && (

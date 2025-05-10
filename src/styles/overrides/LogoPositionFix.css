@@ -1,0 +1,39 @@
+/* High-specificity selectors to ensure logo positioning is correct */
+
+/* Desktop logo positioning override - extra !important to guarantee it works */
+body .share-poster-page .logo-container {
+  position: absolute !important;
+  top: 20px !important;
+  left: 20px !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: auto !important;
+  text-align: left !important;
+  display: block !important;
+}
+
+/* Desktop logo image override */
+body .share-poster-page .logo-container img.header-logo {
+  width: 150px !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+/* Mobile logo positioning override */
+@media (max-width: 768px) {
+  body .share-poster-page .logo-container {
+    position: absolute !important;
+    top: 15px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+  }
+  
+  /* Push down template container */
+  body .share-poster-page .share-poster-content {
+    margin-top: 140px !important;
+  }
+} 

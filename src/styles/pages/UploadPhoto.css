@@ -293,19 +293,54 @@
 .right-content {
   max-width: 500px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  margin: 20px auto 0;
-  box-sizing: border-box; /* Include any padding in width calculation */
+}
+
+@media (min-width: 769px) {
+  /* Target the upload-page class container to ensure these styles only apply to this page */
+  .upload-page .right-content {
+    align-items: flex-start; /* Left align content */
+    margin-top: 0; /* Reset any negative margin */
+  }
+  
+  /* Target specifically the upload container to push it down */
+  .upload-page .upload-container {
+    margin-top: 80px; /* Push down specifically the upload container */
+    width: 100%;
+  }
+  
+  /* Upload photo title - make it more specific */
+  .upload-page .upload-title {
+    text-align: left !important; /* Left align the title */
+    font-size: 48px !important; /* Force the increased font size */
+    font-weight: 700 !important; /* Make it bolder */
+    color: #0a1a34 !important; /* Ensure consistent color with other pages */
+    margin-bottom: 20px !important; /* Add more space below the title */
+  }
+  
+  /* Ensure progress tracker remains visible */
+  .upload-page .progress-tracker {
+    margin-bottom: 40px !important;
+    z-index: 10;
+  }
+}
+
+/* Target the upload title directly to ensure it's affected */
+.upload-title {
+  font-size: 48px !important; /* Ensure the font size is applied */
 }
 
 /* Progress tracker */
 .progress-tracker {
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   position: relative;
-  width: 100%; /* Ensure full width */
+  width: 100%;
 }
 
 .progress-step {
@@ -368,14 +403,6 @@
 .upload-container {
   width: 100%;
   box-sizing: border-box; /* Include padding in width calculation */
-}
-
-.upload-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 30px 0;
-  color: #0a1a34;
-  width: 100%; /* Ensure title doesn't overflow */
 }
 
 .upload-subtitle {
@@ -578,9 +605,8 @@
   }
   
   .upload-title {
-    font-size: 26px;
-    text-align: center;
-    margin-bottom: 20px;
+    font-size: 28px;
+    margin-bottom: 5px;
   }
   
   .upload-subtitle {
@@ -619,6 +645,24 @@
   .next-btn {
     margin-top: 10px;
     font-size: 16px;
+  }
+  
+  /* Uniform 20px spacing between elements */
+  .left-logo-container {
+    margin: 20px 0 20px 0 !important;
+  }
+  
+  .left-bumrah-container {
+    margin: 0 0 20px 0 !important;
+  }
+  
+  .left-dos-container {
+    margin: 0 0 20px 0 !important;
+  }
+  
+  /* Form 20px below DOS2 image */
+  .form-container {
+    margin: 0 auto !important;
   }
 }
 
@@ -1330,4 +1374,146 @@
 
 .take-photo-btn.selfie-btn:hover {
   background-color: #E64A19;
+}
+
+/* Footer fix - prevent translucent layer issues */
+footer, .footer {
+  position: relative !important;
+  bottom: 0 !important;
+  z-index: 10 !important;
+  margin-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Mobile-specific layout */
+@media (max-width: 768px) {
+  .upload-page {
+    min-height: auto !important;
+    height: auto !important;
+    padding-bottom: 20px !important;
+    flex-direction: column !important;
+    display: block !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: none !important;
+  }
+  
+  /* Full width left section for mobile */
+  .left-section {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 20px !important;
+    min-height: auto !important;
+    position: relative !important;
+    overflow: visible !important;
+    margin-bottom: 20px !important;
+  }
+  
+  /* Background for mobile */
+  .left-section-background {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 0 !important;
+  }
+  
+  /* Logo positioning at top */
+  .left-logo-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 20px 0 20px 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+  }
+  
+  /* Bumrah image 20px below logo */
+  .left-bumrah-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 0 0 20px 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+  }
+  
+  /* Only show Dos2 image on mobile, 20px below Bumrah */
+  .left-dos-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 0 0 20px 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+  
+  /* Hide first DOS image on mobile */
+  .left-dos-container img:first-child {
+    display: none !important;
+  }
+  
+  /* Show only second DOS image (Dos2) */
+  .left-dos-container img:last-child {
+    max-width: 85% !important;
+    width: 85% !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+  
+  /* Form below DOS2 with 20px spacing */
+  .form-container {
+    position: relative !important;
+    margin: 0 auto !important;
+    width: 95% !important;
+    z-index: 5 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 15px !important;
+    padding: 15px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Upload Your Photo text size */
+  .form-title {
+    font-size: 14px !important; 
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Mobile stepper */
+  .fixed-stepper {
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 auto 10px auto !important;
+    width: 100% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /* Upload area in mobile form */
+  .upload-area {
+    margin-top: 10px !important;
+    border-radius: 10px !important;
+    border: 2px dashed #ccc !important;
+    min-height: 180px !important;
+    padding: 15px !important;
+  }
+  
+  /* Hide right section completely */
+  .right-section {
+    display: none !important;
+  }
 }

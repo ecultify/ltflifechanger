@@ -24,8 +24,8 @@
 /* Logo loader wrapper */
 .logo-loader-wrapper {
   position: relative;
-  width: 220px;
-  height: 220px;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,8 +34,8 @@
 
 /* Logo image container */
 .logo-image-container {
-  width: 160px;
-  height: 160px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,12 +220,22 @@
 
 @media (max-width: 768px) {
   .loading-spinner {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
   
   .loading-text {
     font-size: 16px;
+  }
+  
+  .logo-loader-wrapper {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .logo-image-container {
+    width: 100px;
+    height: 100px;
   }
 }
 

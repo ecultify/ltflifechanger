@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import '../styles/pages/AddDetails.css';
 import '../styles/pages/StepColorOverrides.css';
 import '../styles/pages/AddDetailsOverrides.css'; // Added for layout adjustments
 import '../styles/components/FixedStepper.css'; // For fixed position stepper
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { OPENAI_API_KEY } from '../config'; // Import API key from config file
 
@@ -531,95 +531,45 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
   };
 
   return (
-    <div className="details-page" style={{
-      ...isMobile ? { backgroundColor: '#0a1a34' } : {},
-      minHeight: 'calc(100vh - 95px)' // Increased height by 10px more (from -105px to -95px)
-    }}>
-      <div className="left-section">
-        {/* Desktop view with the new images layout - COMPLETE REDESIGN */}
-        {!isMobile && (
-          <>
-            {/* Background image */}
-            <img 
-              src="/images/adddetails/UploadPhoto+AddDetails.png" 
-              alt="Background" 
-              className="left-section-background"
-            />
-            
-            {/* Logo and Group images container */}
-            <div style={{
-              position: 'absolute', 
-              top: 0, 
-              left: 0, 
-              width: '100%', 
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              paddingTop: '10px' /* Reduced padding to bring elements up */
-            }}>
-              {/* Logo container */}
-              <div className="left-logo-container" style={{ position: 'absolute', top: '-15px', left: '20px' }}>
-                <img 
-                  src="/images/adddetails/LOGO.png" 
-                  alt="Logo" 
-                  style={{ width: '550px' }} /* Significantly increased size from 350px to 550px */
-                />
-              </div>
-              
-              {/* Group image */}
-              <div className="left-group-container" style={{ position: 'absolute', top: '250px', left: '50%', transform: 'translateX(-50%)' }}>
-                <img 
-                  src="/images/adddetails/Group15183.png" 
-                  alt="Group" 
-                  style={{ width: '350px', marginBottom: '20px' }} /* Increased size from 300px to 350px and added spacing */
-                />
-              </div>
-            </div>
-            
-            {/* People image */}
-            <div className="left-people-container">
+    <div className="details-page" style={isMobile ? { backgroundImage: `url('/images/adddetails/UploadPhoto+AddDetails.png')` } : {}}>
+      {!isMobile && (
+        <div className="left-section">
+          <img 
+            src="/images/adddetails/UploadPhoto+AddDetails.png" 
+            alt="Background" 
+            className="left-section-background"
+          />
+          <div className="left-logo-container">
+            <Link to="/">
               <img 
-                src="/images/adddetails/Layer1.png" 
-                alt="People" 
-                className="left-people-image"
+                src="/images/adddetails/LOGO.png" 
+                alt="L&T Finance Logo" 
+                className="left-logo-image"
               />
-            </div>
-          </>
-        )}
-        
-        {/* Mobile view with all three images stacked */}
-        {isMobile && (
-          <div className="mobile-left-images">
-            {/* Logo at the top */}
-            <img 
-              src="/images/adddetails/LOGO.png" 
-              alt="L&T Finance Logo" 
-              className="mobile-logo-image"
-            />
-            
-            {/* Group15183 in the middle */}
+            </Link>
+          </div>
+          <div className="left-group-container">
             <img 
               src="/images/adddetails/Group15183.png" 
-              alt="Group Image" 
-              className="mobile-group-image"
-            />
-            
-            {/* Layer1 at the bottom */}
-            <img 
-              src="/images/adddetails/Layer1.png" 
-              alt="People Image" 
-              className="mobile-people-image"
+              alt="Group" 
+              className="left-group-image"
             />
           </div>
-        )}
-      </div>
+          <div className="left-people-container">
+            <img 
+              src="/images/adddetails/Layer1.png" 
+              alt="Layer" 
+              className="left-people-image"
+            />
+          </div>
+        </div>
+      )}
       
-      <div className="right-section" style={isMobile ? { backgroundColor: 'white', marginTop: '180px', marginBottom: '30px', padding: '20px', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)', position: 'relative', zIndex: 5, width: 'calc(100% - 40px)', marginLeft: 'auto', marginRight: 'auto' } : {}}>
-        {/* Fixed position stepper in right column */}
+      <div className="right-section">
+        {/* Fixed position stepper */}
         <div className="fixed-stepper-container">
           <div className="fixed-stepper">
-            <div className="progress-step completed">
+            <div className="progress-step">
               <div className="step-circle">1</div>
               <div className="step-label">OTP</div>
             </div>
@@ -635,10 +585,34 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             </div>
           </div>
         </div>
-        {/* Removed old background image div */}
-        <div className="right-content" style={isMobile ? { marginTop: '0' } : {}}>
+        
+        <div className="right-content">
+          {/* Mobile elements container */}
+          {isMobile && (
+            <div className="mobile-elements-container">
+              <Link to="/">
+                <img 
+                  src="/images/adddetails/LOGO.png" 
+                  alt="L&T Finance Logo" 
+                  className="mobile-logo"
+                />
+              </Link>
+              <img 
+                src="/images/adddetails/Group15183.png" 
+                alt="Group" 
+                className="mobile-group"
+              />
+              <img 
+                src="/images/adddetails/Layer1.png" 
+                alt="Layer" 
+                className="mobile-layer"
+                style={{ position: 'relative', zIndex: 1 }}
+              />
+            </div>
+          )}
+          
           <div className="form-container">
-            {/* Added stepper indicator for mobile view inside form container */}
+            {/* Mobile stepper inside form */}
             {isMobile && (
               <div className="mobile-stepper-container form-stepper">
                 <div className="mobile-stepper">
@@ -758,7 +732,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             {/* Keywords in one row */}
             <div className="form-row">
               <div className="form-group" style={{ width: '100%' }}>
-                <label htmlFor="keywords">Keywords</label>
+                <label htmlFor="keywords">Select your keyword</label>
                 <div className="keywords-input-container border-blue">
                   <div className="keywords-tags">
                     {keywords.map((keyword, index) => (
@@ -771,9 +745,6 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                         >×</button>
                       </div>
                     ))}
-                    <div className="keywords-input" style={{ ...inputStyle, fontStyle: 'italic', color: '#999' }}>
-                      Select keywords
-                    </div>
                   </div>
                 </div>
                 <div className="suggested-keywords">

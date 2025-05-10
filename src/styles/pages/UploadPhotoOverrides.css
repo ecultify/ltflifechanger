@@ -1,0 +1,354 @@
+/* Overrides for Upload Photo page */
+
+/* Desktop left section positioning */
+.left-section {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Reposition logo - move it up by 20px from its current position */
+.left-logo-container {
+  top: 10px !important; /* Reduced from 30px to 10px - moved up by 20px */
+  margin-top: 0 !important; /* Removed additional margin */
+}
+
+/* Push Bumrah and You image down further by 20px from the updated position */
+.left-bumrah-container {
+  top: 215px !important; /* Original 195px plus 20px more */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Push DOS images down by 15px more from the updated position */
+.left-dos-container {
+  top: 360px !important; /* Original 345px plus 15px more */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Push the headline and form content down by 35px more on desktop */
+.right-content {
+  padding-top: 70px !important; /* Increased from 35px to 70px (added 35px) */
+}
+
+/* Reduce font size for "Upload Your Photo" on desktop */
+.upload-title {
+  font-size: 16px !important; /* Reduced font size for desktop */
+}
+
+/* Push the upload area down by 35px */
+.upload-area-container {
+  margin-top: 35px !important; /* Add space below title */
+}
+
+/* Fix footer translucent layer issue for all screen sizes */
+footer, .footer {
+  position: relative !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 10 !important;
+  overflow: hidden !important; /* Prevent overflow */
+  padding-bottom: 0 !important; /* Remove bottom padding */
+  margin-bottom: 0 !important; /* Remove bottom margin */
+}
+
+/* Page wrapper adjustments to prevent footer issues */
+html, body, #root, .app {
+  overflow-x: hidden !important; /* Prevent horizontal scroll */
+  min-height: 100% !important;
+  height: auto !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Hide ONLY the Take a photo button on desktop, keep selfie option */
+@media (min-width: 769px) {
+  /* Hide only the regular camera button but keep selfie button */
+  .take-photo-btn:not(.selfie-btn) {
+    display: none !important;
+  }
+  
+  .upload-title {
+    margin-top: 35px !important; /* Push down to avoid overlap with stepper */
+    font-size: 16px !important; /* Ensure reduced font size on desktop */
+  }
+}
+
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  /* Single page layout for mobile - restructured */
+  .upload-page {
+    min-height: auto !important;
+    height: auto !important;
+    padding-bottom: 20px !important; /* Small bottom padding to accommodate footer */
+    flex-direction: column !important;
+    display: block !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important; /* Allow vertical scrolling */
+    max-height: none !important; /* Remove max-height restriction */
+  }
+  
+  /* Full width left section for mobile single page layout */
+  .left-section {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 20px 20px 20px 20px !important; /* Add bottom padding */
+    min-height: auto !important;
+    position: relative !important;
+    overflow: visible !important;
+    margin-bottom: 20px !important; /* Add margin bottom for footer */
+  }
+  
+  /* Apply background to entire page rather than sections */
+  .left-section-background {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 0 !important;
+  }
+  
+  /* Logo positioning - increased size and at top */
+  .left-logo-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 20px 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+  }
+  
+  .left-logo-image {
+    max-width: 230px !important; /* Significantly increased size */
+  }
+  
+  /* Bumrah image positioning - 20px below logo */
+  .left-bumrah-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 20px 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+  }
+  
+  .left-bumrah-image {
+    max-width: 85% !important;
+  }
+  
+  /* DOS2 image positioning - 20px below bumrah, single image */
+  .left-dos-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 20px 0 !important; 
+    transform: none !important;
+    z-index: 5 !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+  
+  .left-dos-container img {
+    max-width: 85% !important;
+    width: 85% !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+  
+  /* Form container positioned 20px below DOS2 image */
+  .left-section .form-container {
+    position: relative !important;
+    margin: 20px auto 20px auto !important; /* 20px space from DOS2 and 20px bottom margin */
+    width: 95% !important;
+    z-index: 5 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 15px !important;
+    padding: 15px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Make Upload Your Photo text smaller in mobile form container */
+  .left-section .form-title {
+    font-size: 14px !important; /* Further reduced from 16px to 14px for mobile */
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Center align the stepper inside form container and remove container styling */
+  .left-section .fixed-stepper {
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 auto 10px auto !important; /* Reduced bottom margin */
+    width: 100% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /* Additional styling for stepper elements to make it feel integrated */
+  .left-section .fixed-stepper .progress-step {
+    align-items: center !important;
+  }
+  
+  /* Adjust spacing for upload area in left section */
+  .left-section .upload-area {
+    margin-top: 10px !important;
+    border-radius: 10px !important;
+    border: 2px dashed #ccc !important;
+    min-height: 180px !important;
+    padding: 15px !important;
+  }
+  
+  /* Adjust button styles for better visibility on the new background */
+  .left-section .upload-btn,
+  .left-section .browse-button {
+    margin-bottom: 10px !important;
+    font-weight: 600 !important; /* Make text more visible */
+  }
+  
+  /* Remove the right section entirely in mobile view */
+  .right-section {
+    display: none !important;
+  }
+  
+  /* Override any other styles that might cause extra space at bottom */
+  .processing-modal-overlay,
+  .preview-modal-overlay {
+    bottom: 0 !important;
+  }
+}
+
+/* Loader adjustments */
+/* Desktop loader */
+@media (min-width: 769px) {
+  .logo-loader-wrapper {
+    width: 240px !important; /* Increased from 220px */
+    height: 240px !important; /* Increased from 220px */
+  }
+  
+  .logo-image-container {
+    width: 180px !important; /* Increased from 160px */
+    height: 180px !important; /* Increased from 160px */
+  }
+  
+  .loading-text {
+    font-size: 22px !important; /* Increased from 18px */
+    font-weight: 700 !important; /* Made bolder */
+  }
+}
+
+/* Mobile loader */
+@media (max-width: 768px) {
+  .loader-container {
+    width: calc(100% - 10px) !important; /* Reduce width by 5px on each side */
+    left: 5px !important;
+    right: 5px !important;
+  }
+  
+  .logo-loader-wrapper {
+    width: 200px !important; /* Reduced height */
+    height: 200px !important; /* Reduced height */
+  }
+  
+  .logo-image-container {
+    width: 150px !important; /* Reduced from 160px */
+    height: 150px !important; /* Reduced from 160px */
+  }
+  
+  .loading-text {
+    font-size: 16px !important;
+  }
+}
+
+/* UploadPhoto Overrides */
+
+/* Desktop specific overrides */
+@media (min-width: 769px) {
+  /* Make the upload title match the font size of Add Details page */
+  .upload-page .upload-title,
+  .upload-container .upload-title,
+  .right-content .upload-title,
+  .upload-title {
+    font-size: 28px !important; /* Match AddDetails form-title size */
+    font-weight: 700 !important;
+    text-align: left !important;
+    color: #0a1a34 !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+/* Processing modal height reduction */
+.processing-modal {
+  padding: 20px !important; /* Reduced from 30px */
+  max-height: 400px !important; /* Limit maximum height */
+}
+
+.processing-modal .logo-loader-wrapper {
+  width: 140px !important; /* Reduced from 240px/200px */
+  height: 140px !important; /* Reduced from 240px/200px */
+  margin-bottom: 10px !important; /* Reduced from 20px */
+}
+
+.processing-modal .logo-image-container {
+  width: 100px !important; /* Reduced from 180px/150px */
+  height: 100px !important; /* Reduced from 180px/150px */
+}
+
+.processing-modal .logo-pulse {
+  width: 120px !important; /* Reduced from 180px */
+  height: 120px !important; /* Reduced from 180px */
+}
+
+.processing-modal .loading-text {
+  font-size: 16px !important; /* Reduced from 18px/22px */
+  margin-top: 5px !important; /* Reduced from 10px */
+}
+
+.processing-modal .progress-bar {
+  margin-top: 10px !important; /* Reduced from 15px */
+}
+
+/* Additional reduction for mobile */
+@media (max-width: 768px) {
+  .processing-modal {
+    padding: 15px !important; /* Further reduced padding for mobile */
+  }
+  
+  .processing-modal .logo-loader-wrapper {
+    width: 120px !important; /* Further reduced for mobile */
+    height: 120px !important;
+  }
+  
+  .processing-modal .logo-image-container {
+    width: 90px !important; /* Further reduced for mobile */
+    height: 90px !important;
+  }
+  
+  .processing-modal .logo-pulse {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .processing-modal .loading-text {
+    font-size: 14px !important; /* Further reduced text size */
+  }
+} 

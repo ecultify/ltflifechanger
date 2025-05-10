@@ -158,12 +158,14 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="hero-section" style={heroStyle}>
         <div className="hero-content">
-          <img 
-            src={LOGO_IMAGE_PATH} 
-            alt="Business Loan Game Changer" 
-            className="hero-logo" 
-            style={{ alignSelf: 'flex-start', marginLeft: '-35px' }}
-          />
+          <Link to="/">
+            <img 
+              src={LOGO_IMAGE_PATH} 
+              alt="Business Loan Game Changer" 
+              className="hero-logo" 
+              style={{ alignSelf: 'flex-start', marginLeft: '-35px' }}
+            />
+          </Link>
           
           <div className="hero-text-container">
             {/* Profile image carousel - left side */}
@@ -282,7 +284,9 @@ const LandingPage = () => {
         <div className="container">
           <div className="section-3-content">
             <div className="loan-disbursement-container">
-              <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" style={{ alignSelf: 'flex-start', marginLeft: '-150px' }} />
+              <Link to="/">
+                <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" style={{ alignSelf: 'flex-start', marginLeft: '-150px' }} />
+              </Link>
               
               <div className="loan-text-carousel">
                 <h2 

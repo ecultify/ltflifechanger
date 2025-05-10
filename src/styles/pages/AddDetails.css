@@ -97,9 +97,23 @@
 
 @media (min-width: 769px) {
   /* Desktop-only padding adjustment */
+  .right-section {
+    flex: 1;
+    background-color: white;
+    display: flex;
+    align-items: flex-start; /* Keep aligned to top */
+    justify-content: center;
+    padding: 40px 30px 80px 30px; 
+    margin-top: 0; 
+    min-height: 100vh;
+    overflow-y: auto;
+    padding-top: 0; /* Remove top padding completely */
+  }
+  
   .right-content {
     padding-top: 0; /* Removed top padding */
-    margin-top: 30px; /* Use margin instead of padding to position relative to stepper */
+    margin-top: -45px; /* Pull up content more aggressively (from -20px to -45px) */
+    background-color: transparent; /* Ensure content background is transparent */
   }
   
   /* Position stepper at top */
@@ -115,10 +129,26 @@
     z-index: 10 !important;
   }
   
+  /* Make sure stepper text is visible */
+  .progress-tracker .step-label {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
   /* Add more space above form title on desktop */
   .form-title {
-    margin-top: 50px !important; /* Increased from 30px to 50px to clear fixed stepper */
+    margin-top: 40px !important; /* Reduced from 50px to 40px to bring content up */
     padding-top: 0 !important; /* Removed padding */
+  }
+  
+  /* Remove background from form container on desktop */
+  .form-container {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
   }
 }
 
@@ -199,7 +229,21 @@
 .form-row {
   display: flex;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Changed back to original 10px */
+  width: 100%;
+}
+
+/* Last form row that contains the Next button */
+.form-row:last-child {
+  margin-top: 0; /* Reset margin */
+  position: relative;
+  clear: both;
+}
+
+/* Tagline section */
+.form-row:has(label[for="tagline"]) {
+  margin-bottom: 0; /* Reset margin */
+  flex-direction: column;
 }
 
 .form-group {
@@ -341,14 +385,16 @@ label {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 0; /* Removed space between input and suggestions */
+  margin-top: 0;
   padding-top: 3px;
-  border-top: 1px dashed #eee; /* Light separator */
-  max-height: 80px; /* Increased max height for suggestions */
-  overflow-y: auto; /* Add scrolling if needed */
-  position: absolute; /* Position within the reserved space */
-  width: calc(100% - 2px); /* Match container width */
-  background: white; /* Ensure background matches */
+  border-top: 1px dashed #eee;
+  height: 50px; /* Reduced from 70px to 50px */
+  max-height: 50px;
+  min-height: 50px;
+  overflow: visible;
+  width: 100%;
+  background: white;
+  margin-bottom: 0;
 }
 
 .suggested-keyword {
@@ -356,17 +402,25 @@ label {
   color: #666;
   border: 1px solid #ddd;
   border-radius: 3px;
-  padding: 3px 6px; /* Reduced padding */
-  font-size: 11px; /* Reduced font size to match keyword tags */
+  padding: 3px 6px;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.2s;
   margin: 2px;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .suggested-keyword:hover {
   background-color: #e9f5fb;
   color: #0083B5;
   border-color: #0083B5;
+}
+
+/* Bring tagline section closer to keyword section */
+.form-group:has(label[for="tagline"]), 
+.tagline-input-container {
+  margin-top: -15px; /* Reduced further to push up by 20 more pixels */
 }
 
 /* Set Poppins font for all input placeholders */
@@ -379,11 +433,10 @@ select {
 /* Tagline input */
 .tagline-input-container {
   width: 100%;
-  margin-bottom: 0;
-  height: 130px; /* Increased fixed height to accommodate 2 lines */
-  max-height: 130px; /* Ensure maximum height constraint */
-  overflow: visible; /* Allow content to be visible */
-  position: relative; /* For positioning inner content */
+  margin-bottom: 0 !important; /* Reset margin */
+  min-height: 100px;
+  overflow: visible;
+  position: relative;
 }
 
 .tagline-input-container .input-and-button {
@@ -395,38 +448,47 @@ select {
 
 /* Two-line tagline display area */
 .tagline-display-area {
-  height: 80px !important; /* Increased for 2 lines */
-  min-height: 80px !important; /* Increased for 2 lines */
-  max-height: 80px !important; /* Increased for 2 lines */
-  overflow: hidden !important; /* Hide overflow */
-  margin-bottom: 10px !important; /* Consistent spacing */
+  height: 48px !important; /* Reduced to strictly 2 lines */
+  min-height: 48px !important;
+  max-height: 48px !important;
+  overflow: hidden !important;
+  margin-bottom: 10px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  padding: 0 !important; /* Remove all padding from the container */
 }
 
 /* Two-line tagline display box */
 .tagline-display {
-  height: 80px !important; /* Increased for 2 lines */
-  min-height: 80px !important; /* Increased for 2 lines */
-  max-height: 80px !important; /* Increased for 2 lines */
-  overflow: hidden !important; /* Hide overflow instead of scroll */
-  padding: 10px 15px !important; /* Consistent padding */
-  line-height: 1.5 !important; /* Increased for better readability */
-  align-items: center !important; /* Center content vertically */
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  overflow: hidden !important;
+  padding: 2px 8px !important; /* Minimal padding */
+  line-height: 1.2 !important;
   display: flex !important;
-  flex-wrap: wrap !important;
-  align-content: center !important; /* Center content vertically */
-  word-break: break-word !important; /* Break words to fit box */
+  align-items: center !important;
+  justify-content: center !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+  font-size: 14px !important; /* Slightly smaller font */
 }
 
-/* Ensure buttons container has consistent height */
+/* Tagline buttons container */
 .tagline-buttons {
-  height: 40px !important; /* Fixed height */
-  overflow: visible !important; /* Ensure buttons are visible */
+  height: auto !important;
+  min-height: 44px !important;
+  overflow: visible !important;
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
+  margin-bottom: 0 !important; /* Remove bottom margin */
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 .tagline-input-container .form-input {
@@ -461,6 +523,7 @@ select {
   box-shadow: 0 2px 4px rgba(0,131,181,0.1);
 }
 
+/* Generate button */
 .generate-btn {
   display: flex;
   align-items: center;
@@ -489,7 +552,28 @@ select {
   font-size: 16px;
 }
 
-/* Next button */
+/* Delete button */
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 15px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Next button - adjusted positioning */
 .next-btn {
   width: 100%;
   background-color: #FFCB03;
@@ -501,11 +585,66 @@ select {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+  margin-top: -30px; /* Move up by 30px */
+  clear: both;
+  display: block;
 }
 
 .next-btn:hover {
   background-color: #e6b800;
+}
+
+/* Desktop-specific adjustments */
+@media (min-width: 769px) {
+  /* Specific style for tagline container */
+  .tagline-input-container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Adjust the Next button */
+  .next-btn {
+    margin-top: -30px !important; /* Move up by 30px on desktop too */
+  }
+  
+  /* Remove extra space for buttons */
+  .tagline-buttons {
+    margin-bottom: 0 !important;
+  }
+
+  /* Desktop-specific styles for tagline */
+  .tagline-display-area {
+    height: 40px !important; /* Further reduced for desktop */
+    min-height: 40px !important;
+    max-height: 40px !important;
+    margin-bottom: 8px !important;
+    overflow: hidden !important;
+  }
+  
+  .tagline-display {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    padding: 0px 6px !important; /* Almost no padding */
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1.15 !important; /* Very tight line height */
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+  }
+  
+  /* Remove spacing between words */
+  .tagline-display span {
+    margin: 0;
+    line-height: 1.15 !important;
+    padding: 0 !important;
+  }
 }
 
 /* Enhanced mobile optimization for AddDetails page */
@@ -712,10 +851,32 @@ select {
     padding-right: 85px; /* Make space for the narrower button */
   }
   
-  /* Make keyword tags more compact on mobile */
-  .keyword-tag {
-    padding: 4px 8px;
-    font-size: 12px;
+  /* Larger text for keywords */
+  .suggested-keyword {
+    font-size: 10px !important; /* Increased from 9px for better readability */
+    padding: 1px 3px !important; /* Increased horizontal padding */
+    margin: 2px !important; /* Increased margin for more space */
+    height: 16px !important; /* Increased height */
+    line-height: 14px !important; /* Increased line height */
+    border-radius: 2px !important;
+  }
+  
+  /* Dynamic height keyword cloud with more breathing room */
+  .suggested-keywords {
+    overflow: visible !important;
+    height: auto !important; /* Auto height instead of fixed */
+    max-height: none !important; /* No maximum height */
+    min-height: 40px !important; /* Increased from 30px */
+    flex-wrap: wrap !important;
+    gap: 3px !important; /* Increased from 1px */
+    padding: 5px !important; /* Increased from 2px */
+    margin-bottom: 12px !important; /* Increased from 10px */
+  }
+  
+  /* Add gap between keyword cloud and tagline section */
+  .form-group:has(label[for="tagline"]), 
+  .tagline-input-container {
+    margin-top: 12px !important; /* Increased from 10px */
   }
 }
 
@@ -816,5 +977,58 @@ select {
     max-height: calc(100vh - 40px);
     overflow-y: auto;
     padding: 15px;
+  }
+}
+
+/* Desktop adjustments */
+@media (min-width: 769px) {
+  /* Ensure proper spacing between buttons on desktop */
+  .next-btn {
+    margin-top: 70px !important; /* Even more space on desktop */
+  }
+  
+  /* Desktop keyword styling */
+  .suggested-keyword {
+    font-size: 12px !important; /* Increased from 11px */
+    padding: 4px 8px !important; /* Increased padding */
+    margin: 2px !important;
+    border-radius: 3px !important;
+  }
+  
+  /* Desktop suggested keywords container */
+  .suggested-keywords {
+    height: 50px !important; /* Kept at 50px */
+    max-height: 50px !important;
+    min-height: 50px !important;
+    gap: 4px !important; /* Increased from 3px */
+  }
+  
+  /* Add space between tagline box and buttons */
+  .tagline-buttons {
+    margin-top: 5px !important; /* Add 5px space between tagline box and buttons */
+  }
+  
+  /* Desktop-specific styles for tagline */
+  .tagline-display-area {
+    height: 60px !important; /* Reduced from 70px to 60px to make it more compact */
+    min-height: 60px !important;
+    max-height: 60px !important;
+    margin-bottom: 10px !important; /* Reduced from 15px */
+  }
+  
+  .tagline-display {
+    height: 60px !important; /* Reduced from 70px to 60px */
+    min-height: 60px !important;
+    max-height: 60px !important;
+    padding: 5px 8px !important; /* Significantly reduced padding from 10px 15px */
+    font-size: 16px !important; /* Reduced from 18px */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Remove spacing between words */
+  .tagline-display span {
+    margin: 0; /* Removed 2px margin */
   }
 }

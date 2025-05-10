@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/pages/SharePoster.css';
+import '../styles/overrides/LogoPositionFix.css'; // Import logo positioning overrides
 import Loader from '../components/Loader';
 import CTABannerCarousel from '../components/CTABannerCarousel';
 import { loadFaceDetectionModels, getOptimalImagePlacement } from '../utils/faceDetection';
+import { getRandomTemplateForIndustry } from '../utils/templateSelector'; // Import template selector
 
 // Try to load face detection models early
 loadFaceDetectionModels().catch(err => {
@@ -18,6 +20,7 @@ const SharePoster = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingStatus, setLoadingStatus] = useState('Generating your poster...');
+  const [templatePath, setTemplatePath] = useState(null); // Store the selected template path
   const canvasRef = useRef(null);
   const preloadedTemplateRef = useRef(null); // Ref to store preloaded image
   
@@ -48,53 +51,53 @@ const SharePoster = () => {
     };
   }, []);
 
-  // Preload the template image when component mounts
+  // Preload the template image when component mounts and userData is available
   useEffect(() => {
     const preloadTemplateImage = async () => {
+      if (!userData || !userData.industry) {
+        return; // Wait for user data to be available
+      }
+
       try {
+        // Get template path based on industry
+        const selectedTemplatePath = await getRandomTemplateForIndustry(userData.industry);
+        setTemplatePath(selectedTemplatePath);
+        console.log(`Selected template path: ${selectedTemplatePath} for industry: ${userData.industry}`);
+        
+        // Preload the template image
         const img = new Image();
         img.crossOrigin = 'anonymous';
         
-        // Try different paths to preload the template
-        const paths = [
-          `${window.location.origin}/images/mage.jpg`,
-          '/images/mage.jpg',
-          'images/mage.jpg',
-          `${window.location.origin}/images/template.jpg`,
-          '/images/template.jpg',
-          'images/template.jpg'
-        ];
-        
-        // Function to try loading with each path
-        const tryLoadingWithPath = (index) => {
-          if (index >= paths.length) {
-            console.error('All template image paths failed to load');
-            return;
-          }
-          
-          img.onload = () => {
-            console.log(`Template image preloaded successfully from: ${paths[index]}`);
-            preloadedTemplateRef.current = img;
-          };
-          
-          img.onerror = () => {
-            console.warn(`Failed to preload template image from: ${paths[index]}`);
-            // Try next path
-            tryLoadingWithPath(index + 1);
-          };
-          
-          img.src = paths[index];
+        img.onload = () => {
+          console.log(`Template image preloaded successfully from: ${selectedTemplatePath}`);
+          preloadedTemplateRef.current = img;
         };
         
-        // Start trying with first path
-        tryLoadingWithPath(0);
+        img.onerror = (err) => {
+          console.warn(`Failed to preload template image from: ${selectedTemplatePath}`, err);
+          // Fall back to mage.jpg if the template fails to load
+          const fallbackImage = new Image();
+          fallbackImage.crossOrigin = 'anonymous';
+          fallbackImage.src = '/images/mage.jpg';
+          
+          fallbackImage.onload = () => {
+            console.log('Fallback template image preloaded successfully');
+            preloadedTemplateRef.current = fallbackImage;
+          };
+          
+          fallbackImage.onerror = (fallbackErr) => {
+            console.error('Even fallback template failed to load:', fallbackErr);
+          };
+        };
+        
+        img.src = selectedTemplatePath;
       } catch (error) {
         console.error('Error preloading template image:', error);
       }
     };
     
     preloadTemplateImage();
-  }, []);
+  }, [userData]);  // Re-run when userData changes
 
   // Define generatePoster with useCallback before it's used in useEffect
   const generatePoster = useCallback(async () => {
@@ -151,11 +154,11 @@ const SharePoster = () => {
         userImg.crossOrigin = 'anonymous';
         userImg.src = processedImage;
         
-        // Load the template image with Bumrah
-        // Use absolute URL path to ensure correct loading across all environments
-        const templateSrc = `${window.location.origin}/images/mage.jpg`;
+        // Load the template image based on user's industry
+        // Use the selected template path if available, otherwise fall back to the default
+        const templateSrc = templatePath || `${window.location.origin}/images/mage.jpg`;
           
-        console.log(`Using template: ${templateSrc}`);
+        console.log(`Using template: ${templateSrc} for industry: ${userData.industry || 'unknown'}`);
         
         setLoadingStatus('Generating your poster...');
         let templateImg;
@@ -176,23 +179,18 @@ const SharePoster = () => {
           templateImg.onerror = () => {
             console.error('Failed to load template image, trying alternate path');
             // Try without window.location.origin as a fallback
-            templateImg.src = '/images/mage.jpg';
+            const srcWithoutOrigin = templateSrc.replace(`${window.location.origin}`, '');
+            templateImg.src = srcWithoutOrigin;
             
             // If that also fails, try a relative path
             templateImg.onerror = () => {
-              console.error('Still failed to load template image, using relative path');
-              templateImg.src = 'images/mage.jpg';
+              console.error('Still failed to load template image, using default fallback');
+              templateImg.src = '/images/mage.jpg';
               
               // If that still fails, try the backup template file
               templateImg.onerror = () => {
-                console.error('All mage.jpg paths failed, trying template.jpg');
-                templateImg.src = '/images/template.jpg';
-                
-                // Last attempt with relative path
-                templateImg.onerror = () => {
-                  console.error('Even template.jpg failed, using final fallback');
-                  templateImg.src = 'images/template.jpg';
-                };
+                console.error('Default fallback failed, trying final fallback');
+                templateImg.src = 'images/template.jpg';
               };
             };
           };
@@ -825,7 +823,7 @@ const SharePoster = () => {
       isProcessing = false;
       setIsLoading(false);
     }
-  }, [processedImage, userData]);
+  }, [processedImage, userData, templatePath]);
 
   useEffect(() => {
     // Load data from sessionStorage when component mounts
@@ -932,6 +930,101 @@ const SharePoster = () => {
     console.log('SharePoster - Initial isMobile state:', window.innerWidth <= 768, 'Width:', window.innerWidth);
     
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Prevent automatic scrolling - add at the beginning of the component
+  useEffect(() => {
+    // Prevent scrolling to carousel on page load
+    const preventAutoScroll = () => {
+      // Store the current scroll position
+      const scrollPosition = window.pageYOffset;
+      
+      // If something tries to scroll the page automatically, restore the position
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+      }, 100);
+    };
+    
+    // Execute once on component mount and when window loads
+    window.addEventListener('load', preventAutoScroll);
+    
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('load', preventAutoScroll);
+    };
+  }, []);
+
+  // Allow users to scroll manually by adding passive touch listeners
+  useEffect(() => {
+    let touchStartY = 0;
+    
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchMove = (e) => {
+      const touchY = e.touches[0].clientY;
+      const diff = touchStartY - touchY;
+      
+      // If scrolling up and near the top, allow normal browser behavior
+      if (diff < 0 && window.scrollY < 50) {
+        e.stopPropagation();
+      }
+    };
+    
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
+  // Add this right after the existing preventAutoScroll effect
+  useEffect(() => {
+    // Only for mobile view - add additional scroll protection
+    if (window.innerWidth <= 768) {
+      // Create a more aggressive scroll position lock
+      let lastScrollPosition = window.pageYOffset;
+      let scrollLock = false;
+      
+      const lockScrollPosition = () => {
+        lastScrollPosition = window.pageYOffset;
+        scrollLock = true;
+        
+        // Release lock after 400ms to allow intentional user scrolling
+        setTimeout(() => {
+          scrollLock = false;
+        }, 400);
+      };
+      
+      const checkAndRestoreScroll = () => {
+        if (scrollLock) {
+          window.scrollTo(0, lastScrollPosition);
+        }
+      };
+      
+      // Initialize scroll position
+      lockScrollPosition();
+      
+      // Add scroll event listener
+      window.addEventListener('scroll', checkAndRestoreScroll);
+      
+      // Add touch events that can trigger scroll position locking
+      const handleTouchStart = () => {
+        if (!scrollLock) {
+          lockScrollPosition();
+        }
+      };
+      
+      document.addEventListener('touchstart', handleTouchStart, { passive: true });
+      
+      return () => {
+        window.removeEventListener('scroll', checkAndRestoreScroll);
+        document.removeEventListener('touchstart', handleTouchStart);
+      };
+    }
   }, []);
 
   return (

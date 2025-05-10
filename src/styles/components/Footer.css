@@ -21,6 +21,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.company-name, .cin-number {
+  display: inline-block;
+}
+
 .social {
   display: flex;
   align-items: center;
@@ -62,21 +66,41 @@
 @media (max-width: 768px) {
   .footer .container {
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
     text-align: center;
   }
   
   .copyright {
-    font-size: 12px;
+    font-size: 10px !important;
     flex: none;
     width: 100%;
     order: 2;
   }
   
+  .company-name {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 10px !important;
+  }
+  
+  .cin-number {
+    display: block;
+    font-size: 10px !important;
+  }
+  
   .social {
     width: 100%;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     order: 1;
+  }
+  
+  .social p {
+    font-size: 12px !important;
+  }
+  
+  .social-icon {
+    width: 25px !important;
+    height: 25px !important;
   }
 } 

@@ -4,6 +4,9 @@ const CTABannerCarousel = ({ banners = [] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef(null);
   const timerRef = useRef(null);
+  // Add a flag to track user scrolling
+  const userScrollingRef = useRef(false);
+  const lastScrollTimeRef = useRef(0);
   
   // Use the actual images from the CTA folder
   const defaultBanners = [
@@ -63,13 +66,102 @@ const CTABannerCarousel = ({ banners = [] }) => {
   // Ref for scrollable container to implement auto-scrolling
   const scrollContainerRef = useRef(null);
   
-  // Update scroll position when active index changes
+  // Add event listeners to detect user scrolling
   useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const handleScroll = () => {
+      // Mark that user is scrolling and set timestamp
+      userScrollingRef.current = true;
+      lastScrollTimeRef.current = Date.now();
+      
+      // After 2 seconds, allow auto-scrolling again
+      setTimeout(() => {
+        if (Date.now() - lastScrollTimeRef.current >= 2000) {
+          userScrollingRef.current = false;
+        }
+      }, 2000);
+    };
+    
+    // Add touch and scroll event listeners
+    container.addEventListener('scroll', handleScroll);
+    container.addEventListener('touchmove', handleScroll);
+    
+    // Add manual click handler for mobile view
+    const handleClick = (e) => {
+      const children = Array.from(container.children);
+      const clickedIndex = children.findIndex(child => child.contains(e.target));
+      
+      if (clickedIndex !== -1) {
+        e.preventDefault(); // Prevent default link behavior
+        goToSlide(clickedIndex);
+        
+        // Manually trigger scroll if on mobile
+        if (window.innerWidth <= 768) {
+          setTimeout(() => {
+            if (children[clickedIndex]) {
+              children[clickedIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+              });
+            }
+          }, 50);
+        }
+      }
+    };
+    
+    container.addEventListener('click', handleClick);
+    
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('touchmove', handleScroll);
+      container.removeEventListener('click', handleClick);
+    };
+  }, []);
+  
+  // Update scroll position when active index changes with modified behavior for mobile
+  useEffect(() => {
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    // For mobile, use a more reliable scrolling method
+    if (isMobile) {
+      if (scrollContainerRef.current && displayBanners.length > 0) {
+        // Allow some time for the DOM to update
+        setTimeout(() => {
+          const container = scrollContainerRef.current;
+          if (!container) return;
+          
+          const children = Array.from(container.children);
+          const activeChild = children[activeIndex];
+          
+          if (activeChild && !userScrollingRef.current) {
+            // Calculate scroll position to center the active item
+            const containerWidth = container.offsetWidth;
+            const activeChildWidth = activeChild.offsetWidth;
+            const activeChildLeft = activeChild.offsetLeft;
+            const scrollLeft = activeChildLeft - (containerWidth - activeChildWidth) / 2;
+            
+            // Use scrollTo instead of scrollIntoView for more control
+            container.scrollTo({
+              left: scrollLeft,
+              behavior: 'smooth'
+            });
+          }
+        }, 50);
+      }
+      return;
+    }
+    
+    // Desktop behavior remains the same
     if (scrollContainerRef.current && displayBanners.length > 0) {
       const container = scrollContainerRef.current;
       const children = Array.from(container.children);
       
-      if (children[activeIndex]) {
+      // Only scroll into view if user isn't currently scrolling
+      if (children[activeIndex] && !userScrollingRef.current) {
         // Scroll the active banner into view smoothly
         children[activeIndex].scrollIntoView({
           behavior: 'smooth',
@@ -91,6 +183,13 @@ const CTABannerCarousel = ({ banners = [] }) => {
             target="_blank"
             rel="noopener noreferrer"
             className={index === activeIndex ? 'active-image' : ''}
+            onClick={(e) => {
+              // For mobile view, prevent default and handle manually
+              if (window.innerWidth <= 768) {
+                e.preventDefault();
+                goToSlide(index);
+              }
+            }}
           >
             <img 
               src={`/images/cta/${banner.name}`} 

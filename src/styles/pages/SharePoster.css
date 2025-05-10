@@ -19,26 +19,32 @@
   position: relative; /* For absolute positioning of the half-cut container */
 }
 
-/* Logo container styles */
+/* Logo container styles - ensure it's positioned at top left for desktop */
 .logo-container {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 100; /* Ensure logo appears above other elements */
+  position: absolute !important;
+  top: 20px !important;
+  left: 20px !important;
+  transform: none !important; /* Remove any transform that might be centering the logo */
+  z-index: 100 !important;
+  text-align: left !important; /* Ensure text alignment is left */
+  width: auto !important; /* Reset any width constraints */
+  margin: 0 !important; /* Reset any margins */
 }
 
+/* Ensure logo is properly sized and aligned */
 .header-logo {
   width: 150px;
   height: auto;
   cursor: pointer;
   transition: transform 0.2s ease;
+  margin-left: 0 !important; /* Reset any left margin */
 }
 
 .header-logo:hover {
   transform: scale(1.05);
 }
 
-/* Main content container */
+/* Main content container - pushed down by 20px */
 .share-poster-content {
   display: flex;
   width: 100%;
@@ -47,9 +53,10 @@
   align-items: flex-start;
   box-sizing: border-box; /* Include gaps in width calculation */
   margin-left: 40px; /* Move the entire content 40px to the right */
+  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
 }
 
-/* Left side - Poster template */
+/* Left side - Poster template - pushed down by 20px */
 .poster-container {
   flex: 1;
   max-width: 380px;
@@ -57,12 +64,13 @@
   position: relative;
   z-index: 10; /* Ensure poster is above any overlapping elements */
   box-sizing: border-box; /* Include margin in width calculation */
+  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
 }
 
-/* Neo brutalism poster frame */
+/* Neo brutalism poster frame - reduced white border */
 .poster-frame {
   background-color: #ffffff; /* White background */
-  border: 4px solid #ffffff; /* Pure white border */
+  border: 2px solid #ffffff; /* Reduced from 4px to 2px */
   border-radius: 0; /* Make corners sharp */
   padding: 10px; /* Reduced from 20px to 10px */
   position: relative;
@@ -106,10 +114,11 @@
   box-sizing: border-box; /* Include any padding in width calculation */
 }
 
-/* Text section */
+/* Text section - pushed down by 20px */
 .text-section {
   margin-bottom: 25px;
   width: 100%; /* Ensure full width */
+  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
 }
 
 .text-section h2 {
@@ -124,10 +133,11 @@
   color: #FFC107;
 }
 
-/* User info section */
+/* User info section - pushed down by 20px */
 .user-info-section {
   margin-bottom: 20px;
   width: 100%; /* Ensure full width */
+  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
 }
 
 .user-row {
@@ -167,7 +177,7 @@
   color: #FFC107;
 }
 
-/* Business tags */
+/* Business tags - pushed down by 20px */
 .business-tag {
   background-color: #FFC107;
   color: #0a1a34;
@@ -177,6 +187,7 @@
   font-weight: 600;
   display: inline-block;
   margin-bottom: 10px;
+  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
 }
 
 .game-changer-text {
@@ -186,16 +197,18 @@
   letter-spacing: 1px;
 }
 
-/* Right side - Controls section */
+/* Right side - Controls section - pushed down by 20px */
 .controls-section {
   flex: 1;
   max-width: 350px;
   padding-left: 20px; /* Added 20px spacing between poster and content */
-  padding-top: 25px; /* Push content down by 25px */
+  padding-top: 60px; /* Increased from 40px to 60px (added 20px) */
   box-sizing: border-box; /* Include padding in width calculation */
+  position: relative; /* Make it relatively positioned instead of sticky */
+  top: auto; /* Remove sticky positioning */
 }
 
-/* Controls Section Title */
+/* Controls Section Title - pushed down by 20px */
 .section-title {
   font-size: 38px; /* Increased font size */
   font-weight: 700;
@@ -203,6 +216,7 @@
   margin-bottom: 10px; /* Reduced margin to decrease line spacing */
   line-height: 1.1; /* Reduced line height for tighter text */
   max-width: 350px; /* Reduced width */
+  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
 }
 
 .section-subtitle {
@@ -303,134 +317,194 @@
 }
 
 @media (max-width: 768px) {
+  /* Ensure mobile poster page is properly configured */
   .share-poster-page {
-    padding: 30px 20px;
-    overflow-x: hidden; /* Additional prevention for horizontal scrolling */
-    min-height: 100vh; /* Increase section height to fit content */
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 15px !important;
+    overflow-x: hidden !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
-  
+
+  /* Fix logo positioning - center on mobile and make non-sticky */
+  .logo-container {
+    position: absolute !important;
+    top: 15px !important;
+    left: 50% !important; /* Center horizontally */
+    transform: translateX(-50%) !important; /* Center horizontally */
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 1000 !important;
+    width: auto !important; /* Reset width */
+    text-align: center !important; /* Center text */
+  }
+
+  .header-logo {
+    width: 180px !important;
+    height: auto !important;
+    max-width: 180px !important;
+  }
+
+  /* Fix content layout and centering - add 15px more space */
   .share-poster-content {
-    gap: 20px; /* Reduced from 50px to push content up closer to template */
-    max-width: 100%;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 140px auto 0 auto !important; /* Increased from 125px to 140px to push down by 15px more */
+    padding: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    gap: 20px !important;
   }
-  
+
+  /* Center the poster container */
   .poster-container {
-    max-width: 320px;
-    width: 100%;
-    margin-bottom: 10px; /* Reduced from 40px to bring controls closer */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto 20px auto !important;
   }
-  
+
+  /* Center the controls section */
   .controls-section {
-    max-width: 320px;
-    width: 100%;
-    padding-top: 0; /* Remove top padding to push content up */
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
-  
-  .section-title {
-    font-size: 24px;
-    text-align: center;
-    margin-bottom: 10px; /* Reduced from 15px to compress space */
-  }
-  
-  .section-subtitle {
-    text-align: center;
-    font-size: 15px;
-    margin-bottom: 15px; /* Reduced from 25px to compress space */
-  }
-  
-  .download-btn, .make-another-btn {
-    font-size: 15px;
-    padding: 12px;
-  }
-  
-  .another-shot {
-    margin-top: 15px; /* Reduced from 25px */
-  }
-  
+
+  /* Fix text alignment and spacing */
+  .section-title,
+  .section-subtitle,
   .another-shot-text {
-    text-align: center;
-    margin-bottom: 8px; /* Reduced from 10px */
+    text-align: center !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
-  
-  /* Hide the white container on mobile */
-  .cta-container {
-    display: none;
+
+  /* Fix button alignment */
+  .download-btn,
+  .make-another-btn {
+    width: 100% !important;
+    margin: 0 auto !important;
   }
-  
-  /* Add mobile CTA banner section without white container */
+
+  /* Ensure another shot section is centered */
+  .another-shot {
+    width: 100% !important;
+    margin: 15px auto 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  /* Properly fix CTA banner carousel on mobile */
   .mobile-cta-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
-    overflow: hidden;
-    height: 380px; /* Further increased to 380px to prevent image cutoff */
-    max-width: 100vw;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 30px auto 0 auto !important; /* Increased top margin by 10px for additional spacing */
+    overflow: hidden !important;
+    height: 380px !important;
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
   }
-  
-  /* Ensure mobile CTA carousel fills container */
+
   .mobile-cta-section .cta-carousel {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
-  
-  /* Set banners in a single row with auto scroll for mobile */
+
   .mobile-cta-section .banners-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x proximity; /* Changed from mandatory to proximity for smoother scrolling */
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    scrollbar-width: none;
-    gap: 0; /* Remove gap between items */
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    scrollbar-width: none !important;
+    gap: 0 !important;
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
   }
-  
-  /* Banner items in a single row for mobile */
+
   .mobile-cta-section .cta-banner {
-    flex: 0 0 auto;
-    width: 100%; /* Take up full width */
-    min-width: 300px;
-    height: 100%; /* Use full height of container */
-    scroll-snap-align: center;
-    padding: 10px; /* Added padding around the banner */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box; /* Ensure padding is included in width calculation */
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    scroll-snap-align: center !important;
+    padding: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    transform: translateZ(0) !important;
   }
-  
-  /* Ensure mobile banner images are properly displayed without cutoff */
+
   .mobile-cta-section .cta-banner img {
-    max-width: 100%;
-    max-height: 360px; /* Match container height minus padding */
-    width: auto; /* Let width be determined by height to maintain aspect ratio */
-    height: auto; /* Let height be determined by width to maintain aspect ratio */
-    object-fit: contain; /* Ensure the image is fully visible */
-    margin: 0 auto; /* Center image horizontally */
-    display: block; /* Remove any inline spacing issues */
-    object-position: center; /* Ensure image is centered */
+    max-width: 100% !important;
+    max-height: 360px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
+    display: block !important;
+    object-position: center !important;
+  }
+
+  /* Fix overflow issue that causes content shifting */
+  body, html, #root, .app {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+  }
+
+  /* Hide the white container completely in mobile view */
+  .cta-container {
+    display: none !important;
   }
 }
 
 @media (max-width: 480px) {
   .share-poster-page {
     padding: 20px 15px;
-    overflow-x: hidden; /* Additional prevention for horizontal scrolling */
+    overflow-x: hidden;
+  }
+  
+  /* Keep logo size for smaller screens */
+  .header-logo {
+    width: 180px !important; /* Keep the same 180px width for consistency */
   }
   
   .poster-container {
     max-width: 280px;
     width: 100%;
-    margin-bottom: 5px; /* Further reduce spacing */
+    margin-bottom: 5px;
   }
   
   .poster-frame {
@@ -569,10 +643,10 @@
 
 /* Half-cut white container for CTA banners */
 .cta-container {
-  position: fixed;
+  position: absolute !important; /* Absolute positioning, not sticky */
   right: 0;
-  top: 150px; /* Adjusted for smaller container */
-  bottom: 150px; /* Adjusted for smaller container */
+  top: 170px; /* Increased from 150px to 170px (added 20px) */
+  bottom: 150px; /* Kept bottom the same */
   width: 420px; /* Reduced width to make container smaller */
   background-color: #ffffff;
   border-top-left-radius: 20px;
@@ -740,7 +814,7 @@
 @media (max-width: 992px) {
   .cta-container {
     width: 320px;
-    top: 200px;
+    top: 220px; /* Increased from 200px to 220px (added 20px) */
     bottom: 200px;
   }
 }
@@ -748,7 +822,7 @@
 @media (max-width: 768px) {
   .cta-container {
     width: 260px;
-    top: 180px;
+    top: 200px; /* Increased from 180px to 200px (added 20px) */
     bottom: 180px;
   }
 }
@@ -756,7 +830,7 @@
 @media (max-width: 480px) {
   .cta-container {
     width: 200px;
-    top: 160px;
+    top: 180px; /* Increased from 160px to 180px (added 20px) */
     bottom: 160px;
   }
   

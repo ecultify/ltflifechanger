@@ -494,6 +494,17 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
 
   // Handle next button click
   const handleNext = () => {
+    // Process the tagline to clean up any manual edits
+    let finalTagline = tagline;
+    
+    // If tagline has been edited manually, we need to identify any highlighted keywords
+    const highlightedKeywords = keywords.filter(keyword => {
+      // Check if this keyword appears in the tagline (case insensitive)
+      // Handle both normal and highlighted format (with asterisks)
+      const keywordRegex = new RegExp(`\\*?${keyword}\\*?`, 'i');
+      return keywordRegex.test(finalTagline);
+    });
+    
     // Store form data in sessionStorage instead of localStorage
     sessionStorage.setItem('userName', name);
     sessionStorage.setItem('companyName', companyName);
@@ -501,16 +512,10 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     sessionStorage.setItem('businessVintage', businessVintage);
     sessionStorage.setItem('turnover', turnover);
     // Callback option removed
-    sessionStorage.setItem('tagline', tagline);
+    sessionStorage.setItem('tagline', finalTagline);
     
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
     sessionStorage.setItem('selectedKeywords', JSON.stringify(keywords));
-    
-    // Find which keywords are actually used in the tagline for highlighting in the poster
-    const highlightedKeywords = keywords.filter(keyword => {
-      // Check if this keyword appears in the tagline (case insensitive)
-      return tagline.toLowerCase().includes(keyword.toLowerCase());
-    });
     
     // Store the highlighted keywords separately for the poster generation
     sessionStorage.setItem('highlightedKeywords', JSON.stringify(highlightedKeywords));
@@ -530,6 +535,9 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     color: '#000000',
   };
 
+  // Handle tagline selection
+  const taglineRef = useRef(null);
+
   return (
     <div className="details-page" style={isMobile ? { backgroundImage: `url('/images/adddetails/UploadPhoto+AddDetails.png')` } : {}}>
       {!isMobile && (
@@ -545,6 +553,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                 src="/images/adddetails/LOGO.png" 
                 alt="L&T Finance Logo" 
                 className="left-logo-image"
+                style={{ marginTop: "-15px" }}
               />
             </Link>
           </div>
@@ -553,6 +562,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               src="/images/adddetails/Group15183.png" 
               alt="Group" 
               className="left-group-image"
+              style={{ marginTop: "-30px" }}
             />
           </div>
           <div className="left-people-container">
@@ -560,6 +570,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               src="/images/adddetails/Layer1.png" 
               alt="Layer" 
               className="left-people-image"
+              style={{ marginTop: "-25px" }}
             />
           </div>
         </div>
@@ -595,23 +606,25 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                   src="/images/adddetails/LOGO.png" 
                   alt="L&T Finance Logo" 
                   className="mobile-logo"
+                  style={{ marginTop: "-15px" }}
                 />
               </Link>
               <img 
                 src="/images/adddetails/Group15183.png" 
                 alt="Group" 
                 className="mobile-group"
+                style={{ marginTop: "-15px" }}
               />
               <img 
                 src="/images/adddetails/Layer1.png" 
                 alt="Layer" 
                 className="mobile-layer"
-                style={{ position: 'relative', zIndex: 1 }}
+                style={{ position: 'relative', zIndex: 1, marginTop: "-25px" }}
               />
             </div>
           )}
           
-          <div className="form-container">
+          <div className="form-container" style={{ marginBottom: "-20px" }}>
             {/* Mobile stepper inside form */}
             {isMobile && (
               <div className="mobile-stepper-container form-stepper">
@@ -766,84 +779,58 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             
             {/* Tagline in one row */}
             <div className="form-row">
-              <div className="form-group" style={{ width: '100%' }}>
+              <div className="form-group" style={{ width: '100%', marginBottom: '5px' }}>
                 <label htmlFor="tagline">Generate Tagline</label>
-                <div className="tagline-input-container">
-                  {/* Tagline input/display with buttons below it */}
-                  <div className="tagline-display-area" style={{ marginBottom: '15px' }}>
+                <div className="tagline-row">
+                  <div className="tagline-field">
                     {tagline ? (
-                      <div 
+                      <input 
+                        ref={taglineRef}
+                        type="text" 
                         className="tagline-display border-blue"
+                        value={tagline}
+                        readOnly={true}
                         style={{
                           ...inputStyle,
-                          padding: '12px 15px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          minHeight: '60px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          flexWrap: 'wrap',
-                          gap: '2px',
-                          backgroundColor: 'white',
-                          width: '100%'
+                          height: 'auto',
+                          minHeight: '38px',
+                          padding: '8px 10px',
+                          overflow: 'auto',
+                          whiteSpace: 'normal',
+                          textOverflow: 'clip',
+                          cursor: 'text',
+                          backgroundColor: '#f8f8f8'
                         }}
-                      >
-                        {tagline.split(' ').map((word, index) => {
-                          // Remove punctuation for comparison
-                          const cleanWord = word.replace(/[.,!?;:()\[\]{}'"\-]/g, '').toLowerCase();
-                          
-                          // Check which keywords match this word
-                          const matchingKeyword = keywords.find(keyword => {
-                            const keywordLower = keyword.toLowerCase();
-                            return cleanWord === keywordLower || cleanWord.includes(keywordLower);
-                          });
-                          
-                          const isKeyword = !!matchingKeyword;
-                          
-                          // Apply special styling for keywords
-                          return (
-                            <span 
-                              key={index} 
-                              style={{
-                                fontWeight: isKeyword ? 'bold' : 'normal',
-                                color: isKeyword ? '#0083B5' : 'inherit',
-                                display: 'inline-block',
-                                textDecoration: isKeyword ? 'underline' : 'none',
-                                textUnderlineOffset: '3px',
-                                textDecorationThickness: '1px'
-                              }}
-                            >
-                              {word}{index < tagline.split(' ').length - 1 ? ' ' : ''}
-                            </span>
-                          );
-                        })}
-                      </div>
+                      />
                     ) : (
                       <input 
                         type="text" 
                         id="tagline"
-                        placeholder="Your company tagline..." 
+                        placeholder="Your company tagline will appear here..." 
                         value={tagline}
                         readOnly={true}
                         className="form-input border-blue"
-                        style={inputStyle}
+                        style={{
+                          ...inputStyle,
+                          height: '38px',
+                          lineHeight: '38px'
+                        }}
                       />
                     )}
                   </div>
-                  
-                  {/* Buttons arranged horizontally */}
-                  <div className="tagline-buttons" style={{ display: 'flex', gap: '10px' }}>
+                  <div className="tagline-actions">
                     <button 
                       type="button" 
                       className="generate-btn"
                       onClick={handleGenerateTagline}
                       disabled={isGeneratingTagline || keywords.length === 0}
                       style={{
-                        backgroundColor: isTaglineGenerated ? '#FFC107' : '#0083B5',
-                        color: isTaglineGenerated ? '#000' : '#fff',
+                        backgroundColor: '#0083B5',
+                        color: '#fff',
                         border: 'none',
                         borderRadius: '4px',
-                        padding: '10px 15px',
+                        padding: '0 15px',
+                        height: '38px',
                         cursor: keywords.length === 0 ? 'not-allowed' : 'pointer',
                         opacity: keywords.length === 0 ? 0.7 : 1,
                         fontWeight: 'bold',
@@ -869,40 +856,12 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                         </>
                       )}
                     </button>
-                    
-                    {isTaglineGenerated && (
-                      <button 
-                        type="button" 
-                        className="delete-btn"
-                        onClick={() => {
-                          setTagline('');
-                          setIsTaglineGenerated(false);
-                        }}
-                        style={{
-                          backgroundColor: '#f44336',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '10px 15px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '5px'
-                        }}
-                      >
-                        <i className="fas fa-trash"></i>
-                        Delete
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Callback option removed as requested */}
-            
-            <button className="next-btn" onClick={handleNext} style={yellowButtonStyle}>
+            <button className="next-btn" onClick={handleNext} style={{...yellowButtonStyle, marginTop: '5px', marginBottom: '-20px'}}>
               Next
             </button>
           </div>

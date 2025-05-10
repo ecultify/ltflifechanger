@@ -79,13 +79,40 @@ label[for="keywords"] {
 .details-page .tagline-display,
 .right-section .tagline-display,
 .form-container .tagline-display {
-  min-height: 60px !important;
+  min-height: 38px !important;
   height: auto !important; /* Allow expansion */
   max-height: none !important; /* Remove max-height to allow expansion */
-  overflow: visible !important; /* No scrolling */
-  padding: 12px !important; 
+  overflow: auto !important; /* Allow scrolling */
+  padding: 8px 10px !important; 
   display: block !important;
   text-align: left !important; /* Left-align text like regular text boxes */
+  white-space: normal !important; /* Allow text to wrap */
+  text-overflow: initial !important; /* Remove ellipsis */
+  box-sizing: border-box !important;
+  width: 100% !important;
+  line-height: 1.5 !important;
+  font-size: 14px !important;
+  border-color: #0083B5 !important;
+  white-space: pre-wrap !important; /* Ensure line breaks are respected */
+  word-wrap: break-word !important; /* Break long words if needed */
+}
+
+/* Override the nowrap property that might be causing issues */
+.tagline-field .form-input, 
+.tagline-field input,
+.tagline-field .tagline-display {
+  white-space: normal !important;
+  overflow: auto !important;
+  text-overflow: clip !important;
+}
+
+/* Ensure we don't have conflicting styles from other places */
+.tagline-row {
+  display: flex !important;
+  align-items: flex-start !important; /* Changed from center to allow for expansion */
+  gap: 10px !important;
+  width: 100% !important;
+  margin-bottom: 15px !important;
 }
 
 /* Adjusted positioning for logo and Group15183 image */

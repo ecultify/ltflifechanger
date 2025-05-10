@@ -1,0 +1,102 @@
+/* OTP Verification Page Overrides */
+
+/* Desktop improvements */
+@media (min-width: 769px) {
+  /* Add proper spacing below the phone input container to position OTP inputs */
+  .phone-input-group {
+    margin-bottom: 30px !important;
+  }
+
+  /* Make OTP input container more compact */
+  .simple-otp-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* Ensure form container has relative positioning */
+  .form-container {
+    position: relative !important;
+    padding-top: 25px !important;
+    overflow: visible !important;
+  }
+
+  /* Apply button should be positioned consistently */
+  .verify-btn {
+    margin-top: 20px !important;
+  }
+
+  /* Make sure the OTP inputs are properly spaced */
+  .simple-otp-container .otp-container {
+    margin-bottom: 15px !important;
+  }
+
+  /* Add styling for the consent checkbox container */
+  .consent-container > div {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 5px !important;
+  }
+
+  /* Fix alignment of the resend OTP link and timer */
+  .simple-otp-container .otp-info {
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Make sure the OTP section appears immediately after phone input */
+  .right-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  
+  /* Make sure the OTP verification page doesn't scroll unnecessarily */
+  .otp-page {
+    overflow: hidden !important;
+  }
+  
+  /* Ensure the page sections maintain proper proportions */
+  .left-section, .right-section {
+    min-height: calc(100vh - 55px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+  /* Keep the consent container at the bottom for mobile */
+  .consent-container {
+    margin-bottom: 15px !important;
+  }
+
+  /* Make sure the OTP modal appears properly */
+  .otp-modal {
+    z-index: 2000 !important;
+  }
+  
+  /* Style the checkbox to be more visible */
+  .consent-container div[style*="checkbox"] {
+    border-color: #666 !important;
+  }
+}
+
+/* General improvements for both layouts */
+.consent-modal {
+  z-index: 2000 !important;
+}
+
+/* Styling for Terms and Conditions link on both mobile and desktop */
+.consent-container a {
+  color: #0083B5 !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  padding: 2px 0 !important;
+  border-bottom: 1px dotted #0083B5 !important;
+}
+
+/* Fix styles for the verify button */
+.verify-btn.initial-verify-btn {
+  background-color: #FFCB03 !important;
+  color: #0a1a34 !important;
+  font-weight: 600 !important;
+} 

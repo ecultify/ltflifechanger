@@ -598,7 +598,7 @@ const UploadPhoto = () => {
 
       // Get API key from environment or use fallback
       const segmindApiKey = process.env.REACT_APP_SEGMIND_API_KEY || 'SG_13f9868f102f0d83';
-      
+
       // Check if imageFile is valid
       if (!imageFile || !(imageFile instanceof File)) {
         console.error('Invalid image file for background removal:', imageFile);
@@ -625,7 +625,7 @@ const UploadPhoto = () => {
       try {
         console.log('Trying Segmind background-eraser API...');
         setProcessingStep('Removing background (method 1)...');
-        
+
         const response = await fetch('https://api.segmind.com/v1/background-eraser', {
           method: 'POST',
           headers: {
@@ -640,11 +640,11 @@ const UploadPhoto = () => {
             base64: false
           })
         });
-        
+
         if (!response.ok) {
           throw new Error(`Background-eraser API responded with status: ${response.status}`);
         }
-        
+
         const blob = await response.blob();
         if (!blob || blob.size === 0) {
           throw new Error('Empty response from background-eraser API');
@@ -652,10 +652,10 @@ const UploadPhoto = () => {
         
         result = URL.createObjectURL(blob);
         console.log('Background-eraser API successful');
-        
+
         // If we successfully got a result, return it
         if (result) {
-          setLoadingProgress(80);
+        setLoadingProgress(80);
           return result;
         }
       } catch (error) {
@@ -707,25 +707,25 @@ const UploadPhoto = () => {
       try {
         console.log('Trying formData approach...');
         setProcessingStep('Removing background (method 3)...');
-        
+          
         const formData = new FormData();
         formData.append('file', imageFile);
         
         const response = await axios({
-          method: 'post',
-          url: 'https://api.segmind.com/v1/bg-removal',
+            method: 'post',
+            url: 'https://api.segmind.com/v1/bg-removal',
           data: formData,
-          headers: {
+            headers: {
             'x-api-key': segmindApiKey,
             'Content-Type': 'multipart/form-data'
-          },
-          responseType: 'blob'
-        });
-        
+            },
+            responseType: 'blob'
+          });
+          
         if (!response.data || response.data.size === 0) {
           throw new Error('Empty response from FormData approach');
         }
-        
+          
         result = URL.createObjectURL(response.data);
         console.log('FormData approach successful');
         
@@ -741,7 +741,7 @@ const UploadPhoto = () => {
       
       // If all methods failed, return original image
       console.log('All background removal methods failed, using original image');
-      return previewUrl;
+          return previewUrl;
       
     } catch (error) {
       console.error('Fatal error in background removal process:', error);

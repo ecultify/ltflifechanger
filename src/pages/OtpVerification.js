@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/pages/OtpVerification.css';
 import '../styles/pages/StepColorOverrides.css'; // Added step color overrides
 import '../styles/components/FixedStepper.css'; // For fixed position stepper
+import '../styles/pages/OtpVerificationOverrides.css'; // Added custom overrides for layout
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
@@ -14,7 +15,7 @@ const OtpVerification = () => {
   const [remainingTime, setRemainingTime] = useState(30);
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('TEST MODE: OTP is hardcoded to 123456');
+  const [error, setError] = useState('');
   const [usingTestMode, setUsingTestMode] = useState(true); // Always in test mode
   const [consentChecked, setConsentChecked] = useState(true); // Auto-checked for testing
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ const OtpVerification = () => {
 
   // Open consent modal
   const openConsentModal = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setShowConsentModal(true);
   };
 
@@ -158,8 +159,6 @@ const OtpVerification = () => {
       // Pre-fill the OTP with 123456
       setOtp(['1', '2', '3', '4', '5', '6']);
       
-      // Display test mode message
-      setError('TEST MODE: Using hardcoded OTP 123456');
       setUsingTestMode(true);
       
     } catch (error) {
@@ -170,7 +169,6 @@ const OtpVerification = () => {
       startCountdown();
       setUsingTestMode(true);
       setOtp(['1', '2', '3', '4', '5', '6']);
-      setError('TEST MODE: Using hardcoded OTP 123456');
     } finally {
       setIsLoading(false);
     }
@@ -190,8 +188,6 @@ const OtpVerification = () => {
       // Pre-fill the OTP with 123456
       setOtp(['1', '2', '3', '4', '5', '6']);
       
-      // Display test mode message
-      setError('TEST MODE: Using hardcoded OTP 123456');
       setUsingTestMode(true);
       
     } catch (error) {
@@ -201,7 +197,6 @@ const OtpVerification = () => {
       startCountdown();
       setUsingTestMode(true);
       setOtp(['1', '2', '3', '4', '5', '6']);
-      setError('TEST MODE: Using hardcoded OTP 123456');
     } finally {
       setIsLoading(false);
     }
@@ -361,7 +356,7 @@ const OtpVerification = () => {
             </div>
             
             {/* Right content with form for desktop */}
-            <div className="right-content">
+            <div className="right-content" style={{position: 'relative'}}>
               <div className="form-container">
                 {/* Form content for desktop */}
                 <DesktopFormContent 
@@ -382,6 +377,7 @@ const OtpVerification = () => {
                   handleVerify={handleVerify}
                   consentChecked={consentChecked}
                   handleConsentChange={handleConsentChange}
+                  openConsentModal={openConsentModal}
                 />
               </div>
             </div>
@@ -389,19 +385,81 @@ const OtpVerification = () => {
         )}
       </div>
       
-      {/* Consent Modal for Mobile */}
+      {/* Consent Modal for Both Mobile and Desktop */}
       {showConsentModal && (
-        <div className="consent-modal">
-          <div className="consent-modal-content">
-            <h3 className="consent-modal-title">Terms & Conditions</h3>
-            <div className="consent-modal-text">
-              <p>
+        <div className="consent-modal" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+          backdropFilter: 'blur(2px)'
+        }}>
+          <div className="consent-modal-content" style={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            padding: '25px',
+            width: '90%',
+            maxWidth: '450px',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 className="consent-modal-title" style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              marginBottom: '15px',
+              color: '#0a1a34',
+              textAlign: 'center'
+            }}>Terms & Conditions</h3>
+            <div className="consent-modal-text" style={{
+              fontSize: '14px',
+              color: '#333',
+              lineHeight: '1.5',
+              marginBottom: '20px'
+            }}>
+              <p style={{fontSize: '14px', display: 'block', maxHeight: 'none', overflow: 'visible'}}>
                 I hereby consent to L&T Finance Limited and its affiliates to use, edit, reproduce, and publish the photographs, videos, audio recordings, contact numbers, and any AI-generated or campaign-related content featuring me or submitted by me, for marketing, promotional, and other commercial purposes related to the "Bumrah X You" campaign, across any media platforms including digital, print, outdoor, or broadcast, without any compensation or further approval.
               </p>
             </div>
-            <div className="consent-modal-buttons">
-              <button className="decline-btn" onClick={declineConsent}>Decline</button>
-              <button className="accept-btn" onClick={acceptConsent}>Accept</button>
+            <div className="consent-modal-buttons" style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '15px'
+            }}>
+              <button 
+                className="decline-btn" 
+                onClick={declineConsent}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '30px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: '1px solid #ddd',
+                  backgroundColor: '#f5f5f5',
+                  color: '#333'
+                }}
+              >Decline</button>
+              <button 
+                className="accept-btn" 
+                onClick={acceptConsent}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '30px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: 'none',
+                  backgroundColor: '#0083B5',
+                  color: 'white'
+                }}
+              >Accept</button>
             </div>
           </div>
         </div>
@@ -540,7 +598,7 @@ const MobileFormContent = ({
       <div style={{display: 'flex', alignItems: 'flex-start'}}>
         {/* Single custom checkbox implementation */}
         <div 
-          onClick={() => !isLoading && !showOtpInput && handleConsentChange()}
+          onClick={(e) => { e.preventDefault(); handleConsentChange(); }}
           style={{
             width: '10px',
             height: '10px',
@@ -568,7 +626,7 @@ const MobileFormContent = ({
           )}
         </div>
         <span style={{fontSize: '12px', lineHeight: '1.3'}}>
-          I agree to the <a href="#" onClick={openConsentModal}>Terms & Conditions</a>
+          By continuing, I accept the <a href="#" onClick={(e) => { e.preventDefault(); openConsentModal(e); }}>Terms & Conditions</a>
         </span>
       </div>
     </div>
@@ -585,12 +643,12 @@ const MobileFormContent = ({
   </>
 );
 
-// Desktop form content component
+// Desktop form content component - simplified to match mobile approach
 const DesktopFormContent = ({ 
   error, usingTestMode, countryCode, handleCountryCodeChange, phoneNumber, 
   handlePhoneNumberChange, isLoading, showOtpInput, handleGetOtp, otp, 
   handleOtpChange, handleKeyDown, remainingTime, handleResendOtp, handleVerify,
-  consentChecked, handleConsentChange
+  consentChecked, handleConsentChange, openConsentModal
 }) => (
   <>
     <h2 className="form-title">Game on.</h2>
@@ -684,16 +742,21 @@ const DesktopFormContent = ({
       </div>
     )}
     
+    {/* Simple consent container like in mobile view */}
     <div className="consent-container" style={{display: 'flex', alignItems: 'flex-start', margin: '10px 0'}}>
       <div style={{display: 'flex', alignItems: 'flex-start'}}>
-        {/* Single custom checkbox implementation */}
+        {/* Simple checkbox implementation */}
         <div 
-          onClick={() => !isLoading && !showOtpInput && handleConsentChange()}
+          onClick={(e) => {
+            if (!isLoading && !showOtpInput) {
+              handleConsentChange();
+            }
+          }}
           style={{
-            width: '10px',
-            height: '10px',
-            minWidth: '10px',
-            border: '1px solid #999',
+            width: '12px',
+            height: '12px',
+            minWidth: '12px',
+            border: '1px solid #0083B5',
             borderRadius: '2px',
             marginRight: '8px',
             marginTop: '3px',
@@ -716,7 +779,7 @@ const DesktopFormContent = ({
           )}
         </div>
         <span style={{fontSize: '12px', lineHeight: '1.3'}}>
-          I hereby consent to L&T Finance Limited and its affiliates to use, edit, reproduce, and publish the photographs, videos, audio recordings, contact numbers, and any AI-generated or campaign-related content featuring me or submitted by me, for marketing, promotional, and other commercial purposes related to the "Bumrah X You" campaign, across any media platforms including digital, print, outdoor, or broadcast, without any compensation or further approval.
+          By continuing, I accept the <a href="#" onClick={(e) => { e.preventDefault(); openConsentModal(e); }}>Terms & Conditions</a>
         </span>
       </div>
     </div>

@@ -98,7 +98,9 @@
 @media (min-width: 769px) {
   /* Desktop-only padding adjustment */
   .right-section {
-    flex: 1;
+    width: calc(50% - 25px) !important; /* Explicitly set width to 50% - 25px */
+    max-width: calc(50% - 25px) !important; /* Ensure maximum width */
+    flex: 0 0 calc(50% - 25px) !important; /* Don't grow, don't shrink, maintain width */
     background-color: white;
     display: flex;
     align-items: flex-start; /* Keep aligned to top */
@@ -149,6 +151,14 @@
     background-color: transparent !important;
     box-shadow: none !important;
     border: none !important;
+  }
+  
+  /* Desktop - increased width for left section */
+  .left-section {
+    width: calc(50% + 25px) !important; /* Explicitly set width to 50% + 25px */
+    min-width: calc(50% + 25px) !important; /* Ensure minimum width */
+    max-width: calc(50% + 25px) !important; /* Override the max-width: 50% */
+    flex: 0 0 calc(50% + 25px) !important; /* Don't grow, don't shrink, maintain width */
   }
 }
 
@@ -417,163 +427,70 @@ label {
   border-color: #0083B5;
 }
 
-/* Bring tagline section closer to keyword section */
-.form-group:has(label[for="tagline"]), 
-.tagline-input-container {
-  margin-top: -15px; /* Reduced further to push up by 20 more pixels */
-}
-
-/* Set Poppins font for all input placeholders */
-input::placeholder, 
-textarea::placeholder,
-select {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Tagline input */
-.tagline-input-container {
-  width: 100%;
-  margin-bottom: 0 !important; /* Reset margin */
-  min-height: 100px;
-  overflow: visible;
-  position: relative;
-}
-
-.tagline-input-container .input-and-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
 /* Two-line tagline display area */
 .tagline-display-area {
-  height: 48px !important; /* Reduced to strictly 2 lines */
-  min-height: 48px !important;
-  max-height: 48px !important;
+  height: 38px !important; /* Reduced height for single line */
+  min-height: 38px !important;
+  max-height: 38px !important;
   overflow: hidden !important;
-  margin-bottom: 10px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  padding: 0 !important; /* Remove all padding from the container */
-}
-
-/* Two-line tagline display box */
-.tagline-display {
-  height: 48px !important;
-  min-height: 48px !important;
-  max-height: 48px !important;
-  overflow: hidden !important;
-  padding: 2px 8px !important; /* Minimal padding */
-  line-height: 1.2 !important;
+  margin-bottom: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  word-break: break-word !important;
-  white-space: normal !important;
-  font-size: 14px !important; /* Slightly smaller font */
+  border-radius: 4px;
+  padding: 0 !important; /* Remove all padding from the container */
+  background-color: transparent !important;
+  border: none !important;
 }
 
-/* Tagline buttons container */
-.tagline-buttons {
-  height: auto !important;
-  min-height: 44px !important;
-  overflow: visible !important;
+/* Single-line tagline display box */
+.tagline-display {
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  overflow: hidden !important;
+  padding: 0px 8px !important;
+  line-height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  white-space: nowrap !important; /* Prevent wrapping */
+  overflow-x: hidden !important; /* Hide overflow text */
+  text-overflow: ellipsis !important; /* Add ellipsis for overflow */
+  font-size: 14px !important;
+  border: 1px solid #ddd !important;
+  background-color: white !important;
+  width: 100% !important;
+  border-radius: 4px !important;
+}
+
+/* Tagline row layout */
+.tagline-row {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  margin-bottom: 0 !important; /* Remove bottom margin */
-  position: relative !important;
-  z-index: 2 !important;
+  width: 100% !important;
+  margin-bottom: 15px !important;
 }
 
-.tagline-input-container .form-input {
+.tagline-field {
+  flex-grow: 1 !important;
+}
+
+.tagline-actions {
+  flex-shrink: 0 !important;
+}
+
+/* Tagline input container with merged row design */
+.tagline-input-container {
   width: 100%;
-  flex: 1;
+  margin-bottom: 0 !important;
+  min-height: auto !important; /* Remove fixed height */
+  overflow: visible;
+  position: relative;
+  margin-top: -5px !important; /* Reduce spacing */
 }
 
-.tagline-options {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tagline-option {
-  background-color: #f9f9f9;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tagline-option:hover {
-  background-color: #e9f5fb;
-  border-color: #0083B5;
-}
-
-.tagline-option.selected {
-  background-color: #e9f5fb;
-  border-color: #0083B5;
-  box-shadow: 0 2px 4px rgba(0,131,181,0.1);
-}
-
-/* Generate button */
-.generate-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 15px;
-  background-color: #FFC107;
-  color: #000;
-  border: 2px solid #000;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  transition: background-color 0.2s;
-  min-width: 120px;
-  height: 44px;
-  white-space: nowrap;
-}
-
-.generate-btn:hover {
-  background-color: #e6b800;
-}
-
-.generate-btn .sparkle-icon {
-  font-size: 16px;
-}
-
-/* Delete button */
-.delete-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 10px 15px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 16px;
-  transition: background-color 0.2s;
-}
-
-.delete-btn:hover {
-  background-color: #d32f2f;
-}
-
-/* Next button - adjusted positioning */
+/* Next button - adjust positioning */
 .next-btn {
   width: 100%;
   background-color: #FFCB03;
@@ -587,63 +504,36 @@ select {
   transition: background-color 0.3s;
   position: relative;
   z-index: 1;
-  margin-top: -30px; /* Move up by 30px */
+  margin-top: 5px !important; /* Further reduced to push up by another 15px */
   clear: both;
   display: block;
 }
 
-.next-btn:hover {
-  background-color: #e6b800;
+/* Bring tagline section closer to keyword section */
+.form-group:has(label[for="tagline"]), 
+.tagline-input-container {
+  margin-top: -10px !important; /* Reduced spacing */
+  margin-bottom: 5px !important; /* Reduced spacing */
 }
 
-/* Desktop-specific adjustments */
+/* Set Poppins font for all input placeholders */
+input::placeholder, 
+textarea::placeholder,
+select {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Desktop adjustments */
 @media (min-width: 769px) {
   /* Specific style for tagline container */
   .tagline-input-container {
-    margin-bottom: 0 !important;
+    margin-bottom: 5px !important;
     padding-bottom: 0 !important;
   }
 
   /* Adjust the Next button */
   .next-btn {
-    margin-top: -30px !important; /* Move up by 30px on desktop too */
-  }
-  
-  /* Remove extra space for buttons */
-  .tagline-buttons {
-    margin-bottom: 0 !important;
-  }
-
-  /* Desktop-specific styles for tagline */
-  .tagline-display-area {
-    height: 40px !important; /* Further reduced for desktop */
-    min-height: 40px !important;
-    max-height: 40px !important;
-    margin-bottom: 8px !important;
-    overflow: hidden !important;
-  }
-  
-  .tagline-display {
-    height: 40px !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
-    padding: 0px 6px !important; /* Almost no padding */
-    font-size: 14px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    line-height: 1.15 !important; /* Very tight line height */
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    word-wrap: break-word !important;
-    white-space: normal !important;
-  }
-  
-  /* Remove spacing between words */
-  .tagline-display span {
-    margin: 0;
-    line-height: 1.15 !important;
-    padding: 0 !important;
+    margin-top: 5px !important; /* Consistent with mobile */
   }
 }
 
@@ -694,7 +584,7 @@ select {
 /* Large screens (1200px and above) */
 @media (min-width: 1200px) {
   .left-section {
-    max-width: 50%; /* Cap the width on large screens */
+    max-width: calc(50% + 25px) !important; /* Adjusted to match our width increase */
   }
   
   .left-logo-image {
@@ -705,7 +595,7 @@ select {
 /* Medium sized screens (992px to 1199px) */
 @media (min-width: 992px) and (max-width: 1199px) {
   .left-section {
-    max-width: 45%; /* Slightly smaller proportion */
+    max-width: calc(50% + 25px) !important; /* Adjusted to match our width increase */
   }
   
   .left-logo-image {
@@ -720,7 +610,7 @@ select {
 /* Smaller screens and tablets (768px to 991px) */
 @media (min-width: 768px) and (max-width: 991px) {
   .left-section {
-    max-width: 40%;
+    max-width: calc(50% + 25px) !important; /* Adjusted to match our width increase */
   }
   
   .left-logo-image {

@@ -402,7 +402,7 @@ const SharePoster = () => {
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 36; // Slightly decreased to reduce tagline width
+          const maxLineLength = 31; // Reduced from 36 to 31 to make tagline width smaller
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines
@@ -1052,9 +1052,9 @@ const SharePoster = () => {
         </div>
       ) : (
         <>
-          <div className="share-poster-content">
+          <div className="share-poster-content" style={!isMobile ? { marginTop: '40px', marginLeft: '-20px' } : {}}>
             {/* Left side - Poster with base template image */}
-            <div className="poster-container">
+            <div className="poster-container" style={!isMobile ? { marginTop: '45px' } : {}}>
               <div className="poster-frame">
                 <div className="content-area">
                   {generatedPoster ? (
@@ -1073,7 +1073,7 @@ const SharePoster = () => {
             </div>
             
             {/* Right side - Controls section */}
-            <div className="controls-section">
+            <div className="controls-section" style={!isMobile ? { marginLeft: "-25px" } : {}}>
               <h1 className="section-title">Here's Your Gamechanger Moment!</h1>
               <p className="section-subtitle">
                 Your poster featuring your image is ready to share, print, flex, and go viral.

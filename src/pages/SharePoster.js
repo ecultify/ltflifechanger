@@ -377,7 +377,7 @@ const SharePoster = () => {
               console.log('Target width (47.29% of frame):', targetWidth);
               
               // Set the width to the target
-              scaledWidth = targetWidth;
+              scaledWidth = targetWidth * 1.15; // Increase width by 15%
               
               // If we have aspect ratio information, use it to calculate the proper height
               // preserving the aspect ratio of the cropped portion

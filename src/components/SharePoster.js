@@ -91,7 +91,7 @@ const SharePoster = ({ userData, userImage, containerRef }) => {
               <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 3px solid #000;">
                 <img 
                   src="${userImage}" 
-                  style="width: 100%; height: 100%; object-fit: cover;" 
+                  style="width: 100%; height: 100%; object-fit: cover; position: relative; left: 3px; right: -3px; top: -8px;" 
                   alt="Profile" 
                 />
               </div>

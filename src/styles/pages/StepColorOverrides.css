@@ -25,6 +25,12 @@
 
 /* Progress line between steps */
 .progress-line {
-  background-color: #0A86AE !important; /* Changed progress lines to match the step circles */
+  background-color: #ddd !important; /* Default grey color for inactive lines */
+  height: 2px;
+}
+
+/* Active progress line between steps */
+.progress-line.active {
+  background-color: #0A86AE !important; /* Blue color only for active lines */
   height: 2px;
 }

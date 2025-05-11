@@ -1556,7 +1556,7 @@ body {
     /* Existing mobile styles */
     .hero-text-container {
         margin-left: 0;
-        transform: none;
+        transform: translateY(-25px); /* Pull up by 25px */
         text-align: center;
         width: 100%;
         margin-bottom: 30px;
@@ -1756,12 +1756,14 @@ body {
         margin-right: auto !important;
         margin-top: 25px !important;
         /* Increased top margin to push headline down further */
-        font-size: 22px !important;
-        /* Adjusted font size for mobile */
-        max-width: 400px !important;
-        /* Increased container width further */
-        white-space: normal !important;
-        /* Allow text wrapping */
+        font-size: 18px !important;
+        /* Reduced font size for mobile from 22px to 18px */
+        max-width: 90vw !important;
+        /* Increased container width to 90% of viewport width */
+        min-width: 300px !important;
+        /* Set minimum width */
+        white-space: nowrap !important;
+        /* Prevent text wrapping to keep on a single line */
         transform: rotate(-1deg) !important;
         /* Minimal rotation */
         padding: 10px 30px !important;

@@ -648,7 +648,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         {/* Fixed position stepper */}
         <div className="fixed-stepper-container">
           <div className="fixed-stepper">
-            <div className="progress-step">
+            <div className="progress-step completed">
               <div className="step-circle">1</div>
               <div className="step-label">OTP</div>
             </div>
@@ -657,7 +657,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               <div className="step-circle">2</div>
               <div className="step-label">Add Details</div>
             </div>
-            <div className="progress-line"></div>
+            <div className="progress-line active"></div>
             <div className="progress-step">
               <div className="step-circle">3</div>
               <div className="step-label">Upload</div>
@@ -668,7 +668,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         <div className="right-content">
           {/* Mobile elements container */}
           {isMobile && (
-            <div className="mobile-elements-container">
+            <div className="mobile-elements-container" style={{ marginBottom: '-40px' }}>
               <Link to="/">
                 <img 
                   src="/images/adddetails/LOGO.png" 
@@ -687,12 +687,12 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                 src="/images/adddetails/Layer1.png" 
                 alt="Layer" 
                 className="mobile-layer"
-                style={{ position: 'relative', zIndex: 1, marginTop: "-25px" }}
+                style={{ position: 'relative', zIndex: 1, marginTop: "-15px", marginBottom: "60px" }}
               />
             </div>
           )}
           
-          <div className="form-container" style={{ marginBottom: "-20px" }}>
+          <div className="form-container" style={{ marginBottom: "-20px", marginTop: isMobile ? "-80px" : "0px", position: "relative", zIndex: 10 }}>
             {/* Mobile stepper inside form */}
             {isMobile && (
               <div className="mobile-stepper-container form-stepper">
@@ -849,25 +849,31 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             <div className="form-row">
               <div className="form-group" style={{ width: '100%', marginBottom: '5px' }}>
                 <label htmlFor="tagline">Generate Tagline</label>
-                <div className="tagline-row">
-                  <div className="tagline-field">
+                <div className="tagline-row" style={{ flexDirection: 'column', width: '100%' }}>
+                  <div className="tagline-field" style={{ width: '100%' }}>
                     {tagline ? (
-                      <input 
+                      <textarea 
                         ref={taglineRef}
-                        type="text" 
                         className="tagline-display border-blue"
                         value={tagline}
                         readOnly={true}
                         style={{
                           ...inputStyle,
                           height: 'auto',
-                          minHeight: '38px',
-                          padding: '8px 10px',
-                          overflow: 'auto',
+                          minHeight: '60px',
+                          padding: '10px 12px',
+                          overflow: 'visible',
                           whiteSpace: 'normal',
-                          textOverflow: 'clip',
+                          textOverflow: 'unset',
+                          wordBreak: 'break-word',
+                          wordWrap: 'break-word',
                           cursor: 'text',
-                          backgroundColor: '#f8f8f8'
+                          backgroundColor: '#f8f8f8',
+                          lineHeight: '1.4',
+                          fontSize: '14px',
+                          resize: 'none',
+                          width: '100%',
+                          border: '1px solid #ddd'
                         }}
                       />
                     ) : (
@@ -886,7 +892,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                       />
                     )}
                   </div>
-                  <div className="tagline-actions">
+                  <div className="tagline-actions" style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
                     <button 
                       type="button" 
                       className="generate-btn"
@@ -897,14 +903,17 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                         color: '#fff',
                         border: 'none',
                         borderRadius: '4px',
-                        padding: '0 15px',
-                        height: '38px',
+                        padding: '5px 15px',
+                        height: '32px',
                         cursor: keywords.length === 0 ? 'not-allowed' : 'pointer',
                         opacity: keywords.length === 0 ? 0.7 : 1,
                         fontWeight: 'bold',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '5px'
+                        gap: '5px',
+                        marginTop: '5px',
+                        width: window.innerWidth > 768 ? '25%' : '100%', // 25% width on desktop, 100% on mobile
+                        maxWidth: window.innerWidth > 768 ? '25%' : '100%'
                       }}
                     >
                       {isGeneratingTagline ? (

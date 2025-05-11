@@ -2,558 +2,752 @@
 
 
 /* Close the gap between keyword box and tagline box */
+
 .form-group:has(.keywords-input-container) {
-  margin-bottom: 5px !important; /* Reduced from 15px */
+    margin-bottom: 5px !important;
+    /* Reduced from 15px */
 }
+
 
 /* Alternative way to target the keywords section if :has() selector is not supported in all browsers */
+
 .keywords-input-container {
-  margin-bottom: -10px !important;
+    margin-bottom: -10px !important;
 }
+
 
 /* Add a 5px gap between keyword box and keyword suggestions */
+
 .keywords-input-container {
-  margin-bottom: 5px !important; /* Create clear separation from suggestions */
+    margin-bottom: 5px !important;
+    /* Create clear separation from suggestions */
 }
+
 
 /* Fixed height container for keyword suggestions with two rows */
+
 .suggested-keywords {
-  margin-top: 5px !important;
-  margin-bottom: 0;
-  padding-top: 5px !important;
-  border-top: 1px solid #f0f0f0 !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  height: 50px !important; /* Keep at 50px for desktop */
-  max-height: 50px !important;
-  min-height: 50px !important;
-  overflow-y: visible !important;
+    margin-top: 5px !important;
+    margin-bottom: 0;
+    padding-top: 5px !important;
+    border-top: 1px solid #f0f0f0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    height: 50px !important;
+    /* Keep at 50px for desktop */
+    max-height: 50px !important;
+    min-height: 50px !important;
+    overflow-y: visible !important;
 }
+
 
 /* Ensure keywords don't stretch by giving them a specific width */
+
 .suggested-keyword {
-  flex: 0 0 auto !important; /* Don't allow stretching */
-  display: inline-block !important;
-  white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    /* Don't allow stretching */
+    display: inline-block !important;
+    white-space: nowrap !important;
 }
+
+/* Desktop suggested keyword buttons - increased size */
+html body button.suggested-keyword {
+    height: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
+    line-height: 1.2 !important;
+    font-size: 11px !important;
+    padding: 0 6px !important;
+    margin: 2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove button for keyword chips - adjusted for taller chips */
+.keyword-tag .remove-tag,
+div.keyword-tag button.remove-tag,
+html body .keyword-tag .remove-tag {
+    font-size: 10px !important;
+    margin-left: 2px !important;
+    padding: 0 !important;
+    line-height: 16px !important;
+    height: 16px !important;
+    width: 16px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: top !important;
+}
+
 
 /* Remove custom label content approach, text is set in the HTML */
+
 label[for="keywords"] {
-  display: block !important;
-  font-weight: 500 !important;
+    display: block !important;
+    font-weight: 500 !important;
 }
+
 
 /* Remove placeholder text in keyword field */
+
 .keywords-input {
-  display: none !important;
+    display: none !important;
 }
 
-/* Desktop keyword chip size adjustment */
+
+/* Desktop keyword chip size adjustment - increased size */
+
 .keyword-tag {
-  padding: 3px 6px !important;
-  font-size: 12px !important;
-  border-radius: 3px !important;
-  margin: 2px !important;
-  background-color: #f0f8ff !important;
-  border: 1px solid #0083B5 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  max-height: 24px !important; /* Reduced height for desktop */
-  line-height: 1.2 !important;
+    padding: 4px 8px !important;
+    font-size: 13px !important;
+    border-radius: 4px !important;
+    margin: 2px !important;
+    background-color: #f0f8ff !important;
+    border: 1px solid #0083B5 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    max-height: 26px !important;
+    /* Increased height for desktop */
+    line-height: 1.3 !important;
 }
+
 
 /* Fixed tagline display area for ALL views */
-.tagline-display-area, 
+
+.tagline-display-area,
 .details-page .tagline-display-area,
 .right-section .tagline-display-area,
 .form-container .tagline-display-area {
-  min-height: 60px !important;
-  height: auto !important; /* Allow expansion */
-  max-height: none !important; /* Remove max-height to allow expansion */
-  overflow: visible !important; /* No scrolling */
-  margin-bottom: 15px !important;
-  position: relative !important;
+    min-height: 65px !important;
+    height: 65px !important; /* Fixed height to prevent expansion */
+    max-height: 65px !important; /* Fixed max-height to match */
+    overflow: visible !important;
+    /* No scrolling */
+    margin-bottom: 15px !important;
+    position: relative !important;
 }
 
 .tagline-display,
 .details-page .tagline-display,
 .right-section .tagline-display,
 .form-container .tagline-display {
-  min-height: 38px !important;
-  height: auto !important; /* Allow expansion */
-  max-height: none !important; /* Remove max-height to allow expansion */
-  overflow: auto !important; /* Allow scrolling */
-  padding: 8px 10px !important; 
-  display: block !important;
-  text-align: left !important; /* Left-align text like regular text boxes */
-  white-space: normal !important; /* Allow text to wrap */
-  text-overflow: initial !important; /* Remove ellipsis */
-  box-sizing: border-box !important;
-  width: 100% !important;
-  line-height: 1.5 !important;
-  font-size: 14px !important;
-  border-color: #0083B5 !important;
-  white-space: pre-wrap !important; /* Ensure line breaks are respected */
-  word-wrap: break-word !important; /* Break long words if needed */
+    min-height: 60px !important;
+    height: 60px !important; /* Fixed height to prevent expansion */
+    max-height: 60px !important; /* Fixed max-height to match */
+    overflow: auto !important; /* Enable scrolling if content exceeds fixed height */
+    padding: 8px 10px !important;
+    display: block !important;
+    text-align: left !important;
+    /* Left-align text like regular text boxes */
+    white-space: normal !important;
+    /* Allow text to wrap */
+    text-overflow: initial !important;
+    /* Remove ellipsis */
+    box-sizing: border-box !important;
+    width: 100% !important;
+    line-height: 1.5 !important;
+    font-size: 14px !important;
+    border-color: #0083B5 !important;
+    white-space: pre-wrap !important;
+    /* Ensure line breaks are respected */
+    word-wrap: break-word !important;
+    /* Break long words if needed */
 }
+
 
 /* Override the nowrap property that might be causing issues */
-.tagline-field .form-input, 
+
+.tagline-field .form-input,
 .tagline-field input,
 .tagline-field .tagline-display {
-  white-space: normal !important;
-  overflow: auto !important;
-  text-overflow: clip !important;
+    white-space: normal !important;
+    overflow: auto !important;
+    text-overflow: clip !important;
 }
+
 
 /* Ensure we don't have conflicting styles from other places */
+
 .tagline-row {
-  display: flex !important;
-  align-items: flex-start !important; /* Changed from center to allow for expansion */
-  gap: 10px !important;
-  width: 100% !important;
-  margin-bottom: 15px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    /* Changed from center to allow for expansion */
+    gap: 10px !important;
+    width: 100% !important;
+    margin-bottom: 15px !important;
 }
 
+
 /* Adjusted positioning for logo and Group15183 image */
+
 .left-logo-container {
-  top: -5px !important; /* Moved up by 50px from 45px */
+    top: -5px !important;
+    /* Moved up by 50px from 45px */
 }
 
 .left-logo-image {
-  max-width: 460px !important; /* Further increased size from 420px to 460px */
+    max-width: 460px !important;
+    /* Further increased size from 420px to 460px */
 }
 
 .left-group-container {
-  top: 250px !important; /* Moved up by 50px from 300px */
+    top: 250px !important;
+    /* Moved up by 50px from 300px */
 }
 
 .left-group-image {
-  max-width: 350px !important; /* Increased size from 300px to 350px */
+    max-width: 350px !important;
+    /* Increased size from 300px to 350px */
 }
+
 
 /* Add spacing between Group15183 and Layer1 images */
+
 .left-group-container {
-  margin-bottom: 20px !important; /* Adding 20px spacing */
+    margin-bottom: 20px !important;
+    /* Adding 20px spacing */
 }
+
 
 /* Ensure the Group15183 image stays center-aligned */
+
 .left-group-container {
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  display: flex !important;
-  justify-content: center !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    justify-content: center !important;
 }
+
 
 /* Add space above the Generate Tagline section */
+
 .form-group:has(label[for="tagline"]) {
-  margin-top: 20px !important; /* Add space above the tagline section */
+    margin-top: 20px !important;
+    /* Add space above the tagline section */
 }
+
 
 /* Two-column form layout for better space utilization */
+
 .form-container {
-  margin-top: 15px !important; /* Changed from -30px to 15px to push form down */
+    margin-top: 15px !important;
+    /* Changed from -30px to 15px to push form down */
 }
+
 
 /* Desktop styling */
+
 @media (min-width: 769px) {
-  /* Adjust the form content position - move up by 35px */
-  .right-content {
-    margin-top: -5px !important; /* Previously 30px, reduced by 35px */
-  }
-  
-  /* Reduce the height of the entire section by 40px */
-  .right-section {
-    min-height: calc(100vh - 40px) !important;
-  }
-  
-  .suggested-keyword {
-    font-size: 12px !important;
-    padding: 4px 8px !important;
-    margin: 2px !important;
-  }
-  
-  /* Fixed height for desktop keyword cloud */
-  .suggested-keywords {
-    margin-top: 5px !important;
-    margin-bottom: 0 !important;
-    min-height: 50px !important;
-    height: 50px !important;
-    max-height: 50px !important;
-    gap: 4px !important;
-  }
-  
-  /* Add space between tagline box and buttons */
-  .tagline-buttons {
-    margin-top: 5px !important; /* Add 5px spacing */
-  }
-  
-  /* Move Next button down by 15px more from its current position */
-  .next-btn {
-    margin-top: 65px !important; /* Increased from 55px to 65px to push down by 10px more, totaling the requested 25px */
-    position: relative !important;
-    width: 100% !important; /* Make button full width of container */
-    max-width: 100% !important;
-    display: block !important;
-    box-sizing: border-box !important;
-    border-radius: 12px !important; /* Increased from 4px to 12px (added 8px as requested) */
-  }
+    /* Adjust the form content position - move up by 35px */
+    .right-content {
+        margin-top: -5px !important;
+        /* Previously 30px, reduced by 35px */
+    }
+    /* Increase the height of the entire section by 40px from the bottom */
+    .right-section {
+        min-height: calc(100vh + 60px) !important;
+        padding-bottom: 120px !important;
+        /* Ensure bottom padding is increased */
+    }
+    .suggested-keyword {
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        margin: 2px !important;
+    }
+    /* Fixed height for desktop keyword cloud */
+    .suggested-keywords {
+        margin-top: 5px !important;
+        margin-bottom: 0 !important;
+        min-height: 50px !important;
+        height: 50px !important;
+        max-height: 50px !important;
+        gap: 4px !important;
+    }
+    /* Add space between tagline box and buttons */
+    .tagline-buttons {
+        margin-top: 5px !important;
+        /* Add 5px spacing */
+    }
+    /* Move Next button down by 15px more from its current position */
+    .next-btn {
+        margin-top: 65px !important;
+        /* Increased from 55px to 65px to push down by 10px more, totaling the requested 25px */
+        position: relative !important;
+        width: 100% !important;
+        /* Make button full width of container */
+        max-width: 100% !important;
+        display: block !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
+        /* Increased from 4px to 12px (added 8px as requested) */
+    }
 }
+
 
 /* Mobile styling */
+
 @media (max-width: 768px) {
-  /* Reset all previous styles that might be causing conflicts */
-  .details-page,
-  .details-page .left-section,
-  .details-page .right-section,
-  .details-page .right-content,
-  .details-page .form-container {
-    position: static !important;
-    max-height: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    transform: none !important;
-  }
-
-  /* Main page container */
-  .details-page {
-    display: block !important;
-    min-height: 100vh !important;
-    background-image: url('../../../public/images/adddetails/UploadPhoto+AddDetails.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    padding-bottom: 50px !important;
-    overflow-y: auto !important;
-    position: relative !important;
-  }
-
-  /* Hide left section completely */
-  .details-page .left-section {
-    display: none !important;
-  }
-
-  /* Mobile layout with images */
-  .mobile-elements-container {
-    position: relative !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    padding-top: 20px !important;
-    width: 100% !important;
-  }
-
-  /* LOGO styling */
-  .mobile-logo {
-    width: 480px !important; /* Increased from 420px to 480px for bigger logo */
-    height: auto !important;
-    margin: -30px auto 10px auto !important; /* Pushed up by adding negative margin */
-    max-width: 100% !important; /* Ensure it doesn't overflow */
-  }
-
-  /* Group15183 styling */
-  .mobile-group {
-    width: 280px !important;
-    height: auto !important;
-    margin: -45px auto !important; /* Changed to -45px to push up properly */
-    display: block !important;
-    position: relative !important;
-    z-index: 2 !important;
-    left: 35% !important;
-    transform: translateX(-50%) !important;
-  }
-
-  /* Layer1 styling - attached to form container - positioned for overlap */
-  .mobile-layer {
-    width: calc(100% - 30px) !important;
-    max-width: 520px !important;
-    height: auto !important;
-    margin: 60px auto -2px auto !important; /* Changed from 45px to 60px to push down more */
-    display: block !important;
-    position: relative !important;
-    z-index: 1 !important; /* Ensure it's behind the form */
-  }
-
-  /* Right section containing the form */
-  .details-page .right-section {
-    width: 100% !important;
-    padding: 20px !important;
-    background-color: transparent !important;
-    position: relative !important;
-    z-index: 10 !important;
-  }
-  
-  /* Right content wrapper */
-  .details-page .right-content {
-    max-width: 500px !important;
-    width: 100% !important;
-    margin: 10px auto !important;
-    padding: 0 !important;
-  }
-  
-  /* Improved tagline display box for mobile */
-  .details-page .right-section .tagline-display-area,
-  .details-page .right-section .tagline-display {
-    min-height: 65px !important; /* Increased height as requested */
-    height: auto !important; /* Allow height to adjust based on content */
-    overflow: visible !important; /* Prevent scrolling */
-    white-space: normal !important; /* Allow text wrapping */
-    word-wrap: break-word !important; /* Ensure text wraps properly */
-    text-overflow: ellipsis !important; /* Show ellipsis for overflow as a fallback */
-    display: block !important;
-    line-height: 1.5 !important; /* Better line height for readability */
-  }
-  
-  /* Ensure text inside tagline breaks properly into two lines */
-  .details-page .right-section .tagline-display {
-    font-size: 14px !important; /* Slightly smaller font to fit better */
-    padding: 10px 12px !important; /* Consistent padding */
-    border: 1px solid #0083B5 !important; /* Consistent blue border */
-    border-radius: 4px !important;
-  }
-  
-  /* Move Generate Tagline section up */
-  .details-page .right-section .form-group:has(label[for="tagline"]) {
-    margin-top: -10px !important; /* Moved up by 20px */
-  }
-
-  /* Form container styling with rounded corners (top and bottom) */
-  .details-page .form-container,
-  body .details-page .form-container,
-  html body .details-page .form-container {
-    background-color: white !important;
-    border-radius: 20px !important; /* Ensure ALL corners are rounded */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-    padding: 20px !important;
-    margin: 20px 15px 20px 15px !important; /* Added top margin to push down */
-    display: block !important;
-    width: calc(100% - 30px) !important;
-    max-width: 500px !important;
-    z-index: 10 !important;
-    position: relative !important;
-    overflow: visible !important; /* Allow content to expand container properly */
-  }
-
-  /* Override any styles that might be affecting the bottom corners */
-  .details-page .form-container::before,
-  .details-page .form-container::after {
-    display: none !important; /* Remove any pseudo elements that might affect corners */
-  }
-
-  /* Ensure forms and inputs are displayed properly */
-  .details-page .form-group {
-    margin-bottom: 15px !important;
-    display: block !important;
-  }
-
-  /* Make form input fields clearly visible */
-  .details-page .form-input,
-  .details-page .form-select {
-    display: block !important;
-    width: 100% !important;
-    padding: 10px !important;
-    background-color: white !important;
-    border: 1px solid #ccc !important;
-  }
-  
-  /* Rename keyword label for mobile - removed content approach since the label text is set in HTML */
-  .details-page .right-section label[for="keywords"] {
-    display: block !important;
-    font-weight: 500 !important;
-    margin-bottom: 5px !important;
-  }
-  
-  /* Optimize keyword chips for mobile */
-  .details-page .right-section .keyword-tag {
-    padding: 2px 5px !important;
-    font-size: 11px !important;
-    margin: 1px !important;
-    max-height: 20px !important; /* Reduced height for mobile */
-    line-height: 1.1 !important;
-  }
-  
-  /* Dynamic height for keyword cloud on mobile with more space */
-  .details-page .right-section .suggested-keywords {
-    height: auto !important;
-    max-height: none !important;
-    min-height: 40px !important; /* Increased from 30px */
-    padding: 5px !important; /* Increased from 2px */
-    gap: 3px !important; /* Increased from 1px */
-    margin-bottom: 12px !important; /* Increased from 10px */
-  }
-  
-  /* Bigger text for keyword chips on mobile */
-  .details-page .right-section .suggested-keyword {
-    font-size: 10px !important; /* Increased from 9px */
-    padding: 1px 3px !important; /* Increased from 2px */
-    height: 16px !important; /* Increased from 12px */
-    line-height: 14px !important; /* Increased from 10px */
-    margin: 2px !important; /* Increased from 1px */
-  }
-  
-  /* Add gap between keyword section and tagline section */
-  .details-page .right-section .form-group:has(label[for="tagline"]) {
-    margin-top: 12px !important; /* Increased from 10px */
-  }
-  
-  /* Optimize tagline display */
-  .details-page .right-section .tagline-display-area {
-    margin-top: 5px !important;
-  }
-  
-  /* Make the tagline buttons the same height */
-  .tagline-buttons .generate-btn,
-  .tagline-buttons .delete-btn {
-    height: 40px !important; /* Fixed height for both buttons */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  /* Make tagline section label visible (prevent cutoff) */
-  .details-page .right-section label[for="tagline"] {
-    display: block !important;
-    width: 100% !important;
-    font-weight: 500 !important;
-    margin-bottom: 8px !important;
-    white-space: normal !important; /* Prevent text from being cut off */
-    overflow: visible !important;
-    font-size: 15px !important; /* Ensure readable font size */
-    line-height: 1.4 !important; /* Proper line height for readability */
-  }
-  
-  /* Ensure any container for tagline section has proper spacing */
-  .form-group:has(label[for="tagline"]),
-  .tagline-container, 
-  .tagline-section {
-    margin-top: 25px !important; /* Add more space above the tagline section */
-    clear: both !important; /* Ensure it starts on a new "row" */
-    width: 100% !important;
-    display: block !important;
-    overflow: visible !important;
-  }
-
-  /* Custom border styling to force rounded corners (last resort approach) */
-  .details-page .form-container {
-    border-radius: 20px !important; /* Force rounded corners */
-    overflow: visible !important; /* Prevent clipping */
-    border: none !important; /* Remove any border that might be interfering */
-  }
-  
-  /* Force overrides of any conflicting styles for form container */
-  .details-page .right-section .form-container,
-  .details-page .right-content .form-container,
-  .details-page > .form-container,
-  .form-container {
-    border-radius: 20px !important; /* Force rounded corners on ALL sides */
-  }
-
-  /* Ensure form container overlaps with Layer1 image */
-  .details-page .form-container,
-  body .details-page .form-container,
-  html body .details-page .form-container {
-    margin-top: 40px !important; /* Pull up to match MobileResponsiveOverrides.css */
-  }
+    /* Reset all previous styles that might be causing conflicts */
+    .details-page,
+    .details-page .left-section,
+    .details-page .right-section,
+    .details-page .right-content,
+    .details-page .form-container {
+        position: static !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        transform: none !important;
+    }
+    /* Main page container */
+    .details-page {
+        display: block !important;
+        min-height: calc(100vh + 40px) !important; /* Increased height by 40px */
+        background-image: url('../../../public/images/adddetails/UploadPhoto+AddDetails.png') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        padding-bottom: 90px !important; /* Increased from 50px to 90px */
+        overflow-y: auto !important;
+        position: relative !important;
+    }
+    /* Hide left section completely */
+    .details-page .left-section {
+        display: none !important;
+    }
+    /* Mobile layout with images */
+    .mobile-elements-container {
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        padding-top: 20px !important;
+        width: 100% !important;
+    }
+    /* LOGO styling */
+    .mobile-logo {
+        width: 480px !important;
+        /* Increased from 420px to 480px for bigger logo */
+        height: auto !important;
+        margin: -30px auto 10px auto !important;
+        /* Pushed up by adding negative margin */
+        max-width: 100% !important;
+        /* Ensure it doesn't overflow */
+    }
+    /* Group15183 styling */
+    .mobile-group {
+        width: 280px !important;
+        height: auto !important;
+        margin: -45px auto !important;
+        /* Changed to -45px to push up properly */
+        display: block !important;
+        position: relative !important;
+        z-index: 2 !important;
+        left: 35% !important;
+        transform: translateX(-50%) !important;
+    }
+    /* Layer1 styling - attached to form container - positioned for overlap */
+    .mobile-layer {
+        width: calc(100% - 30px) !important;
+        max-width: 520px !important;
+        height: auto !important;
+        margin: 60px auto -2px auto !important;
+        /* Changed from 45px to 60px to push down more */
+        display: block !important;
+        position: relative !important;
+        z-index: 1 !important;
+        /* Ensure it's behind the form */
+    }
+    /* Right section containing the form */
+    .details-page .right-section {
+        width: 100% !important;
+        padding: 20px !important;
+        background-color: transparent !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+    /* Right content wrapper */
+    .details-page .right-content {
+        max-width: 500px !important;
+        width: 100% !important;
+        margin: 10px auto !important;
+        padding: 0 !important;
+    }
+    /* Improved tagline display box for mobile */
+    .details-page .right-section .tagline-display-area,
+    .details-page .right-section .tagline-display {
+        min-height: 65px !important;
+        /* Increased height as requested */
+        height: auto !important;
+        /* Allow height to adjust based on content */
+        overflow: visible !important;
+        /* Prevent scrolling */
+        white-space: normal !important;
+        /* Allow text wrapping */
+        word-wrap: break-word !important;
+        /* Ensure text wraps properly */
+        text-overflow: ellipsis !important;
+        /* Show ellipsis for overflow as a fallback */
+        display: block !important;
+        line-height: 1.5 !important;
+        /* Better line height for readability */
+    }
+    /* Ensure text inside tagline breaks properly into two lines */
+    .details-page .right-section .tagline-display {
+        font-size: 14px !important;
+        /* Slightly smaller font to fit better */
+        padding: 10px 12px !important;
+        /* Consistent padding */
+        border: 1px solid #0083B5 !important;
+        /* Consistent blue border */
+        border-radius: 4px !important;
+    }
+    /* Move Generate Tagline section up */
+    .details-page .right-section .form-group:has(label[for="tagline"]) {
+        margin-top: -10px !important;
+        /* Moved up by 20px */
+    }
+    /* Form container styling with rounded corners (top and bottom) */
+    .details-page .form-container,
+    body .details-page .form-container,
+    html body .details-page .form-container {
+        background-color: white !important;
+        border-radius: 20px !important;
+        /* Ensure ALL corners are rounded */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        padding: 20px !important;
+        margin: 20px 15px 20px 15px !important;
+        /* Added top margin to push down */
+        display: block !important;
+        width: calc(100% - 30px) !important;
+        max-width: 500px !important;
+        z-index: 10 !important;
+        position: relative !important;
+        overflow: visible !important;
+        /* Allow content to expand container properly */
+    }
+    /* Override any styles that might be affecting the bottom corners */
+    .details-page .form-container::before,
+    .details-page .form-container::after {
+        display: none !important;
+        /* Remove any pseudo elements that might affect corners */
+    }
+    /* Ensure forms and inputs are displayed properly */
+    .details-page .form-group {
+        margin-bottom: 15px !important;
+        display: block !important;
+    }
+    /* Make form input fields clearly visible */
+    .details-page .form-input,
+    .details-page .form-select {
+        display: block !important;
+        width: 100% !important;
+        padding: 10px !important;
+        background-color: white !important;
+        border: 1px solid #ccc !important;
+    }
+    /* Rename keyword label for mobile - removed content approach since the label text is set in HTML */
+    .details-page .right-section label[for="keywords"] {
+        display: block !important;
+        font-weight: 500 !important;
+        margin-bottom: 5px !important;
+    }
+    /* Keyword chips for mobile - increased height */
+    html body .details-page .keyword-tag,
+    html body .right-section .keyword-tag,
+    html body .keywords-tags .keyword-tag,
+    html body .form-container .keyword-tag,
+    html body div.keyword-tag,
+    html body .keywords-input-container .keyword-tag,
+    html body .keyword-tag {
+        padding: 1px 4px !important;
+        font-size: 10px !important;
+        margin: 1px !important;
+        max-height: 18px !important;
+        min-height: 18px !important;
+        height: 18px !important;
+        line-height: 16px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        border-width: 1px !important;
+    }
+    
+    /* Force keywords container height */
+    html body .details-page .keywords-tags,
+    html body .keywords-tags,
+    html body .right-section .keywords-tags,
+    html body .form-container .keywords-tags {
+        min-height: 10px !important;
+        max-height: none !important;
+        height: auto !important;
+        line-height: 10px !important;
+        padding: 0 !important;
+    }
+    /* Extreme compact keyword cloud for mobile */
+    html body .details-page .right-section .suggested-keywords,
+    html body .right-section .suggested-keywords,
+    html body .form-container .suggested-keywords,
+    html body .suggested-keywords {
+        height: auto !important;
+        max-height: none !important;
+        min-height: 20px !important;
+        max-height: 30px !important;
+        padding: 1px !important;
+        gap: 0 !important;
+        margin-bottom: 8px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Mobile suggested keyword buttons */
+    html body .suggested-keywords button.suggested-keyword,
+    .suggested-keywords button.suggested-keyword,
+    button.suggested-keyword {
+        height: 12px !important;
+        min-height: 12px !important;
+        max-height: 12px !important;
+        line-height: 0 !important;
+        font-size: 8px !important;
+        padding: 0 3px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        border-radius: 2px !important;
+    }
+    /* End of mobile keyword styles */
+    /* Bigger text for keyword chips on mobile */
+    .details-page .right-section .suggested-keyword {
+        font-size: 10px !important;
+        /* Increased from 9px */
+        padding: 1px 3px !important;
+        /* Increased from 2px */
+        height: 16px !important;
+        /* Increased from 12px */
+        line-height: 14px !important;
+        /* Increased from 10px */
+        margin: 2px !important;
+        /* Increased from 1px */
+    }
+    /* Add gap between keyword section and tagline section */
+    .details-page .right-section .form-group:has(label[for="tagline"]) {
+        margin-top: 12px !important;
+        /* Increased from 10px */
+    }
+    /* Optimize tagline display */
+    .details-page .right-section .tagline-display-area {
+        margin-top: 5px !important;
+        min-height: 55px !important; /* Increase minimum height to accommodate more text */
+    }
+    /* Make the tagline buttons the same height */
+    .tagline-buttons .generate-btn,
+    .tagline-buttons .delete-btn,
+    .tagline-actions .generate-btn {
+        height: 40px !important;
+        /* Fixed height for both buttons */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-top: 10px !important; /* Add space between tagline box and button */
+    }
+    /* Make tagline section label visible (prevent cutoff) */
+    .details-page .right-section label[for="tagline"] {
+        display: block !important;
+        width: 100% !important;
+        font-weight: 500 !important;
+        margin-bottom: 8px !important;
+        white-space: normal !important;
+        /* Prevent text from being cut off */
+        overflow: visible !important;
+        font-size: 15px !important;
+        /* Ensure readable font size */
+        line-height: 1.4 !important;
+        /* Proper line height for readability */
+    }
+    /* Ensure any container for tagline section has proper spacing */
+    .form-group:has(label[for="tagline"]),
+    .tagline-container,
+    .tagline-section {
+        margin-top: 25px !important;
+        /* Add more space above the tagline section */
+        clear: both !important;
+        /* Ensure it starts on a new "row" */
+        width: 100% !important;
+        display: block !important;
+        overflow: visible !important;
+    }
+    /* Custom border styling to force rounded corners (last resort approach) */
+    .details-page .form-container {
+        border-radius: 20px !important;
+        /* Force rounded corners */
+        overflow: visible !important;
+        /* Prevent clipping */
+        border: none !important;
+        /* Remove any border that might be interfering */
+    }
+    /* Force overrides of any conflicting styles for form container */
+    .details-page .right-section .form-container,
+    .details-page .right-content .form-container,
+    .details-page>.form-container,
+    .form-container {
+        border-radius: 20px !important;
+        /* Force rounded corners on ALL sides */
+    }
+    /* Force overlap with Layer1 image - using ultra-important rules */
+    .details-page .form-container,
+    body .details-page .form-container,
+    html body .details-page .form-container,
+    .mobile-elements-container + .form-container {
+        margin-top: -110px !important;
+        /* Adjusted margin to push down 10px */
+        transform: translateY(-10px) !important;
+        /* Reduced transform to push down 10px */
+        position: relative !important;
+        z-index: 100 !important;
+        /* Higher z-index to ensure it's on top */
+        padding-bottom: 30px !important;
+    }
 }
 
+
 /* Add space between top and stepper indicator */
+
 .progress-tracker {
-  margin-top: 35px !important;
-  margin-bottom: 15px !important;
+    margin-top: 35px !important;
+    margin-bottom: 15px !important;
 }
 
 .right-content {
-  max-width: 700px !important; /* Make form container even wider for better spacing */
-  padding: 0 20px !important; /* Add some padding on the sides */
+    max-width: 700px !important;
+    /* Make form container even wider for better spacing */
+    padding: 0 20px !important;
+    /* Add some padding on the sides */
 }
 
+
 /* Create two-column layout for specific form fields */
+
 .form-row {
-  display: flex !important;
-  gap: 20px !important;
-  margin-bottom: 15px !important;
-  align-items: flex-start !important;
+    display: flex !important;
+    gap: 20px !important;
+    margin-bottom: 15px !important;
+    align-items: flex-start !important;
 }
 
 .form-row .form-group {
-  flex: 1 !important;
-  margin-bottom: 10px !important;
+    flex: 1 !important;
+    margin-bottom: 10px !important;
 }
+
 
 /* Make all form groups more compact but still readable */
+
 .form-group {
-  margin-bottom: 15px !important;
+    margin-bottom: 15px !important;
 }
+
 
 /* Better spacing for labels */
+
 .form-group label {
-  margin-bottom: 5px !important;
-  display: block !important;
-  font-weight: 500 !important;
+    margin-bottom: 5px !important;
+    display: block !important;
+    font-weight: 500 !important;
 }
+
 
 /* Change label text for keywords - removed in favor of setting text in HTML */
+
 .form-group label[for="keywords"] {
-  display: block !important;
-  margin-bottom: 5px !important;
-  font-weight: 500 !important;
+    display: block !important;
+    margin-bottom: 5px !important;
+    font-weight: 500 !important;
 }
 
+
 /* Position keywords and tagline in a row */
+
 .keywords-tagline-row {
-  display: flex !important;
-  gap: 25px !important; /* Increased gap between keywords and tagline */
-  margin-bottom: 20px !important;
+    display: flex !important;
+    gap: 25px !important;
+    /* Increased gap between keywords and tagline */
+    margin-bottom: 20px !important;
 }
 
 .keywords-tagline-row .form-group {
-  flex: 1 !important;
+    flex: 1 !important;
 }
+
 
 /* Make tagline section stand out a bit more */
+
 .tagline-input-container {
-  margin-top: 5px !important;
+    margin-top: 5px !important;
 }
+
 
 /* Button styling improvements */
+
 .next-btn {
-  margin-top: 10px !important; /* Changed from -5px to 10px for proper spacing */
-  padding: 10px 30px !important;
-  border-radius: 20px !important; /* Increased from 4px to 12px (added 8px as requested) */
+    margin-top: 10px !important;
+    /* Changed from -5px to 10px for proper spacing */
+    padding: 10px 30px !important;
+    border-radius: 20px !important;
+    /* Increased from 4px to 12px (added 8px as requested) */
 }
+
 
 /* Checkbox positioning */
+
 .checkbox-wrapper {
-  margin-top: -25px !important; /* Push up the checkbox */
+    margin-top: -25px !important;
+    /* Push up the checkbox */
 }
 
+
 /* Center align the Layer1 image and prevent it from being cut off */
+
 .left-people-container {
-  bottom: 0 !important;
-  right: auto !important;
-  left: 0 !important;
-  width: 100% !important;
-  justify-content: center !important;
-  overflow: visible !important;
+    bottom: 0 !important;
+    right: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    overflow: visible !important;
 }
 
 .left-people-image {
-  max-height: 65% !important; /* Further reduced from 75% to 65% */
-  max-width: 95% !important; /* Maintained width */
-  margin: 0 auto !important;
-  position: relative !important;
+    max-height: 65% !important;
+    /* Further reduced from 75% to 65% */
+    max-width: 95% !important;
+    /* Maintained width */
+    margin: 0 auto !important;
+    position: relative !important;
 }
+
 
 /* Properly style the keywords container height */
+
 .keywords-input-container {
-  min-height: 40px !important;
-  max-height: 60px !important; /* Reduced from 80px to 60px */
-  overflow-y: auto !important;
-  padding: 5px !important;
+    min-height: 40px !important;
+    max-height: 60px !important;
+    /* Reduced from 80px to 60px */
+    overflow-y: auto !important;
+    padding: 5px !important;
 }
 
+
 /* Add minimal space between keyword cloud and Generate Tagline title */
+
 .form-group:has(label[for="tagline"]) {
-  margin-top: -15px !important; /* Changed from 5px to -15px to push up by additional 20px */
+    margin-top: -15px !important;
+    /* Changed from 5px to -15px to push up by additional 20px */
 }

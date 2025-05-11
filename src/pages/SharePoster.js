@@ -617,7 +617,7 @@ const SharePoster = () => {
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 31; // Reduced from 36 to 31 to make tagline width smaller
+          const maxLineLength = 30; // Further reduced from 31 to 30 to make tagline width smaller from the right
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines
@@ -656,8 +656,8 @@ const SharePoster = () => {
           ctx.font = 'bold 45.5px Poppins, sans-serif'; // Increased from 42px to 45.5px (42 + 3.5)
           ctx.textAlign = 'left';
           
-          // Calculate vertical spacing for taglines - moved up by 50px total
-          const taglineStartY = canvas.height * 0.10; // Further reduced from 0.12 to move up by another 20px
+          // Calculate vertical spacing for taglines - moved up by additional 2px
+          const taglineStartY = canvas.height * 0.10 - 2; // Further reduced by 2px as requested
           const taglineLineHeight = 55;
           
           // Function to handle drawing text with certain words in bold
@@ -699,33 +699,33 @@ const SharePoster = () => {
             });
           };
           
-          // Draw each line with keywords bolded
+          // Draw each line with keywords bolded - moved right by 3px and reduced width from right by 3px
           taglineLines.forEach((line, index) => {
-            drawTextWithBoldedWords(line, 60, taglineStartY + (index * taglineLineHeight), selectedKeywords);
+            drawTextWithBoldedWords(line, 63, taglineStartY + (index * taglineLineHeight), selectedKeywords);
           });
           
           // Position for company info circles - pushed further up to match logo alignment
-          const circleY = canvas.height * 0.28; // Further reduced from 0.30 to move up by 10px equivalent
+          const circleY = canvas.height * 0.28 - 3; // Further reduced by 3px as requested
           
-          // Draw user icon circles (yellow background)
+          // Draw user icon circles (yellow background) - moved 3px to the right
           ctx.beginPath();
-          ctx.arc(80, circleY, 30, 0, 2 * Math.PI);
+          ctx.arc(83, circleY, 30, 0, 2 * Math.PI);
           ctx.fillStyle = '#FFC72C'; // L&T Finance gold/yellow color
           ctx.fill();
           
-          // Draw phone icon circle
+          // Draw phone icon circle - moved 3px to the right
           ctx.beginPath();
-          ctx.arc(80, circleY + 85, 30, 0, 2 * Math.PI);
+          ctx.arc(83, circleY + 85, 30, 0, 2 * Math.PI);
           ctx.fill();
           
-          // Draw person icon in the first circle
+          // Draw person icon in the first circle - moved 3px to the right
           ctx.fillStyle = 'black'; // Set icon color to black
           ctx.font = 'bold 24px Arial';
           ctx.textAlign = 'center';
-          ctx.fillText('👤', 80, circleY + 8); // Centered the icon
+          ctx.fillText('👤', 83, circleY + 8); // Centered the icon
           
-          // Draw phone icon in the second circle - improved drawing for better visibility
-          const phoneX = 80;
+          // Draw phone icon in the second circle - moved 3px to the right
+          const phoneX = 83;
           const phoneY = circleY + 85;
           
           // Use the preloaded phone icon if available, otherwise create a new one
@@ -815,22 +815,22 @@ const SharePoster = () => {
             line1 = line1.trim();
             line2 = line2.trim();
             
-            // Draw the name in two lines
-            ctx.fillText(line1, 130, circleY - 5); // First line slightly higher
-            ctx.fillText(line2, 130, circleY + 25); // Second line below
+            // Draw the name in two lines - moved 3px to the right
+            ctx.fillText(line1, 133, circleY - 5); // First line slightly higher
+            ctx.fillText(line2, 133, circleY + 25); // Second line below
           } else {
-            // Name fits on a single line
-            ctx.fillText(userName, 130, circleY + 8); // Properly centered with the user icon
+            // Name fits on a single line - moved 3px to the right
+            ctx.fillText(userName, 133, circleY + 8); // Properly centered with the user icon
           }
           
-          // Phone number display - already processed above
+          // Phone number display - moved 3px to the right
           ctx.font = 'bold 28px Arial';
-          ctx.fillText(phoneNumber, 130, circleY + 93); // Kept the same position
+          ctx.fillText(phoneNumber, 133, circleY + 93); // Moved 3px to the right
           
-          // Add vertical white line 190px away from contact details (additional 50px) and 5px higher
-          const lineX = 130 + 190 + ctx.measureText(phoneNumber).width; // Position 190px after the longest text (increased by another 50px)
-          const lineStartY = circleY - 30; // Start 5px higher than before (from -25 to -30)
-          const lineEndY = circleY + 110; // End 5px higher than before (from 115 to 110)
+          // Add vertical white line - moved up by 2px
+          const lineX = 133 + 190 + ctx.measureText(phoneNumber).width; // Position after phone number with adjusted position
+          const lineStartY = circleY - 32; // Start 2px higher than before
+          const lineEndY = circleY + 108; // End 2px higher than before
           
           // Draw the white vertical line
           ctx.beginPath();

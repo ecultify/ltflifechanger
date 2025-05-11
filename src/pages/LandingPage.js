@@ -290,7 +290,11 @@ const LandingPage = () => {
                   <img 
                     src={PROFILE_IMAGES[profileImageIndex]} 
                     alt="Profile" 
-                    className="profile-carousel-image" 
+                    className={`profile-carousel-image ${
+                      profileImageIndex === 0 ? 'mask-group-base' :
+                      profileImageIndex === 4 ? 'mask-group-4' :
+                      profileImageIndex === 5 ? 'mask-group-5' : ''
+                    }`} 
                   />
                 </div>
                 

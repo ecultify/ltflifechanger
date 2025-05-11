@@ -32,8 +32,8 @@
         margin: 0 auto !important;
         padding-top: 0 !important;
         /* Remove top padding */
-        margin-top: -115px !important;
-        /* Adjusted to create more space between logo and text - pulled up by 15px from -100px */
+        margin-top: -130px !important;
+        /* Adjusted to be 15px up from original (pushed down by 10px from previous -140px) */
         width: 100% !important;
         position: relative !important;
         left: 0 !important;
@@ -46,8 +46,8 @@
         margin-bottom: -5px !important;
         /* Reduced bottom margin to move closer to Free Personalised */
         text-align: center !important;
-        margin-top: 300px !important;
-        /* Pulled up by 5px more (from 305px to 300px) - CHANGE 1 */
+        margin-top: 285px !important;
+        /* Adjusted to be 15px up from original (pushed down by 10px from previous 275px) */
         margin-left: 0 !important;
         /* Center alignment */
         width: 100% !important;
@@ -217,6 +217,15 @@
         object-fit: contain !important;
         /* Changed from cover to contain */
         object-position: bottom !important;
+    }
+    
+    /* Specific styles for mask group 0, 4, and 5 - make them larger */
+    .mobile-frame-container .profile-carousel-image.mask-group-base,
+    .mobile-frame-container .profile-carousel-image.mask-group-4,
+    .mobile-frame-container .profile-carousel-image.mask-group-5 {
+        width: 110% !important; /* Make them 10% larger than normal */
+        height: 330px !important; /* Make them taller */
+        transform: translateX(-5%) !important; /* Center the enlarged image */
     }
     .mobile-frame-container .group-30a-image {
         position: relative !important;
@@ -713,7 +722,7 @@
             background-color: #f9f9f9 !important;
             margin: 0 !important;
             text-align: left !important;
-            vertical-align: middle !important; /* Center text vertically */
+            padding-top: 10px !important; /* Add padding instead of vertical-align */
         }
         
         /* Ensure no height change on focus or active states */
@@ -919,6 +928,7 @@
             line-height: 1.5 !important;
             word-break: break-word !important;
             text-overflow: ellipsis !important;
+            line-clamp: 2 !important;
             -webkit-line-clamp: 2 !important;
             -webkit-box-orient: vertical !important;
             display: -webkit-box !important;
@@ -936,6 +946,17 @@
             margin: 0 !important;
             text-align: left !important;
             vertical-align: top !important;
+        }
+        
+        /* Better text truncation for mobile */
+        .profile-bio {
+            line-clamp: 2 !important;
+            -webkit-line-clamp: 2 !important;
+            /* Show exactly 2 lines */
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: -webkit-box !important;
+            -webkit-box-orient: vertical !important;
         }
         
         /* Smaller form labels and inputs for mobile */
@@ -977,7 +998,16 @@
         
         /* Reset the margin-top of the right-content */
         .details-page .right-content {
-            margin-top: 0 !important;
+            background: transparent !important;
+            overflow: visible !important;
+        }
+        
+        /* Text alignment fixes for mobile */
+        .details-page .form-group.tagline-field {
+            display: block !important;
+            width: 100% !important;
+            margin-right: 0 !important;
+            /* No margin on mobile */
         }
         
         /* Style the left section for mobile view */
@@ -1087,36 +1117,39 @@
         .details-page .right-section .suggested-keywords {
             display: flex !important;
             flex-wrap: wrap !important;
-            gap: 4px !important; /* Increased horizontal spacing */
+            gap: 3px !important; /* Increased spacing */
             width: 100% !important;
             max-width: 100% !important;
-            margin-bottom: 10px !important; /* Reduced from 12px */
+            margin-bottom: 10px !important; /* Increased margin */
             align-items: flex-start !important;
             height: auto !important;
             max-height: none !important;
-            min-height: 32px !important; /* Reduced from 40px */
+            min-height: 36px !important; /* Increased height */
             overflow: visible !important;
-            padding: 5px 5px 5px 0 !important; /* Remove left padding for left alignment */
+            padding: 3px 3px 3px 0 !important; /* Increased padding */
             position: relative !important;
             z-index: 1 !important;
             justify-content: flex-start !important; /* Left alignment */
         }
         
-        /* Keyword chips with improved typography and reduced height */
+        /* Compact keyword chips for mobile view - increased from ultra-compact */
         .details-page .right-section .suggested-keyword {
-            font-size: 12px !important; /* Increased from 10px */
-            padding: 3px 6px !important; /* More padding for better readability */
-            margin: 1px 3px 1px 0 !important; /* More horizontal spacing, less vertical */
-            border-radius: 3px !important; /* Slightly larger radius */
+            font-size: 11px !important; /* Slightly larger font */
+            padding: 1px 5px !important; /* Increased padding */
+            margin: 1px 2px 1px 0 !important; /* Maintained spacing */
+            border-radius: 3px !important; /* Larger radius */
             white-space: nowrap !important;
             flex: 0 0 auto !important;
-            display: inline-block !important;
-            height: 13px !important; /* Reduced by 20% from 16px */
-            line-height: 13px !important; /* Match height */
-            font-weight: 500 !important; /* Medium weight for better contrast */
-            color: #0055a5 !important; /* Darker blue for better contrast */
-            background-color: #e6f2ff !important; /* Slightly brighter background */
-            border: 1px solid #99ccff !important; /* Lighter border */
+            display: inline-flex !important;
+            align-items: center !important;
+            height: 16px !important; /* Increased height */
+            max-height: 16px !important;
+            min-height: 16px !important;
+            line-height: 1.1 !important; /* Improved line height */
+            font-weight: 500 !important;
+            color: #0055a5 !important;
+            background-color: #e6f2ff !important;
+            border: 1px solid #99ccff !important; /* Standard border */
         }
         
         /* Compact keyword section */

@@ -264,19 +264,32 @@ html, body, #root, .app {
 /* Loader adjustments */
 /* Desktop loader */
 @media (min-width: 769px) {
+  .loader-container {
+    padding-top: 10px !important; /* Reduce top padding */
+    padding-bottom: 10px !important; /* Reduce bottom padding */
+  }
+  
   .logo-loader-wrapper {
-    width: 240px !important; /* Increased from 220px */
-    height: 240px !important; /* Increased from 220px */
+    width: 240px !important; /* Same width */
+    height: 180px !important; /* Drastically reduced by 40px more */
+    margin-bottom: 5px !important; /* Reduced vertical spacing */
   }
   
   .logo-image-container {
-    width: 180px !important; /* Increased from 160px */
-    height: 180px !important; /* Increased from 160px */
+    width: 220px !important; /* Further increased to make logo bigger */
+    height: 160px !important; /* Reduced height */
+  }
+  
+  /* Make logo fill more of the container */
+  .logo-loader {
+    width: 160% !important; /* Further increased logo size */
+    height: auto !important;
   }
   
   .loading-text {
-    font-size: 22px !important; /* Increased from 18px */
+    font-size: 24px !important; /* Further increased text size */
     font-weight: 700 !important; /* Made bolder */
+    margin-top: 0 !important; /* Reduced space above text */
   }
 }
 
@@ -286,20 +299,30 @@ html, body, #root, .app {
     width: calc(100% - 10px) !important; /* Reduce width by 5px on each side */
     left: 5px !important;
     right: 5px !important;
+    padding-top: 5px !important; /* Reduce top padding */
+    padding-bottom: 5px !important; /* Reduce bottom padding */
   }
   
   .logo-loader-wrapper {
-    width: 200px !important; /* Reduced height */
-    height: 200px !important; /* Reduced height */
+    width: 200px !important; /* Same width */
+    height: 140px !important; /* Drastically reduced by 40px more */
+    margin-bottom: 2px !important; /* Minimal vertical spacing */
   }
   
   .logo-image-container {
-    width: 150px !important; /* Reduced from 160px */
-    height: 150px !important; /* Reduced from 160px */
+    width: 180px !important; /* Further increased to make logo bigger */
+    height: 120px !important; /* Reduced height */
+  }
+  
+  /* Make logo fill more of the container on mobile */
+  .logo-loader {
+    width: 160% !important; /* Further increased logo size */
+    height: auto !important;
   }
   
   .loading-text {
-    font-size: 16px !important;
+    font-size: 18px !important; /* Increased text size */
+    margin-top: 0 !important; /* Reduced space above text */
   }
 }
 

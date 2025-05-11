@@ -55,10 +55,12 @@ const SharePoster = () => {
   useEffect(() => {
     const preloadTemplateImage = async () => {
       if (!userData || !userData.industry) {
+        console.log('No userData or industry available yet:', userData);
         return; // Wait for user data to be available
       }
 
       try {
+        console.log('Selecting template for industry:', userData.industry);
         // Get template path based on industry
         const selectedTemplatePath = await getRandomTemplateForIndustry(userData.industry);
         setTemplatePath(selectedTemplatePath);
@@ -863,8 +865,14 @@ const SharePoster = () => {
       const storedUserData = sessionStorage.getItem('userData');
       const storedImageData = sessionStorage.getItem('processedImage');
       
+      console.log('Retrieved userData from sessionStorage:', storedUserData);
+      
       if (storedUserData && storedImageData) {
-        setUserData(JSON.parse(storedUserData));
+        const parsedUserData = JSON.parse(storedUserData);
+        console.log('Parsed userData:', parsedUserData);
+        console.log('Industry from parsed userData:', parsedUserData.industry);
+        
+        setUserData(parsedUserData);
         setProcessedImage(storedImageData);
       } else {
         setError('No data found. Please upload a photo first.');

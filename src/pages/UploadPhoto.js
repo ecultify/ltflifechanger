@@ -857,15 +857,20 @@ const UploadPhoto = () => {
   const handleContinue = (finalImage) => {
     try {
       // Get user data from previous steps or use default values
+      const industry = sessionStorage.getItem('industry') || 'other';
+      
       const userData = {
         name: sessionStorage.getItem('userName') || 'Your Name',
         companyName: sessionStorage.getItem('companyName') || 'Your Company',
-        industry: sessionStorage.getItem('industry') || 'Your Industry',
+        industry: industry, // Pass industry directly
         tagline: sessionStorage.getItem('tagline') || 'Your Tagline',
         phoneNumber: sessionStorage.getItem('phoneNumber') || 'Your Phone',
         isNormalSelfie: isNormalSelfie, // Add the flag to indicate if this is a normal selfie
         isSelfieMode: isSelfieMode // Add the flag to indicate if this is a selfie mode
       }
+
+      // Log industry value for debugging
+      console.log('Industry value being set:', industry);
 
       // Store data in session storage
       sessionStorage.setItem('userData', JSON.stringify(userData));

@@ -32,8 +32,8 @@
         margin: 0 auto !important;
         padding-top: 0 !important;
         /* Remove top padding */
-        margin-top: -100px !important;
-        /* Adjusted to create more space between logo and text */
+        margin-top: -115px !important;
+        /* Adjusted to create more space between logo and text - pulled up by 15px from -100px */
         width: 100% !important;
         position: relative !important;
         left: 0 !important;
@@ -150,8 +150,8 @@
     }
     /* Adjust images in mobile view */
     .mobile-frame-container {
-        min-height: 200px !important;
-        /* Increased height for better proportions */
+        min-height: 185px !important;
+        /* Reduced height by 15px from 200px */
         align-items: flex-end !important;
         /* Align items to bottom */
         margin-top: 15px !important;
@@ -220,13 +220,13 @@
     /* Make testimonial cards bigger height-wise - CHANGE 3 */
     .testimonial-card {
         min-width: 100% !important;
-        height: 530px !important; /* Increased height by 40px from 490px to 530px */
+        height: 515px !important; /* Reduced height by 15px from 530px to 515px */
         transition: opacity 0.5s ease !important;
         margin: 0 auto !important;
         display: block !important;
     }
     .testimonial-container {
-        height: 550px !important; /* Increased height to match new card height */
+        height: 535px !important; /* Reduced height by 15px from 550px to 535px */
         margin-bottom: 20px !important; /* Added more space between testimonials and dots */
     }
     
@@ -262,48 +262,68 @@
         transform: scale(1.2) !important;
     }
     
-    /* CHANGE 5 - Reduce section 2 title rotation */
+    /* CHANGE 5 - Reduce section 2 title rotation and font size to fit on one line */
     .section-2-title-container {
-        transform: rotate(-4deg) !important; /* Changed from -13deg to -4deg */
-        margin-top: 13px !important; /* Move up by 7px from 20px to 13px */
-        position: absolute !important; /* Make it absolute to center it properly */
+        transform: rotate(-1deg) !important;
+        margin-top: -72px !important; /* Further pushed up by 20px from -32px */
+        position: absolute !important;
         left: 0 !important;
         right: 0 !important;
-        margin-left: auto !important;
+        margin-left: auto !important; 
         margin-right: auto !important;
-        width: 80% !important; /* Reduced width to ensure equal distance from screen sides */
+        width: 100% !important;
+        z-index: 100 !important;
+        margin-bottom: 25px !important;
     }
     
-    /* Section 2 title - perfectly centered with rotation */
+    /* Section 2 title - extreme font size reduction and spacing compression to fit on one line */
     .section-2-title {
         white-space: nowrap !important;
-        font-size: 20px !important;
-        /* Adjusted font size to fit container */
+        font-size: 6px !important; /* Further reduced from 7px to 6px */
         width: auto !important;
-        /* Changed from 100% to auto to allow proper centering */
         text-align: center !important;
         overflow: visible !important;
         display: inline-block !important;
-        padding: 10px 20px !important;
-        /* Increased padding */
+        padding: 4px 6px !important; /* Further reduced padding */
         position: relative !important;
         z-index: 1 !important;
-        left: calc(50% + 15px) !important;
-        /* Moved 20px to the right from center */
-        transform-origin: center right !important; /* Keeping the same pivot point */
-        transform: translateX(-50%) rotate(-4deg) !important; /* Match container rotation - changed from -13deg to -4deg */
-        /* Centered first, then rotated to maintain equal corner distances */
+        left: 0 !important;
+        transform: rotate(-1deg) !important;
+        transform-origin: center !important;
+        max-width: none !important;
+        line-height: 1 !important;
+        letter-spacing: -0.7px !important; /* More negative letter spacing */
+        word-spacing: -0.5px !important; /* Adding negative word spacing */
     }
-    .section-2-title-container {
-        width: 100% !important;
-        text-align: center !important;
-        margin: 20px auto 0 auto !important; /* Added 20px top margin to push down */
-        position: relative !important;
-        left: 0 !important; /* Centered - removed the -20px offset */
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
+
+    /* Override any conflicting media queries with even stronger selectors */
+    @media (max-width: 768px) {
+        .section-2-title, 
+        .section-2 .section-2-title, 
+        .section-2 .container .section-2-title,
+        html body .section-2-title,
+        html body .section-2 .section-2-title,
+        body .section-2 .container .section-2-title {
+            white-space: nowrap !important;
+            font-size: 6px !important; /* Further reduced */
+            line-height: 1 !important;
+            max-width: none !important;
+            padding: 3px 5px !important; /* Further reduced padding */
+            letter-spacing: -0.7px !important; /* More negative letter spacing */
+            word-spacing: -0.5px !important; /* Adding negative word spacing */
+        }
     }
+    
+    /* Video container - pushed down by 25px */
+    .section-2 .video-container {
+        margin-top: 65px !important; /* Increased from 25px to ensure more space from title */
+    }
+    
+    /* Section 2 container needs additional padding */
+    .section-2 .container {
+        padding-top: 40px !important; /* Added top padding to create more space */
+    }
+    
     /* Increase Start Creating button size */
     .section-2 .start-btn {
         font-size: 20px !important;
@@ -321,7 +341,7 @@
     }
     /* Section 3 improvements */
     .section-3 {
-        min-height: 650px !important; /* Reverted from 520px to 650px */
+        min-height: 635px !important; /* Reduced height by 15px from 650px to 635px */
         padding-bottom: 0px !important; /* Removed bottom padding */
         padding-top: 50px !important; /* Significantly increased top padding */
         position: relative !important; /* For absolute positioning */
@@ -420,57 +440,57 @@
         /* OTP page overall container */
         .otp-page {
             min-height: 100vh !important;
-            padding-top: 20px !important; /* Increased padding at the top */
+            padding-top: 0px !important; /* Reduced from 20px to 0px */
             position: relative !important;
         }
         
         /* Logo container positioning */
         .otp-page .logo-container {
-            margin-bottom: 20px !important;
+            margin-bottom: 0px !important; /* Reduced from 20px to 0px */
             position: relative !important;
-            top: -35px !important; /* Push up by 35px (original -15px + additional -20px) */
-            left: 25px !important; /* Keep the same left position */
-            margin-top: 30px !important; /* Keep this margin for overall spacing */
+            top: -35px !important; 
+            left: 25px !important;
+            margin-top: 20px !important; /* Reduced from 30px to 20px */
         }
         
-        /* Bumrah image - EXTREMELY enlarged with no cutoff */
+        /* Bumrah image - pulled up correctly */
         .otp-page .bumrah-container {
             position: relative !important;
             text-align: center !important;
-            margin-bottom: -10px !important; /* Adjusted for proper overlap with form */
-            margin-top: -5px !important; /* Pulled up by 15px more (from 10px to -5px) */
-            z-index: 2 !important; /* Ensure it stays above other elements */
+            margin-bottom: -10px !important;
+            margin-top: -65px !important; /* Changed from -40px to -65px to pull up by 25px more */
+            z-index: 2 !important;
             height: auto !important; 
-            min-height: 450px !important; /* Increased for full image visibility */
+            min-height: 415px !important;
             padding: 0 !important;
-            overflow: visible !important; /* Ensure nothing gets cut off */
+            overflow: visible !important;
         }
         
         .otp-page .bumrah-image {
-            width: 520px !important; /* MAXIMUM size - further increased */
+            width: 520px !important;
             height: auto !important;
             display: inline-block !important;
-            max-width: 100% !important; /* Allow full width usage */
-            transform: scale(1.2) !important; /* Maximum scaling for ultimate impact */
-            margin-top: 10px !important; /* Additional space at top */
-            position: relative !important; /* Enable proper positioning */
-            top: 0 !important; /* Ensure it sits at the top of its container */
+            max-width: 100% !important;
+            transform: scale(1.2) !important;
+            margin-top: 0px !important; /* Reduced from 10px to 0px */
+            position: relative !important;
+            top: 0 !important;
         }
         
         /* Form container position */
         .otp-page .form-container {
             position: relative !important;
-            z-index: 2 !important; /* Ensure it's above the image */
-            margin-top: -60px !important; /* Pulled up by 15px more (from -45px to -60px) */
+            z-index: 2 !important;
+            margin-top: -15px !important; /* Changed from -95px to -70px to push down by 25px */
             background-color: white !important;
             border-top-left-radius: 20px !important;
             border-top-right-radius: 20px !important;
-            border-bottom-left-radius: 20px !important; /* Added rounded corners at bottom */
-            border-bottom-right-radius: 20px !important; /* Added rounded corners at bottom */
-            padding-top: 40px !important; /* Significantly increased top padding for stepper spacing */
-            padding-bottom: 40px !important; /* Increased bottom padding for more space at bottom */
-            margin-bottom: 20px !important; /* Added bottom margin for additional space */
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important; /* Add subtle shadow */
+            border-bottom-left-radius: 20px !important;
+            border-bottom-right-radius: 20px !important;
+            padding-top: 30px !important;
+            padding-bottom: 30px !important;
+            margin-bottom: 20px !important;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important;
         }
         
         /* Mobile stepper container spacing */
@@ -620,11 +640,12 @@
             margin-bottom: 15px !important;
             background-color: white !important;
             padding: 15px !important;
+            padding-bottom: 35px !important; /* Increased from default 15px to 35px (added 20px) */
         }
         
-        /* Layer1 image - push down by 45px to go behind form container */
+        /* Layer1 image - push down by another 15px to 135px total */
         .mobile-layer {
-            margin-top: 105px !important; /* Changed from 60px to 105px to push down by 45px more */
+            margin-top: 135px !important; /* Changed from 120px to 135px to push down by 15px more */
             margin-bottom: -2px !important; 
         }
 
@@ -647,15 +668,71 @@
             margin-top: -10px !important; /* Reduced by 20px from its previous value */
         }
         
-        /* Increase height of the Generate Tagline box by 5px and make it auto-adaptive */
+        /* Fixed height tagline display with horizontal scrolling - desktop-like behavior */
         .details-page .right-section .tagline-display-area,
         .details-page .right-section .tagline-display {
-            min-height: 65px !important; /* Increased from 60px to 65px */
-            height: auto !important; /* Allow auto-expansion based on content */
-            max-height: none !important;
+            min-height: 42px !important; /* Fixed height */
+            height: 42px !important; /* Fixed height */
+            max-height: 42px !important; /* Fixed height */
+            overflow-y: hidden !important; /* No vertical scrolling */
+            overflow-x: auto !important; /* Only horizontal scrolling */
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 4px 8px !important;
+            font-size: 13px !important;
+            line-height: 36px !important; /* Match height - padding for single line */
+            white-space: nowrap !important; /* Keep text on single line */
+            text-overflow: clip !important; /* Show content without ellipsis */
+            display: block !important;
+            resize: none !important;
+            position: relative !important;
+            border: 1px solid #ccc !important;
+            background-color: #f9f9f9 !important;
+            margin: 0 !important;
+            text-align: left !important;
+            vertical-align: middle !important; /* Center text vertically */
+        }
+        
+        /* Ensure no height change on focus or active states */
+        .details-page .right-section .tagline-display-area:focus,
+        .details-page .right-section .tagline-display:focus,
+        .details-page .right-section .tagline-display-area:active,
+        .details-page .right-section .tagline-display:active,
+        .details-page .right-section .tagline-display-area:hover,
+        .details-page .right-section .tagline-display:hover {
+            height: 42px !important; 
+            min-height: 42px !important;
+            max-height: 42px !important;
+            overflow-y: hidden !important;
+            overflow-x: auto !important;
+        }
+        
+        /* Additional styling to prevent any height changes */
+        .details-page .right-section .tagline-display-area > div,
+        .details-page .right-section .tagline-display > div,
+        .details-page .right-section .tagline-display-area input,
+        .details-page .right-section .tagline-display input {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 34px !important; /* Fixed height for content */
+            min-height: 34px !important;
+            max-height: 34px !important;
+            line-height: 34px !important;
+            display: inline-block !important;
+            white-space: nowrap !important;
             overflow: visible !important;
-            word-wrap: break-word !important; /* Ensure text wraps properly */
-            white-space: normal !important;
+            text-overflow: clip !important;
+        }
+
+        /* Specifically target any input fields within the tagline display */
+        .details-page .right-section .tagline-display input,
+        .details-page .right-section .tagline-display-area input {
+            border: none !important;
+            background: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+            width: auto !important;
         }
         
         /* Mobile camera container styles */
@@ -804,16 +881,39 @@
             padding: 0 !important;
         }
         
-        /* Mobile optimized tagline display */
+        /* Mobile optimized tagline display - with minimal styling for plain text */
         .details-page .right-section .tagline-display-area,
         .details-page .right-section .tagline-display {
             width: 100% !important;
             max-width: 100% !important;
-            box-sizing: border-box !important; /* Ensure padding is included in width */
+            box-sizing: border-box !important;
             overflow: hidden !important;
-            height: 45px !important; /* Reduced height for tagline box */
-            min-height: 45px !important;
-            max-height: 45px !important;
+            height: 42px !important; /* Fixed height that never changes */
+            min-height: 42px !important;
+            max-height: 42px !important;
+            padding: 1px 4px !important; /* Minimal padding */
+            text-align: left !important;
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            word-break: break-word !important;
+            text-overflow: ellipsis !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            display: -webkit-box !important;
+            resize: none !important; /* Prevent resizing */
+            vertical-align: top !important; /* Align text to top */
+            margin: 0 !important; /* Remove margins */
+            border: 1px solid #ccc !important; /* Simple border */
+            background-color: #f9f9f9 !important; /* Very light background */
+        }
+        
+        /* Additional important style to handle text alignment correctly */
+        .details-page .right-section .tagline-display-area div,
+        .details-page .right-section .tagline-display div {
+            padding: 0 !important;
+            margin: 0 !important;
+            text-align: left !important;
+            vertical-align: top !important;
         }
         
         /* Smaller form labels and inputs for mobile */
@@ -995,32 +1095,6 @@
             color: #0055a5 !important; /* Darker blue for better contrast */
             background-color: #e6f2ff !important; /* Slightly brighter background */
             border: 1px solid #99ccff !important; /* Lighter border */
-        }
-        
-        /* Optimize tagline display with fixed height and text trimming */
-        .details-page .right-section .tagline-display-area,
-        .details-page .right-section .tagline-display {
-            width: 100% !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-            overflow: hidden !important;
-            height: 42px !important; /* Fixed height for exactly 2 rows */
-            min-height: 42px !important;
-            max-height: 42px !important;
-            padding: 5px 8px !important; /* Reduced padding */
-            text-align: left !important; /* Left-aligned text */
-            font-size: 13px !important; /* Appropriate size for mobile */
-            line-height: 1.5 !important; /* Allows exactly 2 lines in 42px height */
-            word-break: break-word !important; /* Ensures proper wrapping */
-            text-overflow: ellipsis !important; /* Add ellipsis for overflow */
-            -webkit-line-clamp: 2 !important; /* Limit to 2 lines */
-            -webkit-box-orient: vertical !important;
-            display: -webkit-box !important; /* Required for line-clamp to work */
-        }
-        
-        /* Reduced spacing between sections */
-        .details-page .right-section .form-group {
-            margin-bottom: 8px !important; /* Reduced from default */
         }
         
         /* Compact keyword section */

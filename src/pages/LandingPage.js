@@ -193,7 +193,7 @@ const LandingPage = () => {
           </div>
           
           {!isMobile ? (
-            <div className="testimonial-container" style={{ marginBottom: '20px' }}>
+            <div className="testimonial-container">
               {/* Group 30a image above the 4th card */}
               <img 
                 src={GROUP_30A_IMAGE} 
@@ -256,7 +256,9 @@ const LandingPage = () => {
       <section className="section-2" style={section2Style}>
         <div className="container">
           <div className="section-2-title-container">
-            <h2 className="section-2-title">Make Your Poster in 2 Easy Steps</h2>
+            <h2 className="section-2-title">
+              Make Your Poster in 2 Easy Steps
+            </h2>
           </div>
           
           <div className="video-container">

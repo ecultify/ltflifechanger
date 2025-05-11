@@ -156,6 +156,32 @@ const SharePoster = () => {
         userImg.crossOrigin = 'anonymous';
         userImg.src = processedImage;
         
+        console.log('Loading user processed image from URL:', processedImage);
+        
+        // Add a logging function to track the image loading process
+        const trackImageLoading = async (img, description) => {
+          return new Promise((resolve) => {
+            const checkLoaded = () => {
+              if (img.complete) {
+                console.log(`${description} loaded successfully:`, {
+                  width: img.width,
+                  height: img.height,
+                  naturalWidth: img.naturalWidth,
+                  naturalHeight: img.naturalHeight
+                });
+                resolve(true);
+              } else {
+                console.log(`${description} still loading...`);
+                setTimeout(checkLoaded, 200);
+              }
+            };
+            checkLoaded();
+          });
+        };
+        
+        // Track user image loading
+        await trackImageLoading(userImg, 'User image');
+        
         // Load the template image based on user's industry
         // Use the selected template path if available, otherwise fall back to the default
         const templateSrc = templatePath || `${window.location.origin}/images/mage.jpg`;
@@ -317,24 +343,74 @@ const SharePoster = () => {
             const userImgHeight = userImg.height;
             console.log('Original image dimensions:', { width: userImgWidth, height: userImgHeight });
             
+            // Check if we have crop data from the UploadPhoto page
+            let cropData = null;
+            try {
+              const cropDataStr = sessionStorage.getItem('cropData');
+              if (cropDataStr) {
+                cropData = JSON.parse(cropDataStr);
+                console.log('Retrieved crop data:', cropData);
+              }
+            } catch (e) {
+              console.error('Error parsing crop data:', e);
+            }
+            
+            // Get userData for additional metadata
+            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+            console.log('Retrieved user data:', userData);
+            
             // Calculate Bumrah's approximate height in the template
             // Using the full template height (with some small margins)
             const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
             
             // Calculate scale to make user image match Bumrah's height (100%), preserving aspect ratio
             const heightScale = bumrahHeight / userImgHeight; // Make user image the same height as Bumrah
-            const scaledWidth = userImgWidth * heightScale;
+            let scaledWidth = userImgWidth * heightScale;
             const scaledHeight = bumrahHeight; // 100% of Bumrah's height
             
-            console.log('Scaling to match Bumrah height:', { heightScale, scaledWidth, scaledHeight });
+            // If we have crop data, adjust the width based on the crop settings
+            if (cropData) {
+              // Handle the new flexible cropping data format
+              console.log('Applying flexible crop data:', cropData);
+              
+              // Calculate target width (47.29% of frame width)
+              const targetWidth = canvas.width * 0.4729;
+              console.log('Target width (47.29% of frame):', targetWidth);
+              
+              // Calculate the width based on the widthPercentage from crop data
+              // The original image width * heightScale gives us the full width if no cropping was applied
+              let originalScaledWidth = userImgWidth * heightScale;
+              
+              // Apply the crop width percentage to get the actual cropped width
+              const cropWidthPercentage = cropData.widthPercentage || 80; // Default to 80% if not specified
+              
+              // Calculate the cropped width and scale it to fit the target width
+              let croppedScaledWidth = originalScaledWidth * (cropWidthPercentage / 100);
+              
+              // Scale factor to fit the width properly
+              const widthScaleFactor = targetWidth / croppedScaledWidth;
+              
+              console.log('Original scaled width:', originalScaledWidth);
+              console.log('Cropped width percentage:', cropWidthPercentage + '%');
+              console.log('Cropped scaled width:', croppedScaledWidth);
+              console.log('Width scale factor:', widthScaleFactor);
+              
+              // Adjust final width to target width
+              scaledWidth = targetWidth;
+              
+              console.log('Final adjusted width for poster:', scaledWidth);
+            }
+            
+            console.log('Scaling for poster:', { heightScale, scaledWidth, scaledHeight });
             
             // Position to place user on the left side of Bumrah
             // Position is adjusted to account for proper placement
-            const userX = (canvas.width * 0.08) - 95; // Moved 45px more to the right
+            // Moved 15px more to the right and 5px down as requested
+            const userX = (canvas.width * 0.08) - 95 + 15; // Moved 15px more to the right
             
             // Position vertically to align with Bumrah with adjusted height
-            // Pushing the image down by 55px more from previous position
-            const userY = (canvas.height - scaledHeight) + 110 - 18 + 30 + 55; // Adjusted position pushed down by 85px in total
+            // Pushing the image down by 5px more
+            const userY = (canvas.height - scaledHeight) + 110 - 18 + 30 + 55 + 5 + 5; // Additional 5px vertical adjustment
             
             // Apply the calculated placement
             console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
@@ -345,8 +421,44 @@ const SharePoster = () => {
             offscreenCanvas.height = scaledHeight;
             const offCtx = offscreenCanvas.getContext('2d');
             
-            // 1. Draw the user's image to the offscreen canvas
-            offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
+            // Draw the user's image to the offscreen canvas
+            // The image should already be properly cropped, just need to draw it
+            try {
+              console.log('Drawing user image to offscreen canvas with dimensions:', {
+                width: scaledWidth,
+                height: scaledHeight
+              });
+              
+              // Clear the offscreen canvas first
+              offCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+              
+              // Draw the image preserving its aspect ratio
+              offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
+              console.log('Successfully drew user image to offscreen canvas');
+              
+              // Log the image data for debugging
+              try {
+                const imageData = offCtx.getImageData(0, 0, 5, 5);
+                console.log('Sample of image data (first 5x5 pixels):', imageData.data.slice(0, 100));
+              } catch (e) {
+                console.warn('Could not access image data for debugging:', e);
+              }
+            } catch (drawError) {
+              console.error('Error drawing user image to offscreen canvas:', drawError);
+              
+              // Try an alternative drawing approach
+              try {
+                console.log('Attempting alternative drawing approach with natural dimensions');
+                offCtx.drawImage(
+                  userImg, 
+                  0, 0, userImg.naturalWidth, userImg.naturalHeight,
+                  0, 0, scaledWidth, scaledHeight
+                );
+                console.log('Alternative drawing approach succeeded');
+              } catch (altError) {
+                console.error('Alternative drawing approach also failed:', altError);
+              }
+            }
             
             // Black tint has been removed as requested
             
@@ -377,9 +489,61 @@ const SharePoster = () => {
             
             // 4. Now draw the processed image to the main canvas
             // Note: Background removal is assumed to be already done in the processedImage
-            ctx.drawImage(offscreenCanvas, userX, userY, scaledWidth, scaledHeight);
-            
-            console.log('User image placed successfully with enhancements');
+            try {
+              console.log('Drawing final image to main canvas at position:', {
+                x: userX,
+                y: userY,
+                width: scaledWidth,
+                height: scaledHeight
+              });
+              
+              // Check if offscreen canvas has content
+              try {
+                const testData = offCtx.getImageData(0, 0, 1, 1);
+                if (testData.data[3] === 0) {
+                  console.warn('Offscreen canvas appears to be empty or transparent');
+                }
+              } catch (e) {
+                console.warn('Could not test offscreen canvas data:', e);
+              }
+              
+              ctx.drawImage(offscreenCanvas, userX, userY, scaledWidth, scaledHeight);
+              console.log('Successfully drew final image to main canvas');
+            } catch (imgPlacementError) {
+              console.error('Error placing image on poster:', imgPlacementError);
+              
+              // Try a direct drawing approach as fallback
+              try {
+                console.log('Attempting direct drawing approach');
+                ctx.drawImage(userImg, userX, userY, scaledWidth, scaledHeight);
+                console.log('Direct drawing approach succeeded');
+              } catch (directError) {
+                console.error('Direct drawing approach failed:', directError);
+                
+                // Try another fallback with a new image
+                try {
+                  console.log('Attempting fallback with new image');
+                  const fallbackImg = new Image();
+                  fallbackImg.crossOrigin = 'anonymous';
+                  fallbackImg.src = processedImage;
+                  
+                  // Wait for the image to load
+                  await new Promise(resolve => {
+                    fallbackImg.onload = resolve;
+                    setTimeout(resolve, 2000); // Timeout after 2 seconds
+                  });
+                  
+                  if (fallbackImg.complete && fallbackImg.naturalHeight !== 0) {
+                    ctx.drawImage(fallbackImg, userX, userY, scaledWidth, scaledHeight);
+                    console.log('Fallback with new image succeeded');
+                  } else {
+                    console.error('Fallback image failed to load properly');
+                  }
+                } catch (fallbackError) {
+                  console.error('All drawing approaches failed:', fallbackError);
+                }
+              }
+            }
           } catch (imageDrawError) {
             console.error('Error drawing user image:', imageDrawError);
             // Continue without user image placement

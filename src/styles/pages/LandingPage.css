@@ -443,8 +443,8 @@ body {
         margin-bottom: 5px;
         /* Maintained spacing */
         text-align: left;
-        margin-top: 50px;
-        /* Maintained spacing */
+        margin-top: 35px;
+        /* Reduced from 50px to 35px to push up by 15px */
         transform: rotate(-3deg);
         /* Maintained tilt */
         transform-origin: bottom left;
@@ -613,8 +613,8 @@ body {
     .mobile-frame-container {
         position: relative;
         width: 100%;
-        min-height: 320px;
-        /* Increased from 280px to accommodate taller images */
+        min-height: 305px;
+        /* Reduced from 320px to 305px to accommodate pushing up text by 15px */
         display: flex;
         justify-content: space-between;
         align-items: flex-end;

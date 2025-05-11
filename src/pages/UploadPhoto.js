@@ -8,6 +8,8 @@ import axios from 'axios';
 import Loader from '../components/Loader';
 import * as faceapi from 'face-api.js';
 import { loadFaceDetectionModels } from '../utils/faceDetection';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const UploadPhoto = () => {
   const [file, setFile] = useState(null);
@@ -26,12 +28,43 @@ const UploadPhoto = () => {
   const [faceDetectionEnabled, setFaceDetectionEnabled] = useState(false);
   const [isSelfieMode, setIsSelfieMode] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  // Crop state
+  const [crop, setCrop] = useState({ 
+    unit: '%', 
+    width: 80,
+    height: 100,
+    x: 10,
+    y: 0,
+    aspect: undefined // Remove aspect ratio constraint to allow fixed height but variable width
+  });
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
+  const [cropMode, setCropMode] = useState('center'); // 'center', 'left', 'right'
+  const [cropWidth, setCropWidth] = useState('medium'); // 'narrow', 'medium', 'wide'
+  // New state variables for flexible cropping
+  const [leftCropPercentage, setLeftCropPercentage] = useState(10); // 10% from left
+  const [rightCropPercentage, setRightCropPercentage] = useState(10); // 10% from right
+  const [cropWidthPercentage, setCropWidthPercentage] = useState(80); // 80% width initially
+  const imgRef = useRef(null);
   console.log('Current device width:', window.innerWidth, 'Is Mobile:', window.innerWidth <= 768);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const detectionRef = useRef(null);
+  const previewCanvasRef = useRef(null); // For cropping
   const navigate = useNavigate();
+
+  // Add a new cropData state variable to track and store crop metadata
+  const [cropData, setCropData] = useState(null);
+
+  // Add new state for the crop modal
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [isCropComplete, setIsCropComplete] = useState(false);
+
+  // Add drag state variables
+  const [isDraggingLeft, setIsDraggingLeft] = useState(false);
+  const [isDraggingRight, setIsDraggingRight] = useState(false);
+  const cropContainerRef = useRef(null);
 
   // Initialize face detection when component mounts
   useEffect(() => {
@@ -66,8 +99,16 @@ const UploadPhoto = () => {
       const fileReader = new FileReader();
       fileReader.onload = () => {
         setPreviewUrl(fileReader.result);
-        // Show preview modal immediately after image is loaded
-        setShowPreviewModal(true);
+        // Reset crop state
+        setCompletedCrop(null);
+        setCroppedImageUrl(null);
+        setLeftCropPercentage(10); // Reset to default
+        setRightCropPercentage(10); // Reset to default
+        
+        // Show crop modal instead of preview modal
+        setShowCropModal(true);
+        setShowPreviewModal(false);
+        setIsCropComplete(false);
       };
       fileReader.readAsDataURL(selectedFile);
     }
@@ -85,8 +126,16 @@ const UploadPhoto = () => {
       const fileReader = new FileReader();
       fileReader.onload = () => {
         setPreviewUrl(fileReader.result);
-        // Show preview modal immediately after image is loaded
-        setShowPreviewModal(true);
+        // Reset crop state
+        setCompletedCrop(null);
+        setCroppedImageUrl(null);
+        setLeftCropPercentage(10); // Reset to default
+        setRightCropPercentage(10); // Reset to default
+        
+        // Show crop modal instead of preview modal
+        setShowCropModal(true);
+        setShowPreviewModal(false);
+        setIsCropComplete(false);
       };
       fileReader.readAsDataURL(droppedFile);
     }
@@ -213,7 +262,7 @@ const UploadPhoto = () => {
     }
   };
 
-  // Handle taking a photo with the camera
+  // Modify takePhoto to show crop modal instead of preview modal
   const takePhoto = () => {
     if (!videoRef.current) return;
 
@@ -300,8 +349,16 @@ const UploadPhoto = () => {
       // Set the file for processing
       setFile(newFile);
 
-      // Show preview modal immediately after photo is taken
-      setShowPreviewModal(true);
+      // Reset crop state
+      setCompletedCrop(null);
+      setCroppedImageUrl(null);
+      setLeftCropPercentage(10);
+      setRightCropPercentage(10);
+      
+      // Show crop modal instead of preview modal
+      setShowCropModal(true);
+      setShowPreviewModal(false);
+      setIsCropComplete(false);
     }, 'image/jpeg', 0.95); // High quality JPEG
 
     // Stop camera stream
@@ -347,6 +404,131 @@ const UploadPhoto = () => {
       };
       reader.onerror = (error) => reject(error);
     });
+  };
+  
+  // Generate cropped image function - update to preserve aspect ratio and width
+  const generateCroppedImage = () => {
+    if (!imgRef.current) return;
+    
+    const img = imgRef.current;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Calculate crop dimensions
+    const imgWidth = img.naturalWidth;
+    const imgHeight = img.naturalHeight;
+    
+    // Calculate actual pixels for crop based on percentages
+    const leftOffset = Math.floor(imgWidth * (leftCropPercentage / 100));
+    const rightOffset = Math.floor(imgWidth * (rightCropPercentage / 100));
+    const croppedWidth = imgWidth - leftOffset - rightOffset;
+    
+    // Set canvas dimensions to the cropped size - preserve exact dimensions
+    canvas.width = croppedWidth;
+    canvas.height = imgHeight;
+    
+    console.log('Cropping image with dimensions:', {
+      originalWidth: imgWidth,
+      originalHeight: imgHeight,
+      leftOffset,
+      rightOffset,
+      croppedWidth,
+      croppedHeight: imgHeight,
+      percentages: {
+        left: leftCropPercentage,
+        right: rightCropPercentage,
+        width: cropWidthPercentage
+      }
+    });
+    
+    // Draw the cropped portion to the canvas - from original image
+    ctx.drawImage(
+      img,
+      leftOffset, 0, croppedWidth, imgHeight,
+      0, 0, croppedWidth, canvas.height
+    );
+    
+    // Store crop data for proper processing later
+    const newCropData = {
+      leftPercentage: leftCropPercentage,
+      rightPercentage: rightCropPercentage,
+      widthPercentage: cropWidthPercentage,
+      originalWidth: imgWidth,
+      originalHeight: imgHeight,
+      croppedWidth: croppedWidth,
+      croppedHeight: canvas.height,
+      sourceX: leftOffset,
+      sourceY: 0,
+      aspectRatio: croppedWidth / imgHeight
+    };
+    setCropData(newCropData);
+    console.log('Stored crop data:', newCropData);
+    
+    // Convert canvas to blob with high quality
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to create blob');
+        return;
+      }
+      
+      // Create URL from blob
+      if (croppedImageUrl) {
+        URL.revokeObjectURL(croppedImageUrl); // Clean up previous URL
+      }
+      const newCroppedUrl = URL.createObjectURL(blob);
+      setCroppedImageUrl(newCroppedUrl);
+      
+      // Store the crop details for later use
+      setCompletedCrop({
+        x: leftOffset,
+        y: 0,
+        width: croppedWidth,
+        height: imgHeight,
+        unit: 'px'
+      });
+      
+      // Create a proper File object with explicit type for better handling
+      const croppedFile = new File([blob], file ? file.name : 'cropped-image.jpg', {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      });
+      
+      console.log('Created cropped file:', croppedFile.name, 'size:', croppedFile.size);
+      
+      // Set the cropped file as the main file
+      setFile(croppedFile);
+      
+      setIsCropComplete(true);
+      
+    }, 'image/jpeg', 0.95); // Use high quality JPEG
+  };
+
+  // Update the preview modal to show the exact cropped image
+  const handleCompleteCrop = () => {
+    if (croppedImageUrl) {
+      // Generate a final high-quality version
+      generateCroppedImage();
+      
+      // Close crop modal and show preview modal
+      setTimeout(() => {
+        setShowCropModal(false);
+        setShowPreviewModal(true);
+      }, 100);
+    } else {
+      // If no cropped image yet, generate it first
+      generateCroppedImage();
+      setTimeout(() => {
+        setShowCropModal(false);
+        setShowPreviewModal(true);
+      }, 200);
+    }
+  };
+
+  // Function to get cropped file for processing
+  const getCroppedFile = async () => {
+    // With our new approach, the main file is already updated to be the cropped version
+    console.log('Using already cropped file:', file ? file.name : 'unknown');
+    return file;
   };
 
   // Helper function to simulate API response for testing/demo purposes
@@ -595,20 +777,35 @@ const UploadPhoto = () => {
     try {
       setProcessingStep('Removing background...');
       console.log('Starting background removal process for file:', imageFile?.name, 'size:', imageFile?.size);
+      console.log('Has cropped image URL:', !!croppedImageUrl);
+
+      // Use cropped image URL directly if it exists, convert to File if needed
+      let fileToProcess = imageFile;
+      if (croppedImageUrl && typeof croppedImageUrl === 'string' && croppedImageUrl.startsWith('blob:')) {
+        try {
+          console.log('Using cropped image URL for processing:', croppedImageUrl);
+          const response = await fetch(croppedImageUrl);
+          const blob = await response.blob();
+          fileToProcess = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+          console.log('Created file from cropped image URL:', fileToProcess.name, 'size:', fileToProcess.size);
+        } catch (err) {
+          console.error('Failed to use cropped image URL:', err);
+        }
+      }
 
       // Get API key from environment or use fallback
       const segmindApiKey = process.env.REACT_APP_SEGMIND_API_KEY || 'SG_13f9868f102f0d83';
 
       // Check if imageFile is valid
-      if (!imageFile || !(imageFile instanceof File)) {
-        console.error('Invalid image file for background removal:', imageFile);
+      if (!fileToProcess || !(fileToProcess instanceof File)) {
+        console.error('Invalid image file for background removal:', fileToProcess);
         throw new Error('Invalid image file');
       }
 
       // Convert the file to base64 for API
       let base64Image;
       try {
-        base64Image = await fileToBase64(imageFile);
+        base64Image = await fileToBase64(fileToProcess);
         console.log('Image converted to base64 for background removal, length:', base64Image.length);
         
         // Remove the data URI prefix for API
@@ -709,7 +906,7 @@ const UploadPhoto = () => {
         setProcessingStep('Removing background (method 3)...');
           
         const formData = new FormData();
-        formData.append('file', imageFile);
+        formData.append('file', fileToProcess);
         
         const response = await axios({
             method: 'post',
@@ -741,12 +938,12 @@ const UploadPhoto = () => {
       
       // If all methods failed, return original image
       console.log('All background removal methods failed, using original image');
-          return previewUrl;
+      return croppedImageUrl || previewUrl;
       
     } catch (error) {
       console.error('Fatal error in background removal process:', error);
       setLoadingProgress(100);
-      return previewUrl; // Return original image as last resort
+      return croppedImageUrl || previewUrl; // Return cropped image or original image as last resort
     }
   };
 
@@ -785,21 +982,24 @@ const UploadPhoto = () => {
       setError('No image file available.');
       return;
     }
-
+    
     try {
-      // Close preview modal and show processing modal
       setShowPreviewModal(false);
       setShowProcessingModal(true);
       setIsLoading(true);
       setLoadingProgress(0);
 
-      // Log file details for debugging
-      console.log('Processing file:', file.name, 'size:', file.size, 'type:', file.type);
+      // Get the cropped file for processing (or original if no crop)
+      const fileToProcess = await getCroppedFile();
+      console.log('Processing file:', fileToProcess.name, 'size:', fileToProcess.size, 
+                 'Original file size:', file.size,
+                 'Using cropped image:', fileToProcess.size !== file.size,
+                 'Crop mode used:', cropMode);
 
       // Simulate initial loading progress
       simulateProgressDuringProcessing(0, 10, 1000, setLoadingProgress);
 
-      let processedImageUrl = previewUrl;
+      let processedImageUrl = croppedImageUrl || previewUrl;
 
       // Normal selfie flow - first remove background
       setProcessingStep('Processing your photo...');
@@ -807,12 +1007,12 @@ const UploadPhoto = () => {
 
       try {
         // Remove the background
-        console.log('Starting background removal with file:', file.name);
-        processedImageUrl = await removeImageBackground(file);
+        console.log('Starting background removal with file:', fileToProcess.name);
+        processedImageUrl = await removeImageBackground(fileToProcess);
         console.log('Background removal completed, result URL length:', processedImageUrl?.length);
 
         // If the result is the same as the original preview URL, it means background removal failed
-        if (processedImageUrl === previewUrl) {
+        if (processedImageUrl === (croppedImageUrl || previewUrl)) {
           console.warn('Background removal may have failed as the result URL is the same as the preview URL');
         }
 
@@ -829,8 +1029,8 @@ const UploadPhoto = () => {
         console.error('Photo processing failed:', error);
         // Log detailed error information
         logDetailedError(error, 'PHOTO_PROCESSING');
-        // Continue with the original image
-        processedImageUrl = previewUrl;
+        // Continue with the cropped image or original if no crop
+        processedImageUrl = croppedImageUrl || previewUrl;
         setLoadingProgress(100);
       }
 
@@ -856,6 +1056,7 @@ const UploadPhoto = () => {
   // Submit the user data and proceed to next step
   const handleContinue = (finalImage) => {
     try {
+      console.log('Handling continue with final image:', finalImage);
       // Get user data from previous steps or use default values
       const industry = sessionStorage.getItem('industry') || 'other';
       
@@ -866,15 +1067,25 @@ const UploadPhoto = () => {
         tagline: sessionStorage.getItem('tagline') || 'Your Tagline',
         phoneNumber: sessionStorage.getItem('phoneNumber') || 'Your Phone',
         isNormalSelfie: isNormalSelfie, // Add the flag to indicate if this is a normal selfie
-        isSelfieMode: isSelfieMode // Add the flag to indicate if this is a selfie mode
+        isSelfieMode: isSelfieMode, // Add the flag to indicate if this is a selfie mode
+        cropData: cropData // Store crop data for proper image processing on poster
       }
 
       // Log industry value for debugging
       console.log('Industry value being set:', industry);
+      console.log('Final image type:', typeof finalImage);
+      console.log('Crop data being stored:', cropData);
+      
+      // Make sure we have the final image URL (either processed or cropped)
+      const finalImageUrl = finalImage || processedImage || croppedImageUrl || previewUrl;
+      console.log('Final image URL that will be stored:', finalImageUrl);
 
       // Store data in session storage
       sessionStorage.setItem('userData', JSON.stringify(userData));
-      sessionStorage.setItem('processedImage', finalImage || processedImage);
+      sessionStorage.setItem('processedImage', finalImageUrl);
+      // Store crop data separately for easier access
+      sessionStorage.setItem('cropData', JSON.stringify(cropData));
+      console.log('Stored processed image and crop data in session storage');
 
       // Force scroll to top before navigation
       window.scrollTo(0, 0);
@@ -898,9 +1109,9 @@ const UploadPhoto = () => {
     }
   };
 
-  // Add a style tag to forcefully override logo size
+  // Add a style tag to forcefully override logo size and add crop styles
   useEffect(() => {
-    // Create style element
+    // Create style element for general styles
     const styleEl = document.createElement('style');
     styleEl.textContent = `
       .forced-small-logo {
@@ -911,14 +1122,370 @@ const UploadPhoto = () => {
       .logo-container-fix {
         top: 45px !important;
       }
+      
+      /* Custom crop styles */
+      .crop-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        width: 100%;
+        max-width: 100%;
+      }
+      
+      .crop-instructions {
+        background-color: rgba(0, 131, 181, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+        width: 100%;
+        text-align: center;
+      }
+      
+      .crop-instruction-text {
+        color: #0083B5;
+        font-weight: bold;
+      }
+      
+      /* Flexible cropper */
+      .flexible-cropper-container {
+        position: relative;
+        width: 100%;
+        max-width: 400px; /* Reduced from 500px to accommodate portrait orientation */
+        margin: 0 auto;
+        overflow: hidden;
+        text-align: center;
+      }
+      
+      .cropper-img-container {
+        position: relative;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid #ddd;
+        touch-action: none; /* Prevent default touch actions */
+        /* Set height for portrait mode */
+        height: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .cropper-img {
+        max-width: 100%;
+        max-height: 500px; /* Increased for portrait orientation */
+        height: auto;
+        width: auto;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain; /* Maintain aspect ratio */
+      }
+      
+      .crop-overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+      }
+      
+      .left-overlay {
+        left: 0;
+      }
+      
+      .right-overlay {
+        right: 0;
+      }
+      
+      .crop-line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 4px; /* Made wider for easier grabbing */
+        background-color: transparent;
+        border-left: 4px dashed #FFC107;
+        cursor: ew-resize;
+        z-index: 9;
+        touch-action: none; /* Prevent default touch actions */
+      }
+      
+      .left-line {
+        left: 0;
+      }
+      
+      .right-line {
+        right: 0;
+      }
+      
+      .crop-width-display {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 131, 181, 0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 11;
+      }
+      
+      /* Preview styles */
+      .cropper-preview {
+        margin-top: 20px;
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        padding: 15px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .cropper-preview h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #0083B5;
+      }
+      
+      .cropper-preview img {
+        border: 2px solid #0083B5;
+        border-radius: 8px;
+        max-width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+      }
+      
+      /* Fix preview modal size */
+      .preview-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        overflow: auto;
+        padding: 20px;
+      }
+      
+      .preview-modal {
+        background-color: white;
+        border-radius: 8px;
+        max-width: 600px;
+        width: 90%;
+        height: auto;
+        max-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        z-index: 1001;
+      }
+      
+      .preview-modal-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .preview-modal-header h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #0083B5;
+      }
+      
+      .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #666;
+      }
+      
+      .preview-modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .preview-modal-image {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .preview-modal-footer {
+        padding: 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .preview-question {
+        margin: 0 0 15px 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        text-align: center;
+      }
+      
+      .preview-modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+      }
+      
+      .retake-btn, .confirm-btn {
+        padding: 10px 20px;
+        border-radius: 4px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      
+      .retake-btn {
+        background-color: #f5f5f5;
+        color: #333;
+      }
+      
+      .confirm-btn {
+        background-color: #0083B5;
+        color: white;
+      }
+      
+      /* Mobile adjustments */
+      @media (max-width: 768px) {
+        .preview-modal {
+          width: 95%;
+          height: auto;
+          max-height: 95vh;
+        }
+        
+        .preview-modal-body {
+          max-height: 55vh;
+          padding: 10px;
+        }
+        
+        .preview-modal-buttons {
+          flex-direction: column;
+          width: 100%;
+        }
+        
+        .retake-btn, .confirm-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
     `;
+    
+    // Add to document head
     document.head.appendChild(styleEl);
     
-    // Clean up
+    // Cleanup on component unmount
     return () => {
       document.head.removeChild(styleEl);
     };
   }, []);
+
+  // Define the handleMouseDown function in component scope
+  const handleMouseDown = (e, side) => {
+    e.preventDefault();
+    if (side === 'left') {
+      setIsDraggingLeft(true);
+    } else {
+      setIsDraggingRight(true);
+    }
+  };
+
+  // Add mouse and touch event handlers for dragging crop lines
+  useEffect(() => {
+    // Mouse/touch event handlers for crop lines
+    // handleMouseDown moved to component scope
+    
+    const handleMouseMove = (e) => {
+      if (!isDraggingLeft && !isDraggingRight) return;
+      if (!cropContainerRef.current) return;
+
+      const container = cropContainerRef.current;
+      const rect = container.getBoundingClientRect();
+      const containerWidth = rect.width;
+      
+      // Calculate the mouse position relative to the container as a percentage
+      // For touch events, use the first touch point
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      let positionX = (clientX - rect.left) / containerWidth * 100;
+      
+      // Clamp position between 0 and 100
+      positionX = Math.max(0, Math.min(100, positionX));
+      
+      if (isDraggingLeft) {
+        // Ensure we don't crop too much (keep at least 20% width)
+        if (positionX + rightCropPercentage <= 80) {
+          setLeftCropPercentage(positionX);
+        }
+      } else if (isDraggingRight) {
+        // Convert to right crop percentage (from right edge)
+        const rightPos = 100 - positionX;
+        // Ensure we don't crop too much (keep at least 20% width)
+        if (leftCropPercentage + rightPos <= 80) {
+          setRightCropPercentage(rightPos);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDraggingLeft || isDraggingRight) {
+        setIsDraggingLeft(false);
+        setIsDraggingRight(false);
+        // Generate the cropped image when drag ends
+        generateCroppedImage();
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', handleMouseMove, { passive: false });
+    document.addEventListener('touchend', handleMouseUp);
+    document.addEventListener('touchcancel', handleMouseUp);
+
+    return () => {
+      // Remove event listeners
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleMouseMove);
+      document.removeEventListener('touchend', handleMouseUp);
+      document.removeEventListener('touchcancel', handleMouseUp);
+    };
+  }, [isDraggingLeft, isDraggingRight, leftCropPercentage, rightCropPercentage]);
+
+  // Update crop width percentage whenever left or right crop changes
+  useEffect(() => {
+    const newWidthPercentage = 100 - leftCropPercentage - rightCropPercentage;
+    setCropWidthPercentage(newWidthPercentage);
+    
+    // Generate new cropped image whenever crop percentages change
+    if (imgRef.current) {
+      generateCroppedImage();
+    }
+  }, [leftCropPercentage, rightCropPercentage]);
 
   return (
     <div className="upload-page">
@@ -1254,12 +1821,120 @@ const UploadPhoto = () => {
         </div>
       )}
 
+      {/* Cropping Modal */}
+      {showCropModal && (
+        <div className="preview-modal-overlay">
+          <div className="preview-modal">
+            <div className="preview-modal-header">
+              <h2>Crop Your Image</h2>
+              <button
+                className="modal-close-btn"
+                onClick={() => {
+                  setShowCropModal(false);
+                }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Flexible cropping UI with draggable lines */}
+            <div className="preview-modal-body">
+              <div className="preview-modal-image crop-container">
+                <div className="crop-instructions">
+                  <div className="crop-instruction-text">
+                    <i className="fas fa-crop-alt"></i> Drag the dotted lines to adjust the crop area
+                  </div>
+                </div>
+                
+                <div className="flexible-cropper-container">
+                  <div 
+                    className="cropper-img-container"
+                    ref={cropContainerRef}
+                  >
+                    <img 
+                      ref={imgRef}
+                      src={previewUrl} 
+                      alt="Upload preview" 
+                      className="cropper-img"
+                      onLoad={() => {
+                        // Generate initial crop when image loads
+                        setTimeout(() => {
+                          generateCroppedImage();
+                        }, 100);
+                      }}
+                    />
+                    {/* Left dark overlay */}
+                    <div 
+                      className="crop-overlay left-overlay" 
+                      style={{width: `${leftCropPercentage}%`}}
+                    ></div>
+                    
+                    {/* Right dark overlay */}
+                    <div 
+                      className="crop-overlay right-overlay" 
+                      style={{width: `${rightCropPercentage}%`}}
+                    ></div>
+                    
+                    {/* Left draggable dotted line - make it directly draggable, no handle */}
+                    <div 
+                      className="crop-line left-line"
+                      style={{left: `${leftCropPercentage}%`}}
+                      onMouseDown={(e) => handleMouseDown(e, 'left')}
+                      onTouchStart={(e) => handleMouseDown(e, 'left')}
+                    ></div>
+                    
+                    {/* Remove the left handle */}
+                    
+                    {/* Right draggable dotted line - make it directly draggable, no handle */}
+                    <div 
+                      className="crop-line right-line"
+                      style={{right: `${rightCropPercentage}%`}}
+                      onMouseDown={(e) => handleMouseDown(e, 'right')}
+                      onTouchStart={(e) => handleMouseDown(e, 'right')}
+                    ></div>
+                    
+                    {/* Remove the right handle */}
+                    
+                    {/* Width display */}
+                    <div className="crop-width-display">
+                      Width: {cropWidthPercentage.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="preview-modal-footer">
+              <div className="preview-modal-buttons">
+                <button
+                  className="retake-btn"
+                  onClick={() => {
+                    setShowCropModal(false);
+                    setPreviewUrl(null);
+                    setFile(null);
+                    setCroppedImageUrl(null);
+                  }}
+                >
+                  <i className="fas fa-redo-alt"></i> Choose another
+                </button>
+                <button
+                  className="confirm-btn"
+                  onClick={handleCompleteCrop}
+                >
+                  <i className="fas fa-check"></i> Apply Crop
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Image Preview Modal */}
       {showPreviewModal && (
         <div className="preview-modal-overlay">
           <div className="preview-modal">
             <div className="preview-modal-header">
-              <h2>Preview Your Image</h2>
+              <h2>Image Preview</h2>
               <button
                 className="modal-close-btn"
                 onClick={() => {
@@ -1270,25 +1945,52 @@ const UploadPhoto = () => {
               </button>
             </div>
 
-            {/* Updated layout with image scrollable and buttons fixed */}
             <div className="preview-modal-body">
               <div className="preview-modal-image">
-                <img src={previewUrl} alt="Preview" />
+                <div style={{maxWidth: '500px', margin: '0 auto', textAlign: 'center'}}>
+                  {/* Display the cropped image preview with exact width preservation */}
+                  <img 
+                    src={croppedImageUrl || previewUrl} 
+                    alt="Preview" 
+                    style={{
+                      width: 'auto',
+                      height: 'auto',
+                      maxWidth: '100%',
+                      maxHeight: '500px', 
+                      border: '2px solid #0083B5',
+                      borderRadius: '4px',
+                      margin: '10px 0',
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                      objectFit: 'contain'
+                    }}
+                  />
+                  
+                  <div style={{
+                    backgroundColor: 'rgba(0, 131, 181, 0.1)',
+                    borderRadius: '8px',
+                    padding: '10px',
+                    marginTop: '15px',
+                    marginBottom: '10px'
+                  }}>
+                    <p style={{color: '#0083B5', margin: '0', fontWeight: 'bold', fontSize: '14px'}}>
+                      <i className="fas fa-info-circle"></i> Width: {cropWidthPercentage}% of original image
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="preview-modal-footer">
-              <p className="preview-question">Use this photo?</p>
+              <p className="preview-question">Use this image for your poster?</p>
               <div className="preview-modal-buttons">
                 <button
                   className="retake-btn"
                   onClick={() => {
                     setShowPreviewModal(false);
-                    setPreviewUrl(null);
-                    setFile(null);
+                    setShowCropModal(true);
                   }}
                 >
-                  <i className="fas fa-redo-alt"></i> Choose another
+                  <i className="fas fa-crop-alt"></i> Adjust Crop
                 </button>
                 <button
                   className="confirm-btn"

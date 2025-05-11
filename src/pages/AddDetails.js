@@ -70,6 +70,8 @@ const AddDetails = () => {
   const [keywordInput, setKeywordInput] = useState('');
   const [isTaglineGenerated, setIsTaglineGenerated] = useState(false);
   const [isGeneratingTagline, setIsGeneratingTagline] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [regenerationCount, setRegenerationCount] = useState(0);
   const [industryKeywords, setIndustryKeywords] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   // Callback option removed as requested
@@ -271,10 +273,18 @@ const AddDetails = () => {
       return;
     }
 
+    // Check if we're regenerating
+    const isRegeneration = isTaglineGenerated;
+    if (isRegeneration) {
+      setIsRegenerating(true);
+      setRegenerationCount(prevCount => prevCount + 1);
+    }
+
     setIsGeneratingTagline(true);
 
     try {
       console.log("Making API request to OpenAI...");
+      console.log("Is regenerating:", isRegeneration ? "Yes" : "No");
       
       // Create headers with the imported API key
       const headers = {
@@ -289,13 +299,13 @@ const AddDetails = () => {
         // headers['OpenAI-Organization'] = 'your-org-id';
       }
       
-      // Improved prompt for more meaningful and contextual taglines with highlighted keywords
-      const requestData = {
-        model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-            content: `You are a world-class marketing expert specializing in creating meaningful and impactful business taglines. Your task is to create a COHERENT and PROFESSIONALLY MEANINGFUL tagline that incorporates the following keywords organically: ${keywords.join(", ")}. 
+      // Define system message based on whether this is regeneration or first generation
+      const systemMessage = isRegeneration
+        ? `You are a world-class marketing expert specializing in creating meaningful and impactful business taglines. 
+        
+IMPORTANT: This is a REGENERATION request. You must create a COMPLETELY DIFFERENT tagline than previous attempts, with a new structure and approach.
+
+Your task is to create a COHERENT and PROFESSIONALLY MEANINGFUL tagline that incorporates the following keywords organically: ${keywords.join(", ")}. 
 
 Follow these strict requirements:
 1. Create a first-person tagline (I/my/we/our) between 7-10 words total
@@ -309,10 +319,38 @@ Follow these strict requirements:
 9. Focus on conveying expertise, transformation, or innovation related to the industry
 10. No quotation marks or punctuation (except the asterisks for highlighting) in your response
 11. Return ONLY the final tagline with proper spacing and highlighted keywords`
-            },
-            {
-              role: "user",
-            content: `Create a powerful, meaningful first-person tagline for my ${industry || "business"} business. The tagline should incorporate these keywords organically: ${keywords.join(", ")}.
+        : `You are a world-class marketing expert specializing in creating meaningful and impactful business taglines. Your task is to create a COHERENT and PROFESSIONALLY MEANINGFUL tagline that incorporates the following keywords organically: ${keywords.join(", ")}. 
+
+Follow these strict requirements:
+1. Create a first-person tagline (I/my/we/our) between 7-10 words total
+2. Include as many of the provided keywords as possible while maintaining NATURAL FLOW
+3. Keywords must be integrated MEANINGFULLY - not just forced into the tagline
+4. Make the tagline specifically relevant to the "${industry || "business"}" industry 
+5. The tagline must convey a SPECIFIC VALUE PROPOSITION that resonates with customers
+6. Create something that sounds like a premium brand would use - professional, impactful and meaningful
+7. HIGHLIGHT each keyword by placing asterisks around them (e.g., *keyword*)
+8. The final tagline should read as a coherent statement even with the highlighted keywords
+9. Focus on conveying expertise, transformation, or innovation related to the industry
+10. No quotation marks or punctuation (except the asterisks for highlighting) in your response
+11. Return ONLY the final tagline with proper spacing and highlighted keywords`;
+      
+      // Define user message based on whether this is regeneration or first generation
+      const userMessage = isRegeneration
+        ? `Create a NEW and DIFFERENT powerful, meaningful first-person tagline for my ${industry || "business"} business. 
+        
+This is a REGENERATION request - I need a COMPLETELY DIFFERENT tagline than previously generated, using the same keywords: ${keywords.join(", ")}.
+
+The tagline must:
+- Feel natural and professionally written with keywords *highlighted using asterisks*
+- Have a clear, specific value proposition related to ${industry || "business"}
+- Express a concrete benefit that would resonate with my target audience
+- Be something a premium business would proudly use in marketing materials
+- Highlight transformation, expertise, or innovation in my field
+- Be memorable and impactful for use on a poster
+- Use a DIFFERENT APPROACH than previous generations
+
+Return only the final tagline text with keywords highlighted with asterisks (*keyword*) and no other punctuation or quotation marks.`
+        : `Create a powerful, meaningful first-person tagline for my ${industry || "business"} business. The tagline should incorporate these keywords organically: ${keywords.join(", ")}.
 
 The tagline must:
 - Feel natural and professionally written with keywords *highlighted using asterisks*
@@ -322,11 +360,31 @@ The tagline must:
 - Highlight transformation, expertise, or innovation in my field
 - Be memorable and impactful for use on a poster
 
-Return only the final tagline text with keywords highlighted with asterisks (*keyword*) and no other punctuation or quotation marks.`
-            }
-          ],
-        temperature: 0.75, // Slightly higher temperature for more creative but still controlled output
-        max_tokens: 100
+Return only the final tagline text with keywords highlighted with asterisks (*keyword*) and no other punctuation or quotation marks.`;
+      
+      // Create request data with variables for temperature
+      // Increase temperature when regenerating to increase variation
+      const temperature = isRegeneration ? 0.9 + (Math.min(regenerationCount, 3) * 0.05) : 0.75;
+      
+      // Improved prompt for more meaningful and contextual taglines with highlighted keywords
+      const requestData = {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: systemMessage
+          },
+          {
+            role: "user",
+            content: userMessage
+          }
+        ],
+        temperature: temperature, // Higher temperature for regeneration for more variety
+        max_tokens: 100,
+        // Add presence_penalty when regenerating to encourage different word choices
+        presence_penalty: isRegeneration ? 0.6 : 0.0,
+        // Add frequency penalty when regenerating to discourage repeating phrase patterns
+        frequency_penalty: isRegeneration ? 0.7 : 0.0
       };
       
       console.log("Request data:", requestData);
@@ -367,6 +425,9 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       generateFallbackTagline();
     } finally {
       setIsGeneratingTagline(false);
+      if (isRegeneration) {
+        setIsRegenerating(false);
+      }
     }
   };
 
@@ -537,6 +598,13 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
 
   // Handle tagline selection
   const taglineRef = useRef(null);
+  
+  // Log when regenerate button is clicked
+  useEffect(() => {
+    if (isRegenerating) {
+      console.log('Regenerating tagline with count:', regenerationCount);
+    }
+  }, [isRegenerating, regenerationCount]);
 
   return (
     <div className="details-page" style={isMobile ? { backgroundImage: `url('/images/adddetails/UploadPhoto+AddDetails.png')` } : {}}>

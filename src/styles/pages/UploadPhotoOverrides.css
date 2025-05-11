@@ -298,57 +298,59 @@ html, body, #root, .app {
 
 /* Processing modal height reduction */
 .processing-modal {
-  padding: 20px !important; /* Reduced from 30px */
-  max-height: 400px !important; /* Limit maximum height */
+  padding: 15px !important; /* Further reduced from 20px */
+  max-height: 320px !important; /* Reduced from 400px */
 }
 
 .processing-modal .logo-loader-wrapper {
-  width: 140px !important; /* Reduced from 240px/200px */
-  height: 140px !important; /* Reduced from 240px/200px */
-  margin-bottom: 10px !important; /* Reduced from 20px */
+  width: 120px !important; /* Reduced from 140px */
+  height: 120px !important; /* Reduced from 140px */
+  margin-bottom: 5px !important; /* Reduced from 10px */
 }
 
 .processing-modal .logo-image-container {
-  width: 100px !important; /* Reduced from 180px/150px */
-  height: 100px !important; /* Reduced from 180px/150px */
+  width: 110px !important; /* Increased from 100px to make logo bigger */
+  height: 110px !important; /* Increased from 100px to make logo bigger */
 }
 
 .processing-modal .logo-pulse {
-  width: 120px !important; /* Reduced from 180px */
-  height: 120px !important; /* Reduced from 180px */
+  width: 120px !important; /* Kept the same */
+  height: 120px !important; /* Kept the same */
 }
 
 .processing-modal .loading-text {
-  font-size: 16px !important; /* Reduced from 18px/22px */
-  margin-top: 5px !important; /* Reduced from 10px */
+  font-size: 16px !important; /* Kept the same */
+  margin-top: 0px !important; /* Reduced from 5px */
 }
 
 .processing-modal .progress-bar {
-  margin-top: 10px !important; /* Reduced from 15px */
+  margin-top: 5px !important; /* Reduced from 10px */
 }
 
 /* Additional reduction for mobile */
 @media (max-width: 768px) {
   .processing-modal {
-    padding: 15px !important; /* Further reduced padding for mobile */
+    padding: 10px !important; /* Further reduced padding for mobile */
+    max-height: 280px !important; /* Further reduced height for mobile */
   }
   
   .processing-modal .logo-loader-wrapper {
-    width: 120px !important; /* Further reduced for mobile */
-    height: 120px !important;
+    width: 100px !important; /* Further reduced for mobile */
+    height: 100px !important; /* Further reduced for mobile */
   }
   
   .processing-modal .logo-image-container {
-    width: 90px !important; /* Further reduced for mobile */
-    height: 90px !important;
+    width: 95px !important; /* Increased from 90px to make logo bigger on mobile */
+    height: 95px !important; /* Increased from 90px to make logo bigger on mobile */
   }
   
   .processing-modal .logo-pulse {
-    width: 100px !important;
-    height: 100px !important;
+    width: 100px !important; /* Kept the same */
+    height: 100px !important; /* Kept the same */
   }
   
   .processing-modal .loading-text {
-    font-size: 14px !important; /* Further reduced text size */
+    font-size: 14px !important; /* Kept the same */
+    margin-top: 0px !important; /* Reduced from default */
   }
 } 

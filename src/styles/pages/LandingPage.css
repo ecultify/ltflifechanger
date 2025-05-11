@@ -372,15 +372,16 @@ body {
     background-position: center;
     background-size: cover;
     background-clip: padding-box;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    will-change: transform;
+    transition: none; /* Remove transition effects */
+    will-change: auto; /* Remove will-change since we're not animating */
     z-index: 3;
     flex-shrink: 0;
 }
 
 .testimonial-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: var(--shadow-offset) calc(var(--shadow-offset) + 5px) 10px var(--primary-yellow);
+    /* Remove the enlarging transform and shadow effects */
+    transform: none;
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--primary-yellow);
 }
 
 .neo-extension {
@@ -560,7 +561,7 @@ body {
         flex-shrink: 0;
         scroll-snap-align: center;
         transform: scale(1);
-        transition: transform 0.3s ease;
+        transition: opacity 0.3s ease; /* Remove transform transition, keep only opacity */
         opacity: 1;
         background-clip: padding-box;
         /* Clip background to the padding box, inside the border */
@@ -587,9 +588,9 @@ body {
         background-color: var(--primary-yellow);
         transform: scale(1.2);
     }
-    /* Add hover effects for mobile testimonial cards */
+    /* Remove hover effects for mobile testimonial cards */
     .testimonial-card:hover {
-        animation: cardShadowPulse 2s infinite;
+        animation: none;
     }
     .testimonial-card::before {
         content: '';
@@ -600,14 +601,14 @@ body {
         height: 100%;
         background: linear-gradient(125deg, transparent 20%, rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 60%, transparent 80%);
         opacity: 0;
-        transition: opacity 0.3s ease, transform 0.5s ease;
-        transform: translateX(-100%);
+        transition: none; /* Remove all transitions */
+        transform: none;
         z-index: 2;
         pointer-events: none;
     }
     .testimonial-card:hover::before {
-        opacity: 1;
-        transform: translateX(100%);
+        opacity: 0;
+        transform: none;
     }
     /* Mobile frame container to position profile and group images */
     .mobile-frame-container {
@@ -1704,7 +1705,7 @@ body {
         flex-shrink: 0;
         scroll-snap-align: center;
         transform: scale(1);
-        transition: transform 0.3s ease;
+        transition: opacity 0.3s ease; /* Remove transform transition, keep only opacity */
         opacity: 1;
         background-clip: padding-box;
         /* Clip background to the padding box, inside the border */
@@ -1721,10 +1722,10 @@ body {
         min-width: 10px;
         height: 100%;
     }
-    /* Apply hover effects */
+    /* Remove apply hover effects */
     .testimonial-card:hover {
-        transform: scale(1.05);
-        z-index: 10;
+        transform: none;
+        z-index: auto;
     }
 }
 

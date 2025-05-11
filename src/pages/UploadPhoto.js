@@ -406,7 +406,7 @@ const UploadPhoto = () => {
     });
   };
   
-  // Generate cropped image function - update to preserve aspect ratio and width
+  // Generate cropped image function - update to work with full-size image
   const generateCroppedImage = () => {
     if (!imgRef.current) return;
     
@@ -414,7 +414,7 @@ const UploadPhoto = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Calculate crop dimensions
+    // Calculate crop dimensions based on the actual image dimensions
     const imgWidth = img.naturalWidth;
     const imgHeight = img.naturalHeight;
     
@@ -423,23 +423,22 @@ const UploadPhoto = () => {
     const rightOffset = Math.floor(imgWidth * (rightCropPercentage / 100));
     const croppedWidth = imgWidth - leftOffset - rightOffset;
     
-    // Set canvas dimensions to the cropped size - preserve exact dimensions
-    canvas.width = croppedWidth;
-    canvas.height = imgHeight;
-    
-    console.log('Cropping image with dimensions:', {
+    console.log('Generating cropped image with dimensions:', {
       originalWidth: imgWidth,
       originalHeight: imgHeight,
       leftOffset,
       rightOffset,
       croppedWidth,
-      croppedHeight: imgHeight,
       percentages: {
         left: leftCropPercentage,
         right: rightCropPercentage,
         width: cropWidthPercentage
       }
     });
+    
+    // Set canvas dimensions to the cropped size - preserve exact dimensions
+    canvas.width = croppedWidth;
+    canvas.height = imgHeight;
     
     // Draw the cropped portion to the canvas - from original image
     ctx.drawImage(
@@ -1147,44 +1146,47 @@ const UploadPhoto = () => {
         font-weight: bold;
       }
       
-      /* Flexible cropper */
+      /* Full-size image cropper */
       .flexible-cropper-container {
         position: relative;
         width: 100%;
-        max-width: 400px; /* Reduced from 500px to accommodate portrait orientation */
+        max-width: 100%;
         margin: 0 auto;
         overflow: hidden;
-        text-align: center;
       }
       
       .cropper-img-container {
         position: relative;
         margin: 0 auto;
-        overflow: hidden;
+        overflow: auto; /* Allow scrolling for large images */
+        max-height: 60vh; /* Limit height to viewport */
         border: 1px solid #ddd;
-        touch-action: none; /* Prevent default touch actions */
-        /* Set height for portrait mode */
-        height: 500px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        touch-action: pan-y; /* Allow vertical scrolling, but handle horizontal touches */
       }
       
       .cropper-img {
-        max-width: 100%;
-        max-height: 500px; /* Increased for portrait orientation */
+        max-width: none; /* Allow image to be full size */
+        width: 100%; /* Fill the container width */
         height: auto;
-        width: auto;
         display: block;
-        margin: 0 auto;
-        object-fit: contain; /* Maintain aspect ratio */
+      }
+      
+      .crop-area {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background-color: rgba(0, 131, 181, 0.2); /* Light blue tint for crop area */
+        border-left: 4px dashed #FFC107;
+        border-right: 4px dashed #FFC107;
+        pointer-events: none; /* Don't interfere with interactions */
+        z-index: 8;
       }
       
       .crop-overlay {
         position: absolute;
         top: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better visibility */
         pointer-events: none;
       }
       
@@ -1200,9 +1202,8 @@ const UploadPhoto = () => {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 4px; /* Made wider for easier grabbing */
+        width: 20px; /* Wider area for touch/mouse interaction */
         background-color: transparent;
-        border-left: 4px dashed #FFC107;
         cursor: ew-resize;
         z-index: 9;
         touch-action: none; /* Prevent default touch actions */
@@ -1221,7 +1222,7 @@ const UploadPhoto = () => {
         bottom: 10px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: rgba(0, 131, 181, 0.8);
+        background-color: rgba(0, 131, 181, 0.9);
         color: white;
         padding: 5px 10px;
         border-radius: 4px;
@@ -1486,6 +1487,22 @@ const UploadPhoto = () => {
       generateCroppedImage();
     }
   }, [leftCropPercentage, rightCropPercentage]);
+
+  // Add a function to handle initial image loading and set up
+  const handleImageLoad = () => {
+    if (!imgRef.current) return;
+    
+    const img = imgRef.current;
+    
+    // Set initial crop values
+    setLeftCropPercentage(10);
+    setRightCropPercentage(10);
+    
+    // Generate initial crop
+    setTimeout(() => {
+      generateCroppedImage();
+    }, 100);
+  };
 
   return (
     <div className="upload-page">
@@ -1856,13 +1873,9 @@ const UploadPhoto = () => {
                       src={previewUrl} 
                       alt="Upload preview" 
                       className="cropper-img"
-                      onLoad={() => {
-                        // Generate initial crop when image loads
-                        setTimeout(() => {
-                          generateCroppedImage();
-                        }, 100);
-                      }}
+                      onLoad={handleImageLoad}
                     />
+                    
                     {/* Left dark overlay */}
                     <div 
                       className="crop-overlay left-overlay" 
@@ -1875,7 +1888,16 @@ const UploadPhoto = () => {
                       style={{width: `${rightCropPercentage}%`}}
                     ></div>
                     
-                    {/* Left draggable dotted line - make it directly draggable, no handle */}
+                    {/* Highlighted crop area */}
+                    <div 
+                      className="crop-area"
+                      style={{
+                        left: `${leftCropPercentage}%`,
+                        right: `${rightCropPercentage}%`
+                      }}
+                    ></div>
+                    
+                    {/* Left draggable line */}
                     <div 
                       className="crop-line left-line"
                       style={{left: `${leftCropPercentage}%`}}
@@ -1883,17 +1905,13 @@ const UploadPhoto = () => {
                       onTouchStart={(e) => handleMouseDown(e, 'left')}
                     ></div>
                     
-                    {/* Remove the left handle */}
-                    
-                    {/* Right draggable dotted line - make it directly draggable, no handle */}
+                    {/* Right draggable line */}
                     <div 
                       className="crop-line right-line"
                       style={{right: `${rightCropPercentage}%`}}
                       onMouseDown={(e) => handleMouseDown(e, 'right')}
                       onTouchStart={(e) => handleMouseDown(e, 'right')}
                     ></div>
-                    
-                    {/* Remove the right handle */}
                     
                     {/* Width display */}
                     <div className="crop-width-display">

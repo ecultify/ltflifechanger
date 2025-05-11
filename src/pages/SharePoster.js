@@ -363,54 +363,57 @@ const SharePoster = () => {
             // Using the full template height (with some small margins)
             const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
             
-            // Calculate scale to make user image match Bumrah's height (100%), preserving aspect ratio
-            const heightScale = bumrahHeight / userImgHeight; // Make user image the same height as Bumrah
+            // Initial width and height calculation - but we'll allow height to be fluid
+            const heightScale = bumrahHeight / userImgHeight; // Base height scale
             let scaledWidth = userImgWidth * heightScale;
-            const scaledHeight = bumrahHeight; // 100% of Bumrah's height
+            let scaledHeight = bumrahHeight; // Initial height, but this may change
             
-            // If we have crop data, adjust the width based on the crop settings
+            // If we have crop data, adjust based on the crop settings
             if (cropData) {
-              // Handle the new flexible cropping data format
               console.log('Applying flexible crop data:', cropData);
               
               // Calculate target width (47.29% of frame width)
               const targetWidth = canvas.width * 0.4729;
               console.log('Target width (47.29% of frame):', targetWidth);
               
-              // Calculate the width based on the widthPercentage from crop data
-              // The original image width * heightScale gives us the full width if no cropping was applied
-              let originalScaledWidth = userImgWidth * heightScale;
-              
-              // Apply the crop width percentage to get the actual cropped width
-              const cropWidthPercentage = cropData.widthPercentage || 80; // Default to 80% if not specified
-              
-              // Calculate the cropped width and scale it to fit the target width
-              let croppedScaledWidth = originalScaledWidth * (cropWidthPercentage / 100);
-              
-              // Scale factor to fit the width properly
-              const widthScaleFactor = targetWidth / croppedScaledWidth;
-              
-              console.log('Original scaled width:', originalScaledWidth);
-              console.log('Cropped width percentage:', cropWidthPercentage + '%');
-              console.log('Cropped scaled width:', croppedScaledWidth);
-              console.log('Width scale factor:', widthScaleFactor);
-              
-              // Adjust final width to target width
+              // Set the width to the target
               scaledWidth = targetWidth;
               
-              console.log('Final adjusted width for poster:', scaledWidth);
+              // If we have aspect ratio information, use it to calculate height
+              // but keep the top position fixed
+              if (cropData.aspectRatio) {
+                // Calculate height based on the cropped aspect ratio
+                // aspectRatio = width / height, so height = width / aspectRatio
+                const newHeight = scaledWidth / cropData.aspectRatio;
+                
+                // Allow the height to be larger than bumrahHeight
+                // This means the image might extend below the poster
+                scaledHeight = newHeight;
+                
+                console.log('Using aspect ratio for flexible height:', {
+                  aspectRatio: cropData.aspectRatio,
+                  targetWidth,
+                  calculatedHeight: newHeight,
+                  originalBumrahHeight: bumrahHeight,
+                  heightDifference: (newHeight - bumrahHeight)
+                });
+              }
+              
+              console.log('Final dimensions with fluid height:', { 
+                width: scaledWidth, 
+                height: scaledHeight,
+                isHeightExtended: scaledHeight > bumrahHeight
+              });
             }
-            
-            console.log('Scaling for poster:', { heightScale, scaledWidth, scaledHeight });
             
             // Position to place user on the left side of Bumrah
             // Position is adjusted to account for proper placement
-            // Moved 15px more to the right and 5px down as requested
+            // Moved 15px more to the right as requested
             const userX = (canvas.width * 0.08) - 95 + 15; // Moved 15px more to the right
             
-            // Position vertically to align with Bumrah with adjusted height
-            // Pushing the image down by 5px more
-            const userY = (canvas.height - scaledHeight) + 110 - 18 + 30 + 55 + 5 + 5; // Additional 5px vertical adjustment
+            // IMPORTANT: Keep the TOP position fixed regardless of height
+            // Instead of positioning from the bottom, position from the top
+            const userY = (canvas.height - bumrahHeight) + 110 - 18 + 30 + 55 + 5 + 5; // This keeps top position fixed
             
             // Apply the calculated placement
             console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });

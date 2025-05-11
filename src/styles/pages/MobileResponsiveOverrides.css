@@ -221,7 +221,7 @@
     .testimonial-card {
         min-width: 100% !important;
         height: 515px !important; /* Reduced height by 15px from 530px to 515px */
-        transition: opacity 0.5s ease !important;
+        transition: opacity 0.5s ease !important; /* Only keep opacity transition, remove transform transitions */
         margin: 0 auto !important;
         display: block !important;
     }

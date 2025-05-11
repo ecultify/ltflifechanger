@@ -674,7 +674,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                   src="/images/adddetails/LOGO.png" 
                   alt="L&T Finance Logo" 
                   className="mobile-logo"
-                  style={{ marginTop: "-15px" }}
+                  style={{ marginTop: "-15px", marginLeft: "10px" }}
                 />
               </Link>
               <img 

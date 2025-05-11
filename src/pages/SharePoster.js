@@ -1153,54 +1153,60 @@ const SharePoster = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Prevent automatic scrolling - add at the beginning of the component
+  // Better mobile scrolling implementation for SharePoster
   useEffect(() => {
-    // Prevent scrolling to carousel on page load
-    const preventAutoScroll = () => {
-      // Store the current scroll position
-      const scrollPosition = window.pageYOffset;
+    // Only apply these fixes if we're on mobile
+    if (window.innerWidth <= 768) {
+      console.log('SharePoster - Applying mobile scroll fixes');
       
-      // If something tries to scroll the page automatically, restore the position
-      setTimeout(() => {
-        window.scrollTo(0, scrollPosition);
-      }, 100);
-    };
-    
-    // Execute once on component mount and when window loads
-    window.addEventListener('load', preventAutoScroll);
-    
-    // Clean up event listener on component unmount
-    return () => {
-      window.removeEventListener('load', preventAutoScroll);
-    };
-  }, []);
-
-  // Allow users to scroll manually by adding passive touch listeners
-  useEffect(() => {
-    let touchStartY = 0;
-    
-    const handleTouchStart = (e) => {
-      touchStartY = e.touches[0].clientY;
-    };
-    
-    const handleTouchMove = (e) => {
-      const touchY = e.touches[0].clientY;
-      const diff = touchStartY - touchY;
+      // Make sure body and html have proper scroll settings
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+      document.body.style.height = 'auto';
+      document.body.style.position = 'static';
       
-      // If scrolling up and near the top, allow normal browser behavior
-      if (diff < 0 && window.scrollY < 50) {
-        e.stopPropagation();
+      // Remove any fixed height limitations
+      const root = document.getElementById('root');
+      if (root) {
+        root.style.height = 'auto';
+        root.style.minHeight = '100%';
+        root.style.overflowY = 'visible';
+      }
+      
+      // Ensure the page container allows scrolling
+      const sharePosterPage = document.querySelector('.share-poster-page');
+      if (sharePosterPage) {
+        sharePosterPage.style.overflowY = 'visible';
+        sharePosterPage.style.height = 'auto';
+        sharePosterPage.style.minHeight = '100vh';
+      }
+      
+      // Ensure CTA sections don't block scrolling
+      const ctaSections = document.querySelectorAll('.mobile-cta-section');
+      ctaSections.forEach(section => {
+        section.style.overflowY = 'visible';
+        section.style.height = 'auto';
+      });
+    }
+    
+    // Check for scrolling issues after content is loaded
+    const fixScrollingAfterLoad = () => {
+      if (window.innerWidth <= 768) {
+        // Force a small delay to ensure content is rendered
+        setTimeout(() => {
+          window.scrollTo(0, 1);
+          window.scrollTo(0, 0);
+          console.log('SharePoster - Applied scroll position reset');
+        }, 300);
       }
     };
     
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('load', fixScrollingAfterLoad);
     
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('load', fixScrollingAfterLoad);
     };
-  }, []);
+  }, [isMobile]);
 
   // Add this right after the existing preventAutoScroll effect
   useEffect(() => {

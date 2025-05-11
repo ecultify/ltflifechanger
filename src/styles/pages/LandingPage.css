@@ -78,21 +78,43 @@ body {
 }
 
 
-/* Group 30a image - desktop only adjustments */
+/* Fourth card container to keep Group 30a image and 4th testimonial card together */
+
+.fourth-card-container {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 260px;
+    /* Same as testimonial card width */
+    min-width: 260px;
+    height: 420px;
+    /* Same as testimonial card height */
+}
+
+
+/* Group 30a image - responsive positioning relative to the 4th testimonial card */
 
 .group-30a-image {
     position: absolute;
-    right: 20px;
-    /* Maintain the left position adjustment */
-    top: -500px;
-    /* Changed from 15px to -100px to push it UP significantly */
-    width: 300px;
-    /* Maintain 2x bigger size */
+    right: -20px;
+    /* Position from the right edge of the card */
+    top: -480px;
+    /* Position further above the 4th testimonial card (pushed up by 70px from -80px) */
+    width: 110%;
+    /* Width relative to the container - increased from 100% to 130% */
+    max-width: 350px;
+    /* Maximum size limit - increased from 300px to 400px */
+    min-width: 200px;
+    /* Minimum size limit - increased from 200px to 250px */
     z-index: 1;
     /* Keep behind testimonials */
     transform: rotate(0deg);
     display: block !important;
     /* Force visible */
+    transition: all 0.3s ease;
+    /* Smooth transitions when window resizes */
 }
 
 
@@ -372,8 +394,10 @@ body {
     background-position: center;
     background-size: cover;
     background-clip: padding-box;
-    transition: none; /* Remove transition effects */
-    will-change: auto; /* Remove will-change since we're not animating */
+    transition: none;
+    /* Remove transition effects */
+    will-change: auto;
+    /* Remove will-change since we're not animating */
     z-index: 3;
     flex-shrink: 0;
 }
@@ -561,7 +585,8 @@ body {
         flex-shrink: 0;
         scroll-snap-align: center;
         transform: scale(1);
-        transition: opacity 0.3s ease; /* Remove transform transition, keep only opacity */
+        transition: opacity 0.3s ease;
+        /* Remove transform transition, keep only opacity */
         opacity: 1;
         background-clip: padding-box;
         /* Clip background to the padding box, inside the border */
@@ -601,7 +626,8 @@ body {
         height: 100%;
         background: linear-gradient(125deg, transparent 20%, rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 60%, transparent 80%);
         opacity: 0;
-        transition: none; /* Remove all transitions */
+        transition: none;
+        /* Remove all transitions */
         transform: none;
         z-index: 2;
         pointer-events: none;
@@ -1556,7 +1582,8 @@ body {
     /* Existing mobile styles */
     .hero-text-container {
         margin-left: 0;
-        transform: translateY(-25px); /* Pull up by 25px */
+        transform: translateY(-25px);
+        /* Pull up by 25px */
         text-align: center;
         width: 100%;
         margin-bottom: 30px;
@@ -1705,7 +1732,8 @@ body {
         flex-shrink: 0;
         scroll-snap-align: center;
         transform: scale(1);
-        transition: opacity 0.3s ease; /* Remove transform transition, keep only opacity */
+        transition: opacity 0.3s ease;
+        /* Remove transform transition, keep only opacity */
         opacity: 1;
         background-clip: padding-box;
         /* Clip background to the padding box, inside the border */

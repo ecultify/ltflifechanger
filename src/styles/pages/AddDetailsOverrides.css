@@ -50,14 +50,16 @@
     white-space: nowrap !important;
 }
 
+
 /* Desktop suggested keyword buttons - increased size */
+
 html body button.suggested-keyword {
-    height: 20px !important;
-    min-height: 20px !important;
-    max-height: 20px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
     line-height: 1.2 !important;
-    font-size: 11px !important;
-    padding: 0 6px !important;
+    font-size: 12px !important;
+    padding: 0 8px !important;
     margin: 2px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -65,7 +67,9 @@ html body button.suggested-keyword {
     box-sizing: border-box !important;
 }
 
+
 /* Remove button for keyword chips - adjusted for taller chips */
+
 .keyword-tag .remove-tag,
 div.keyword-tag button.remove-tag,
 html body .keyword-tag .remove-tag {
@@ -121,8 +125,10 @@ label[for="keywords"] {
 .right-section .tagline-display-area,
 .form-container .tagline-display-area {
     min-height: 65px !important;
-    height: 65px !important; /* Fixed height to prevent expansion */
-    max-height: 65px !important; /* Fixed max-height to match */
+    height: 65px !important;
+    /* Fixed height to prevent expansion */
+    max-height: 65px !important;
+    /* Fixed max-height to match */
     overflow: visible !important;
     /* No scrolling */
     margin-bottom: 15px !important;
@@ -134,9 +140,12 @@ label[for="keywords"] {
 .right-section .tagline-display,
 .form-container .tagline-display {
     min-height: 60px !important;
-    height: 60px !important; /* Fixed height to prevent expansion */
-    max-height: 60px !important; /* Fixed max-height to match */
-    overflow: auto !important; /* Enable scrolling if content exceeds fixed height */
+    height: 60px !important;
+    /* Fixed height to prevent expansion */
+    max-height: 60px !important;
+    /* Fixed max-height to match */
+    overflow: auto !important;
+    /* Enable scrolling if content exceeds fixed height */
     padding: 8px 10px !important;
     display: block !important;
     text-align: left !important;
@@ -305,12 +314,14 @@ label[for="keywords"] {
     /* Main page container */
     .details-page {
         display: block !important;
-        min-height: calc(100vh + 40px) !important; /* Increased height by 40px */
+        min-height: calc(100vh + 40px) !important;
+        /* Increased height by 40px */
         background-image: url('../../../public/images/adddetails/UploadPhoto+AddDetails.png') !important;
         background-size: cover !important;
         background-position: center !important;
         background-repeat: no-repeat !important;
-        padding-bottom: 90px !important; /* Increased from 50px to 90px */
+        padding-bottom: 90px !important;
+        /* Increased from 50px to 90px */
         overflow-y: auto !important;
         position: relative !important;
     }
@@ -332,8 +343,8 @@ label[for="keywords"] {
         width: 480px !important;
         /* Increased from 420px to 480px for bigger logo */
         height: auto !important;
-        margin: -30px auto 10px auto !important;
-        /* Pushed up by adding negative margin */
+        margin: -30px auto 10px 15px !important;
+        /* Pushed up by adding negative margin, moved 10px to the right */
         max-width: 100% !important;
         /* Ensure it doesn't overflow */
     }
@@ -463,20 +474,19 @@ label[for="keywords"] {
     html body div.keyword-tag,
     html body .keywords-input-container .keyword-tag,
     html body .keyword-tag {
-        padding: 1px 4px !important;
+        padding: 2px 4px !important;
         font-size: 10px !important;
         margin: 1px !important;
-        max-height: 18px !important;
-        min-height: 18px !important;
-        height: 18px !important;
-        line-height: 16px !important;
+        max-height: 22px !important;
+        min-height: 22px !important;
+        height: 22px !important;
+        line-height: 18px !important;
         display: inline-flex !important;
         align-items: center !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
         border-width: 1px !important;
     }
-    
     /* Force keywords container height */
     html body .details-page .keywords-tags,
     html body .keywords-tags,
@@ -495,8 +505,8 @@ label[for="keywords"] {
     html body .suggested-keywords {
         height: auto !important;
         max-height: none !important;
-        min-height: 20px !important;
-        max-height: 30px !important;
+        min-height: 30px !important;
+        max-height: 40px !important;
         padding: 1px !important;
         gap: 0 !important;
         margin-bottom: 8px !important;
@@ -505,17 +515,16 @@ label[for="keywords"] {
         align-items: flex-start !important;
         justify-content: flex-start !important;
     }
-    
     /* Mobile suggested keyword buttons */
     html body .suggested-keywords button.suggested-keyword,
     .suggested-keywords button.suggested-keyword,
     button.suggested-keyword {
-        height: 12px !important;
-        min-height: 12px !important;
-        max-height: 12px !important;
-        line-height: 0 !important;
-        font-size: 8px !important;
-        padding: 0 3px !important;
+        height: 24px !important;
+        min-height: 24px !important;
+        max-height: 24px !important;
+        line-height: 1 !important;
+        font-size: 10px !important;
+        padding: 3px 5px !important;
         margin: 0 !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -530,8 +539,8 @@ label[for="keywords"] {
         /* Increased from 9px */
         padding: 1px 3px !important;
         /* Increased from 2px */
-        height: 16px !important;
-        /* Increased from 12px */
+        height: 20px !important;
+        /* Increased from 16px */
         line-height: 14px !important;
         /* Increased from 10px */
         margin: 2px !important;
@@ -545,7 +554,8 @@ label[for="keywords"] {
     /* Optimize tagline display */
     .details-page .right-section .tagline-display-area {
         margin-top: 5px !important;
-        min-height: 55px !important; /* Increase minimum height to accommodate more text */
+        min-height: 55px !important;
+        /* Increase minimum height to accommodate more text */
     }
     /* Make the tagline buttons the same height */
     .tagline-buttons .generate-btn,
@@ -556,7 +566,8 @@ label[for="keywords"] {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        margin-top: 10px !important; /* Add space between tagline box and button */
+        margin-top: 10px !important;
+        /* Add space between tagline box and button */
     }
     /* Make tagline section label visible (prevent cutoff) */
     .details-page .right-section label[for="tagline"] {
@@ -605,7 +616,7 @@ label[for="keywords"] {
     .details-page .form-container,
     body .details-page .form-container,
     html body .details-page .form-container,
-    .mobile-elements-container + .form-container {
+    .mobile-elements-container+.form-container {
         margin-top: -110px !important;
         /* Adjusted margin to push down 10px */
         transform: translateY(-10px) !important;

@@ -268,19 +268,28 @@ const LandingPage = () => {
           
           {!isMobile ? (
             <div className="testimonial-container">
-              {/* Group 30a image above the 4th card */}
-              <img 
-                src={GROUP_30A_IMAGE} 
-                alt="Group 30a" 
-                className="group-30a-image"
-                loading="lazy"
-              />
-              
-              {cardStyles.map((style, index) => (
+              {/* First three testimonial cards */}
+              {cardStyles.slice(0, 3).map((style, index) => (
                 <div key={index} className="testimonial-card" style={style}>
                   <div className="neo-extension"></div>
                 </div>
               ))}
+              
+              {/* Fourth card with Group 30a image attached to it */}
+              <div className="fourth-card-container">
+                {/* Group 30a image positioned relative to the 4th card */}
+                <img 
+                  src={GROUP_30A_IMAGE} 
+                  alt="Group 30a" 
+                  className="group-30a-image"
+                  loading="lazy"
+                />
+                
+                {/* The fourth testimonial card */}
+                <div className="testimonial-card" style={cardStyles[3]}>
+                  <div className="neo-extension"></div>
+                </div>
+              </div>
             </div>
           ) : (
             <>

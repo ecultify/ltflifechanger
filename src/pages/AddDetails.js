@@ -573,7 +573,12 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     sessionStorage.setItem('businessVintage', businessVintage);
     sessionStorage.setItem('turnover', turnover);
     // Callback option removed
+    
+    // Store the original tagline with asterisks for backend processing
     sessionStorage.setItem('tagline', finalTagline);
+    
+    // Also store a clean version of the tagline without asterisks
+    sessionStorage.setItem('cleanTagline', finalTagline.replace(/\*(.*?)\*/g, '$1'));
     
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
     sessionStorage.setItem('selectedKeywords', JSON.stringify(keywords));
@@ -855,7 +860,8 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                       <textarea 
                         ref={taglineRef}
                         className="tagline-display border-blue"
-                        value={tagline}
+                        // Display tagline without asterisks for cleaner UI
+                        value={tagline.replace(/\*(.*?)\*/g, '$1')}
                         readOnly={true}
                         style={{
                           ...inputStyle,

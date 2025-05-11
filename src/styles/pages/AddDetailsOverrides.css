@@ -196,6 +196,7 @@ label[for="keywords"] {
     max-width: 100% !important;
     display: block !important;
     box-sizing: border-box !important;
+    border-radius: 12px !important; /* Increased from 4px to 12px (added 8px as requested) */
   }
 }
 
@@ -519,6 +520,7 @@ label[for="keywords"] {
 .next-btn {
   margin-top: 10px !important; /* Changed from -5px to 10px for proper spacing */
   padding: 10px 30px !important;
+  border-radius: 20px !important; /* Increased from 4px to 12px (added 8px as requested) */
 }
 
 /* Checkbox positioning */

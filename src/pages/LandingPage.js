@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/pages/LandingPage.css';
 import '../styles/pages/MobileResponsiveOverrides.css'; // Added mobile responsive overrides
@@ -29,11 +29,47 @@ const PROFILE_IMAGES = [
   '/Mask group (42).png'
 ];
 
+// Lazy-loaded components for code splitting
+const Section2 = lazy(() => import('../components/home/Section2'));
+const Section3 = lazy(() => import('../components/home/Section3'));
+
+// Fallback loader component
+const LoadingFallback = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '200px',
+    width: '100%'
+  }}>
+    <div style={{ 
+      width: '40px', 
+      height: '40px', 
+      border: '4px solid #f3f3f3', 
+      borderTop: '4px solid #0083B5', 
+      borderRadius: '50%', 
+      animation: 'spin 1s linear infinite' 
+    }}></div>
+  </div>
+);
+
+// Function to preload images
+const preloadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+};
+
 const LandingPage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [profileImageIndex, setProfileImageIndex] = useState(0);
   const [loanTextIndex, setLoanTextIndex] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [criticalImagesLoaded, setCriticalImagesLoaded] = useState(false);
   
   // Loan text carousel content
   const loanTextContent = [
@@ -59,6 +95,38 @@ const LandingPage = () => {
     }
   ];
 
+  // Preload critical images in parallel
+  useEffect(() => {
+    const loadCriticalImages = async () => {
+      try {
+        // Only preload the essential images for first render
+        await Promise.all([
+          preloadImage(LOGO_IMAGE_PATH),
+          preloadImage(BG_IMAGE_PATH),
+          preloadImage(PROFILE_IMAGES[0])
+        ]);
+        setCriticalImagesLoaded(true);
+        
+        // Preload the rest in the background
+        setTimeout(async () => {
+          await Promise.all([
+            preloadImage(CAROUSEL_IMAGE_PATHS[0]),
+            preloadImage(GROUP_30A_IMAGE),
+            ...PROFILE_IMAGES.slice(1).map(src => preloadImage(src))
+          ]);
+          setImagesLoaded(true);
+        }, 1000);
+      } catch (error) {
+        console.error('Failed to preload images:', error);
+        // Set loaded anyway to prevent blocking the UI
+        setCriticalImagesLoaded(true);
+        setImagesLoaded(true);
+      }
+    };
+    
+    loadCriticalImages();
+  }, []);
+
   // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
@@ -66,10 +134,19 @@ const LandingPage = () => {
     };
     
     checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
+    
+    // Throttle resize event for better performance
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkIfMobile, 100);
+    };
+    
+    window.addEventListener('resize', handleResize);
     
     return () => {
-      window.removeEventListener('resize', checkIfMobile);
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimer);
     };
   }, []);
 
@@ -80,30 +157,36 @@ const LandingPage = () => {
 
   // Profile image carousel - automatic rotation
   useEffect(() => {
+    if (!criticalImagesLoaded) return;
+    
     const interval = setInterval(() => {
       setProfileImageIndex((prev) => (prev === PROFILE_IMAGES.length - 1 ? 0 : prev + 1));
     }, 3000); // Change image every 3 seconds
     
     return () => clearInterval(interval);
-  }, []);
+  }, [criticalImagesLoaded]);
   
   // Loan text carousel - automatic rotation
   useEffect(() => {
+    if (!criticalImagesLoaded) return;
+    
     const interval = setInterval(() => {
       setLoanTextIndex((prev) => (prev === loanTextContent.length - 1 ? 0 : prev + 1));
     }, 4000); // Change text every 4 seconds
     
     return () => clearInterval(interval);
-  }, []);
+  }, [criticalImagesLoaded]);
 
-  // Auto-advance carousel
+  // Auto-advance carousel - only start when critical images are loaded
   useEffect(() => {
+    if (!criticalImagesLoaded) return;
+    
     const interval = setInterval(() => {
       nextSlide();
     }, 4000);
     
     return () => clearInterval(interval);
-  }, [activeIndex, nextSlide]);
+  }, [activeIndex, nextSlide, criticalImagesLoaded]);
 
   // Create hero section style with background
   const heroStyle = {
@@ -125,33 +208,24 @@ const LandingPage = () => {
     backgroundImage: `url(${path})`,
   }));
 
-  // eslint-disable-next-line no-unused-vars
-  const prevSlide = React.useCallback(() => {
-    setActiveIndex((prev) => (prev === 0 ? CAROUSEL_IMAGE_PATHS.length - 1 : prev - 1));
-  }, []);
-
   const goToSlide = React.useCallback((index) => {
     setActiveIndex(index);
   }, []);
 
-  // Mobile carousel transformation
-  const getTransformStyle = () => {
-    return {
-      transform: `translateX(-${activeIndex * 100}%)`,
-    };
-  };
+  // Use srcSet for responsive images
+  const getResponsiveImage = (src, alt, className, style = {}) => (
+    <img 
+      src={src} 
+      alt={alt} 
+      className={className}
+      loading="lazy" 
+      style={style}
+    />
+  );
 
-  // Get card style for mobile with active state
-  const getCardStyle = (index) => {
-    const baseStyle = cardStyles[index];
-    const isActive = index === activeIndex;
-    
-    return {
-      ...baseStyle,
-      transform: isActive ? 'scale(1)' : 'scale(0.9)',
-      opacity: isActive ? 1 : 0.5,
-    };
-  };
+  if (!criticalImagesLoaded) {
+    return <LoadingFallback />;
+  }
 
   return (
     <div className="landing-page">
@@ -198,7 +272,8 @@ const LandingPage = () => {
               <img 
                 src={GROUP_30A_IMAGE} 
                 alt="Group 30a" 
-                className="group-30a-image" 
+                className="group-30a-image"
+                loading="lazy"
               />
               
               {cardStyles.map((style, index) => (
@@ -222,7 +297,8 @@ const LandingPage = () => {
                 <img 
                   src={GROUP_30A_IMAGE} 
                   alt="Game Changer" 
-                  className="group-30a-image" 
+                  className="group-30a-image"
+                  loading="lazy"
                 />
               </div>
               
@@ -252,80 +328,24 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Section 2 */}
-      <section className="section-2" style={section2Style}>
-        <div className="container">
-          <div className="section-2-title-container">
-            <h2 className="section-2-title">
-              Make Your Poster in 2 Easy Steps
-            </h2>
-          </div>
-          
-          <div className="video-container">
-            <div className="play-button">
-              <div className="play-icon"></div>
-            </div>
-          </div>
-          
-          <div className="start-button-container">
-            <Link to="/otp-verification" className="btn-neo start-btn" style={{ fontSize: '1.5em', padding: '15px 30px', fontWeight: 'bold' }}>
-              Start Creating <span>&gt;</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3 */}
-      <section 
-        className="section-3" 
-        style={{
-          ...section3Style,
-          backgroundImage: `url(${isMobile ? SECTION3_MOBILE_BG_IMAGE : '/images/section3/section3bg.jpg'})`
-        }}
-      >
-        <div className="container">
-          <div className="section-3-content">
-            <div className="loan-disbursement-container">
-              <Link to="/">
-                <img src={LOGO_IMAGE_PATH} alt="L&T Finance Logo" className="logo-image" style={{ alignSelf: 'flex-start', marginLeft: '-150px' }} />
-              </Link>
-              
-              <div className="loan-text-carousel">
-                <h2 
-                  className="loan-title" 
-                  key={`title-${loanTextIndex}`}
-                  style={{ fontWeight: 400 }}
-                >
-                  {loanTextContent[loanTextIndex].topLine}
-                </h2>
-                <h3 
-                  className="in-minutes" 
-                  key={`minutes-${loanTextIndex}`}
-                  style={{ fontWeight: 700 }}
-                >
-                  {loanTextContent[loanTextIndex].bottomLine}
-                </h3>
-              </div>
-              
-              <a 
-                href="https://ltfbusinessloans.ltfinance.com/?utm_source=PosterWebsite&utm_medium=Apply+now&utm_campaign=Poster+Website" 
-                className="btn-neo start-btn" 
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Apply Today <span>&gt;</span>
-              </a>
-            </div>
-          </div>
-          
-          {/* Desktop image is shown in mobile/tablet view at the very bottom */}
-          {isMobile && (
-            <div className="section-3-desktop-image">
-              <img src={SECTION3_DESKTOP_IMAGE} alt="Desktop" />
-            </div>
-          )}
-        </div>
-      </section>
+      {/* Lazy-loaded sections */}
+      <Suspense fallback={<LoadingFallback />}>
+        <Section2 style={section2Style} />
+      </Suspense>
+      
+      <Suspense fallback={<LoadingFallback />}>
+        <Section3 
+          style={{
+            ...section3Style,
+            backgroundImage: `url(${isMobile ? SECTION3_MOBILE_BG_IMAGE : '/images/section3/section3bg.jpg'})`
+          }}
+          logoImagePath={LOGO_IMAGE_PATH}
+          desktopImagePath={SECTION3_DESKTOP_IMAGE}
+          loanTextContent={loanTextContent}
+          loanTextIndex={loanTextIndex}
+          isMobile={isMobile}
+        />
+      </Suspense>
     </div>
   );
 };

@@ -44,7 +44,10 @@ const UploadPhoto = () => {
   // New state variables for flexible cropping
   const [leftCropPercentage, setLeftCropPercentage] = useState(10); // 10% from left
   const [rightCropPercentage, setRightCropPercentage] = useState(10); // 10% from right
+  const [topCropPercentage, setTopCropPercentage] = useState(0); // 0% from top
+  const [bottomCropPercentage, setBottomCropPercentage] = useState(0); // 0% from bottom
   const [cropWidthPercentage, setCropWidthPercentage] = useState(80); // 80% width initially
+  const [cropHeightPercentage, setCropHeightPercentage] = useState(100); // 100% height initially
   const imgRef = useRef(null);
   console.log('Current device width:', window.innerWidth, 'Is Mobile:', window.innerWidth <= 768);
 
@@ -64,6 +67,8 @@ const UploadPhoto = () => {
   // Add drag state variables
   const [isDraggingLeft, setIsDraggingLeft] = useState(false);
   const [isDraggingRight, setIsDraggingRight] = useState(false);
+  const [isDraggingTop, setIsDraggingTop] = useState(false);
+  const [isDraggingBottom, setIsDraggingBottom] = useState(false);
   const cropContainerRef = useRef(null);
 
   // Initialize face detection when component mounts
@@ -92,23 +97,52 @@ const UploadPhoto = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Function to check if image is portrait (height > width)
+  const isPortraitImage = (imageUrl, callback) => {
+    const img = new Image();
+    img.onload = () => {
+      const isPortrait = img.height > img.width;
+      callback(isPortrait, img.width, img.height);
+    };
+    img.src = imageUrl;
+  };
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
       const fileReader = new FileReader();
       fileReader.onload = () => {
-        setPreviewUrl(fileReader.result);
-        // Reset crop state
-        setCompletedCrop(null);
-        setCroppedImageUrl(null);
-        setLeftCropPercentage(10); // Reset to default
-        setRightCropPercentage(10); // Reset to default
+        const imageUrl = fileReader.result;
         
-        // Show crop modal instead of preview modal
-        setShowCropModal(true);
-        setShowPreviewModal(false);
-        setIsCropComplete(false);
+        // Check if image is portrait
+        isPortraitImage(imageUrl, (isPortrait, width, height) => {
+          if (!isPortrait) {
+            setError('Only portrait images (height > width) are allowed. Please upload a different image.');
+            return;
+          }
+          
+          // Clear any previous errors
+          setError(null);
+          
+          // Set file and continue with upload
+          setFile(selectedFile);
+          setPreviewUrl(imageUrl);
+          
+          // Reset crop state
+          setCompletedCrop(null);
+          setCroppedImageUrl(null);
+          setLeftCropPercentage(10);
+          setRightCropPercentage(10);
+          setTopCropPercentage(0);
+          setBottomCropPercentage(0);
+          setCropWidthPercentage(80);
+          setCropHeightPercentage(100);
+          
+          // Show crop modal
+          setShowCropModal(true);
+          setShowPreviewModal(false);
+          setIsCropComplete(false);
+        });
       };
       fileReader.readAsDataURL(selectedFile);
     }
@@ -122,20 +156,39 @@ const UploadPhoto = () => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFile = e.dataTransfer.files[0];
-      setFile(droppedFile);
       const fileReader = new FileReader();
       fileReader.onload = () => {
-        setPreviewUrl(fileReader.result);
-        // Reset crop state
-        setCompletedCrop(null);
-        setCroppedImageUrl(null);
-        setLeftCropPercentage(10); // Reset to default
-        setRightCropPercentage(10); // Reset to default
+        const imageUrl = fileReader.result;
         
-        // Show crop modal instead of preview modal
-        setShowCropModal(true);
-        setShowPreviewModal(false);
-        setIsCropComplete(false);
+        // Check if image is portrait
+        isPortraitImage(imageUrl, (isPortrait, width, height) => {
+          if (!isPortrait) {
+            setError('Only portrait images (height > width) are allowed. Please upload a different image.');
+            return;
+          }
+          
+          // Clear any previous errors
+          setError(null);
+          
+          // Set file and continue with upload
+          setFile(droppedFile);
+          setPreviewUrl(imageUrl);
+          
+          // Reset crop state
+          setCompletedCrop(null);
+          setCroppedImageUrl(null);
+          setLeftCropPercentage(10);
+          setRightCropPercentage(10);
+          setTopCropPercentage(0);
+          setBottomCropPercentage(0);
+          setCropWidthPercentage(80);
+          setCropHeightPercentage(100);
+          
+          // Show crop modal
+          setShowCropModal(true);
+          setShowPreviewModal(false);
+          setIsCropComplete(false);
+        });
       };
       fileReader.readAsDataURL(droppedFile);
     }
@@ -313,6 +366,14 @@ const UploadPhoto = () => {
       offsetY = (video.videoHeight - canvasHeight) / 3; // Position higher to include more body
     }
 
+    // Force portrait mode (height > width)
+    if (canvasWidth > canvasHeight) {
+      // Swap dimensions to ensure portrait orientation
+      const temp = canvasWidth;
+      canvasWidth = canvasHeight;
+      canvasHeight = temp * 1.25; // Make it a bit taller for better composition
+    }
+
     // Set canvas dimensions
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -330,39 +391,55 @@ const UploadPhoto = () => {
     // Convert canvas to data URL with high quality
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
 
-    // Set the photo as the preview
-    setPreviewUrl(photoDataUrl);
-
-    // Create a file from the data URL for processing
-    const fileName = isSelfieMode ? "selfie-photo.jpg" : "camera-photo.jpg";
-
-    // Use toBlob with proper MIME type and quality
-    canvas.toBlob((blob) => {
-      // Create a proper File object with explicit type
-      const newFile = new File([blob], fileName, {
-        type: "image/jpeg",
-        lastModified: Date.now()
-      });
-
-      console.log('Created photo file:', newFile.name, 'size:', newFile.size, 'type:', newFile.type);
-
-      // Set the file for processing
-      setFile(newFile);
-
-      // Reset crop state
-      setCompletedCrop(null);
-      setCroppedImageUrl(null);
-      setLeftCropPercentage(10);
-      setRightCropPercentage(10);
+    // Check if the captured image is portrait
+    isPortraitImage(photoDataUrl, (isPortrait, width, height) => {
+      if (!isPortrait) {
+        setError('Please hold your phone in portrait mode to take a photo.');
+        stopCamera();
+        return;
+      }
       
-      // Show crop modal instead of preview modal
-      setShowCropModal(true);
-      setShowPreviewModal(false);
-      setIsCropComplete(false);
-    }, 'image/jpeg', 0.95); // High quality JPEG
+      // Clear any previous errors
+      setError(null);
+      
+      // Set the photo as the preview
+      setPreviewUrl(photoDataUrl);
 
-    // Stop camera stream
-    stopCamera();
+      // Create a file from the data URL for processing
+      const fileName = isSelfieMode ? "selfie-photo.jpg" : "camera-photo.jpg";
+
+      // Use toBlob with proper MIME type and quality
+      canvas.toBlob((blob) => {
+        // Create a proper File object with explicit type
+        const newFile = new File([blob], fileName, {
+          type: "image/jpeg",
+          lastModified: Date.now()
+        });
+
+        console.log('Created photo file:', newFile.name, 'size:', newFile.size, 'type:', newFile.type);
+
+        // Set the file for processing
+        setFile(newFile);
+
+        // Reset crop state
+        setCompletedCrop(null);
+        setCroppedImageUrl(null);
+        setLeftCropPercentage(10);
+        setRightCropPercentage(10);
+        setTopCropPercentage(0);
+        setBottomCropPercentage(0);
+        setCropWidthPercentage(80);
+        setCropHeightPercentage(100);
+        
+        // Show crop modal instead of preview modal
+        setShowCropModal(true);
+        setShowPreviewModal(false);
+        setIsCropComplete(false);
+      }, 'image/jpeg', 0.95); // High quality JPEG
+
+      // Stop camera stream
+      stopCamera();
+    });
   };
 
   // Stop camera stream and face detection
@@ -406,7 +483,7 @@ const UploadPhoto = () => {
     });
   };
   
-  // Generate cropped image function - update to work with full-size image
+  // Generate cropped image function - update to work with full-size image and vertical cropping
   const generateCroppedImage = () => {
     if (!imgRef.current) return;
     
@@ -421,44 +498,57 @@ const UploadPhoto = () => {
     // Calculate actual pixels for crop based on percentages
     const leftOffset = Math.floor(imgWidth * (leftCropPercentage / 100));
     const rightOffset = Math.floor(imgWidth * (rightCropPercentage / 100));
+    const topOffset = Math.floor(imgHeight * (topCropPercentage / 100));
+    const bottomOffset = Math.floor(imgHeight * (bottomCropPercentage / 100));
+    
     const croppedWidth = imgWidth - leftOffset - rightOffset;
+    const croppedHeight = imgHeight - topOffset - bottomOffset;
     
     console.log('Generating cropped image with dimensions:', {
       originalWidth: imgWidth,
       originalHeight: imgHeight,
       leftOffset,
       rightOffset,
+      topOffset,
+      bottomOffset,
       croppedWidth,
+      croppedHeight,
       percentages: {
         left: leftCropPercentage,
         right: rightCropPercentage,
-        width: cropWidthPercentage
+        top: topCropPercentage,
+        bottom: bottomCropPercentage,
+        width: cropWidthPercentage,
+        height: cropHeightPercentage
       }
     });
     
     // Set canvas dimensions to the cropped size - preserve exact dimensions
     canvas.width = croppedWidth;
-    canvas.height = imgHeight;
+    canvas.height = croppedHeight;
     
     // Draw the cropped portion to the canvas - from original image
     ctx.drawImage(
       img,
-      leftOffset, 0, croppedWidth, imgHeight,
-      0, 0, croppedWidth, canvas.height
+      leftOffset, topOffset, croppedWidth, croppedHeight,
+      0, 0, croppedWidth, croppedHeight
     );
     
     // Store crop data for proper processing later
     const newCropData = {
       leftPercentage: leftCropPercentage,
       rightPercentage: rightCropPercentage,
+      topPercentage: topCropPercentage,
+      bottomPercentage: bottomCropPercentage,
       widthPercentage: cropWidthPercentage,
+      heightPercentage: cropHeightPercentage,
       originalWidth: imgWidth,
       originalHeight: imgHeight,
       croppedWidth: croppedWidth,
-      croppedHeight: canvas.height,
+      croppedHeight: croppedHeight,
       sourceX: leftOffset,
-      sourceY: 0,
-      aspectRatio: croppedWidth / imgHeight
+      sourceY: topOffset,
+      aspectRatio: croppedWidth / croppedHeight
     };
     setCropData(newCropData);
     console.log('Stored crop data:', newCropData);
@@ -480,9 +570,9 @@ const UploadPhoto = () => {
       // Store the crop details for later use
       setCompletedCrop({
         x: leftOffset,
-        y: 0,
+        y: topOffset,
         width: croppedWidth,
-        height: imgHeight,
+        height: croppedHeight,
         unit: 'px'
       });
       
@@ -1159,22 +1249,43 @@ const UploadPhoto = () => {
         position: relative;
         margin: 0 auto;
         overflow: auto; /* Allow scrolling for large images */
-        max-height: 60vh; /* Limit height to viewport */
+        max-height: 65vh; /* Increased from 60vh for more visible area */
         border: 1px solid #ddd;
         touch-action: pan-y; /* Allow vertical scrolling, but handle horizontal touches */
+        display: flex;
+        justify-content: center; /* Center the image horizontally */
       }
       
       .cropper-img {
-        max-width: none; /* Allow image to be full size */
-        width: 100%; /* Fill the container width */
+        max-width: 100%; /* Make sure image doesn't exceed container width */
+        max-height: 65vh; /* Make sure image doesn't exceed container height */
         height: auto;
         display: block;
+        object-fit: contain; /* Maintain aspect ratio */
+      }
+      
+      /* For portrait images */
+      @media (min-width: 768px) {
+        /* On desktop, limit width for portrait images to avoid excessive size */
+        .cropper-img-container {
+          max-width: 70%;
+          margin: 0 auto;
+        }
+      }
+      
+      /* For mobile, ensure image doesn't overflow */
+      @media (max-width: 767px) {
+        .cropper-img-container {
+          max-height: 55vh;
+        }
+        
+        .cropper-img {
+          max-height: 55vh;
+        }
       }
       
       .crop-area {
         position: absolute;
-        top: 0;
-        bottom: 0;
         background-color: rgba(0, 131, 181, 0.2); /* Light blue tint for crop area */
         border-left: 4px dashed #FFC107;
         border-right: 4px dashed #FFC107;
@@ -1184,40 +1295,81 @@ const UploadPhoto = () => {
       
       .crop-overlay {
         position: absolute;
-        top: 0;
-        bottom: 0;
         background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better visibility */
         pointer-events: none;
       }
       
       .left-overlay {
         left: 0;
+        top: 0;
+        bottom: 0;
+        width: 10%; /* Default width */
       }
       
       .right-overlay {
         right: 0;
+        top: 0;
+        bottom: 0;
+        width: 10%; /* Default width */
+      }
+      
+      .top-overlay {
+        top: 0;
+        left: 10%; /* Match left overlay width */
+        right: 10%; /* Match right overlay width */
+        height: 0%; /* Default height */
+        z-index: 7;
+      }
+      
+      .bottom-overlay {
+        bottom: 0;
+        left: 10%; /* Match left overlay width */
+        right: 10%; /* Match right overlay width */
+        height: 0%; /* Default height */
+        z-index: 7;
       }
       
       .crop-line {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 20px; /* Wider area for touch/mouse interaction */
         background-color: transparent;
-        cursor: ew-resize;
         z-index: 9;
         touch-action: none; /* Prevent default touch actions */
       }
       
+      .left-line, .right-line {
+        top: 0;
+        bottom: 0;
+        width: 20px; /* Wider area for touch/mouse interaction */
+        cursor: ew-resize;
+      }
+      
+      .top-line, .bottom-line {
+        left: 10%; /* Match left overlay width */
+        right: 10%; /* Match right overlay width */
+        height: 20px; /* Wider area for touch/mouse interaction */
+        cursor: ns-resize;
+        z-index: 10; /* Higher than side lines */
+      }
+      
       .left-line {
-        left: 0;
+        left: 10%; /* Match left overlay width */
       }
       
       .right-line {
-        right: 0;
+        right: 10%; /* Match right overlay width */
       }
       
-      .crop-width-display {
+      .top-line {
+        top: 0%;
+        border-top: 4px dashed #FFC107;
+      }
+      
+      .bottom-line {
+        bottom: 0%;
+        border-bottom: 4px dashed #FFC107;
+      }
+      
+      .crop-dimensions-display {
         position: absolute;
         bottom: 10px;
         left: 50%;
@@ -1229,6 +1381,7 @@ const UploadPhoto = () => {
         font-weight: bold;
         font-size: 14px;
         z-index: 11;
+        text-align: center;
       }
       
       /* Preview styles */
@@ -1394,6 +1547,18 @@ const UploadPhoto = () => {
           justify-content: center;
         }
       }
+      
+      /* Portrait note styling */
+      .portrait-note {
+        color: #0083B5;
+        font-size: 13px;
+        margin: 5px 0;
+        font-weight: 500;
+      }
+      
+      .portrait-note i {
+        margin-right: 5px;
+      }
     `;
     
     // Add to document head
@@ -1410,8 +1575,12 @@ const UploadPhoto = () => {
     e.preventDefault();
     if (side === 'left') {
       setIsDraggingLeft(true);
-    } else {
+    } else if (side === 'right') {
       setIsDraggingRight(true);
+    } else if (side === 'top') {
+      setIsDraggingTop(true);
+    } else if (side === 'bottom') {
+      setIsDraggingBottom(true);
     }
   };
 
@@ -1421,40 +1590,70 @@ const UploadPhoto = () => {
     // handleMouseDown moved to component scope
     
     const handleMouseMove = (e) => {
-      if (!isDraggingLeft && !isDraggingRight) return;
+      if (!isDraggingLeft && !isDraggingRight && !isDraggingTop && !isDraggingBottom) return;
       if (!cropContainerRef.current) return;
 
       const container = cropContainerRef.current;
       const rect = container.getBoundingClientRect();
       const containerWidth = rect.width;
+      const containerHeight = rect.height;
       
-      // Calculate the mouse position relative to the container as a percentage
-      // For touch events, use the first touch point
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      let positionX = (clientX - rect.left) / containerWidth * 100;
-      
-      // Clamp position between 0 and 100
-      positionX = Math.max(0, Math.min(100, positionX));
-      
-      if (isDraggingLeft) {
-        // Ensure we don't crop too much (keep at least 20% width)
-        if (positionX + rightCropPercentage <= 80) {
-          setLeftCropPercentage(positionX);
+      // For horizontal handles
+      if (isDraggingLeft || isDraggingRight) {
+        // Calculate the mouse position relative to the container as a percentage
+        // For touch events, use the first touch point
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let positionX = (clientX - rect.left) / containerWidth * 100;
+        
+        // Clamp position between 0 and 100
+        positionX = Math.max(0, Math.min(100, positionX));
+        
+        if (isDraggingLeft) {
+          // Ensure we don't crop too much (keep at least 20% width)
+          if (positionX + rightCropPercentage <= 80) {
+            setLeftCropPercentage(positionX);
+          }
+        } else if (isDraggingRight) {
+          // Convert to right crop percentage (from right edge)
+          const rightPos = 100 - positionX;
+          // Ensure we don't crop too much (keep at least 20% width)
+          if (leftCropPercentage + rightPos <= 80) {
+            setRightCropPercentage(rightPos);
+          }
         }
-      } else if (isDraggingRight) {
-        // Convert to right crop percentage (from right edge)
-        const rightPos = 100 - positionX;
-        // Ensure we don't crop too much (keep at least 20% width)
-        if (leftCropPercentage + rightPos <= 80) {
-          setRightCropPercentage(rightPos);
+      }
+      
+      // For vertical handles
+      if (isDraggingTop || isDraggingBottom) {
+        // Calculate the mouse position relative to the container as a percentage
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        let positionY = (clientY - rect.top) / containerHeight * 100;
+        
+        // Clamp position between 0 and 100
+        positionY = Math.max(0, Math.min(100, positionY));
+        
+        if (isDraggingTop) {
+          // Ensure we don't crop too much (keep at least 20% height)
+          if (positionY + bottomCropPercentage <= 80) {
+            setTopCropPercentage(positionY);
+          }
+        } else if (isDraggingBottom) {
+          // Convert to bottom crop percentage (from bottom edge)
+          const bottomPos = 100 - positionY;
+          // Ensure we don't crop too much (keep at least 20% height)
+          if (topCropPercentage + bottomPos <= 80) {
+            setBottomCropPercentage(bottomPos);
+          }
         }
       }
     };
 
     const handleMouseUp = () => {
-      if (isDraggingLeft || isDraggingRight) {
+      if (isDraggingLeft || isDraggingRight || isDraggingTop || isDraggingBottom) {
         setIsDraggingLeft(false);
         setIsDraggingRight(false);
+        setIsDraggingTop(false);
+        setIsDraggingBottom(false);
         // Generate the cropped image when drag ends
         generateCroppedImage();
       }
@@ -1475,28 +1674,63 @@ const UploadPhoto = () => {
       document.removeEventListener('touchend', handleMouseUp);
       document.removeEventListener('touchcancel', handleMouseUp);
     };
-  }, [isDraggingLeft, isDraggingRight, leftCropPercentage, rightCropPercentage]);
+  }, [isDraggingLeft, isDraggingRight, isDraggingTop, isDraggingBottom, leftCropPercentage, rightCropPercentage, topCropPercentage, bottomCropPercentage]);
 
-  // Update crop width percentage whenever left or right crop changes
+  // Update crop percentages whenever crop edges change
   useEffect(() => {
     const newWidthPercentage = 100 - leftCropPercentage - rightCropPercentage;
     setCropWidthPercentage(newWidthPercentage);
+    
+    const newHeightPercentage = 100 - topCropPercentage - bottomCropPercentage;
+    setCropHeightPercentage(newHeightPercentage);
     
     // Generate new cropped image whenever crop percentages change
     if (imgRef.current) {
       generateCroppedImage();
     }
-  }, [leftCropPercentage, rightCropPercentage]);
+  }, [leftCropPercentage, rightCropPercentage, topCropPercentage, bottomCropPercentage]);
 
   // Add a function to handle initial image loading and set up
   const handleImageLoad = () => {
     if (!imgRef.current) return;
     
     const img = imgRef.current;
+    const imgWidth = img.naturalWidth;
+    const imgHeight = img.naturalHeight;
+    
+    // Calculate container dimensions
+    const container = cropContainerRef.current;
+    if (!container) return;
+    
+    const containerWidth = container.clientWidth;
+    
+    // Calculate the image's display size (how it appears in the UI)
+    const displayWidth = containerWidth; // Image width is set to 100% of container
+    const displayHeight = (imgHeight / imgWidth) * displayWidth;
+    
+    console.log('Image loaded with dimensions:', imgWidth, 'x', imgHeight, 
+               'Display size:', displayWidth, 'x', displayHeight,
+               'Aspect ratio:', imgHeight / imgWidth);
+    
+    // For portrait images, determine optimal crop sides
+    // Auto-calculate optimal crop margins to have minimal empty space
+    // Default values for standard portrait image (like 3:4)
+    let leftRightCropPercentage = 10; // Default 10% sides
+    
+    // If very tall and narrow portrait (greater than 16:9)
+    if (imgHeight / imgWidth > 1.78) {
+      leftRightCropPercentage = 5; // Reduce side crop to only 5%
+    }
+    // If closer to square
+    else if (imgHeight / imgWidth < 1.3) {
+      leftRightCropPercentage = 15; // Increase side crop to 15%
+    }
     
     // Set initial crop values
-    setLeftCropPercentage(10);
-    setRightCropPercentage(10);
+    setLeftCropPercentage(leftRightCropPercentage);
+    setRightCropPercentage(leftRightCropPercentage);
+    setTopCropPercentage(0);
+    setBottomCropPercentage(0);
     
     // Generate initial crop
     setTimeout(() => {
@@ -1583,16 +1817,7 @@ const UploadPhoto = () => {
               />
             </div>
 
-            {/* DOS2 image only - 20px below Bumrah image */}
-            <div className="left-dos-container">
-              <img
-                src="/images/uploadphoto/Dos2.png"
-                alt="Do's 2"
-                className="left-dos-image"
-              />
-            </div>
-
-            {/* Form container - 20px below DOS2 image */}
+            {/* SWAPPED: Form container comes before DOS2 image */}
             <div className="form-container">
               {/* Mobile stepper indicator - centered and integrated with form */}
               <div className="fixed-stepper" style={{ boxShadow: 'none', background: 'transparent' }}>
@@ -1659,6 +1884,7 @@ const UploadPhoto = () => {
                 /* Normal upload area */
                 <div className="upload-area" onDragOver={handleDragOver} onDrop={handleDrop}>
                   <p>Drag your file to start uploading</p>
+                  <p className="portrait-note"><i className="fas fa-info-circle"></i> Only portrait images (taller than wide) are accepted</p>
                   <div className="upload-divider"><span>or</span></div>
 
                   <div className="upload-buttons">
@@ -1692,6 +1918,24 @@ const UploadPhoto = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* DOS2 image now after form container */}
+            <div className="left-dos-container">
+              <img
+                src="/images/uploadphoto/Dos2.png"
+                alt="Do's 2"
+                className="left-dos-image"
+              />
+            </div>
+            
+            {/* NEW: Added DOS1 image after DOS2 */}
+            <div className="left-dos1-container">
+              <img
+                src="/images/uploadphoto/dos1.png"
+                alt="Do's 1"
+                className="left-dos-image"
+              />
             </div>
           </>
         )}
@@ -1792,6 +2036,7 @@ const UploadPhoto = () => {
                     ) : (
                       <>
                         <p className="drag-text">Drag your file to start uploading</p>
+                        <p className="portrait-note"><i className="fas fa-info-circle"></i> Only portrait images (taller than wide) are accepted</p>
                         <div className="upload-divider">
                           <span>or</span>
                         </div>
@@ -1888,12 +2133,36 @@ const UploadPhoto = () => {
                       style={{width: `${rightCropPercentage}%`}}
                     ></div>
                     
+                    {/* Top dark overlay */}
+                    <div 
+                      className="crop-overlay top-overlay" 
+                      style={{
+                        height: `${topCropPercentage}%`, 
+                        left: `${leftCropPercentage}%`, 
+                        right: `${rightCropPercentage}%`,
+                        top: 0
+                      }}
+                    ></div>
+                    
+                    {/* Bottom dark overlay */}
+                    <div 
+                      className="crop-overlay bottom-overlay" 
+                      style={{
+                        height: `${bottomCropPercentage}%`, 
+                        left: `${leftCropPercentage}%`, 
+                        right: `${rightCropPercentage}%`,
+                        bottom: 0
+                      }}
+                    ></div>
+                    
                     {/* Highlighted crop area */}
                     <div 
                       className="crop-area"
                       style={{
                         left: `${leftCropPercentage}%`,
-                        right: `${rightCropPercentage}%`
+                        right: `${rightCropPercentage}%`,
+                        top: `${topCropPercentage}%`,
+                        bottom: `${bottomCropPercentage}%`
                       }}
                     ></div>
                     
@@ -1913,9 +2182,34 @@ const UploadPhoto = () => {
                       onTouchStart={(e) => handleMouseDown(e, 'right')}
                     ></div>
                     
-                    {/* Width display */}
-                    <div className="crop-width-display">
-                      Width: {cropWidthPercentage.toFixed(1)}%
+                    {/* Top draggable line */}
+                    <div 
+                      className="crop-line top-line"
+                      style={{
+                        top: `${topCropPercentage}%`,
+                        left: `${leftCropPercentage}%`,
+                        right: `${rightCropPercentage}%`
+                      }}
+                      onMouseDown={(e) => handleMouseDown(e, 'top')}
+                      onTouchStart={(e) => handleMouseDown(e, 'top')}
+                    ></div>
+                    
+                    {/* Bottom draggable line */}
+                    <div 
+                      className="crop-line bottom-line"
+                      style={{
+                        bottom: `${bottomCropPercentage}%`,
+                        left: `${leftCropPercentage}%`,
+                        right: `${rightCropPercentage}%`
+                      }}
+                      onMouseDown={(e) => handleMouseDown(e, 'bottom')}
+                      onTouchStart={(e) => handleMouseDown(e, 'bottom')}
+                    ></div>
+                    
+                    {/* Dimensions display */}
+                    <div className="crop-dimensions-display">
+                      <div>Width: {cropWidthPercentage.toFixed(1)}%</div>
+                      <div>Height: {cropHeightPercentage.toFixed(1)}%</div>
                     </div>
                   </div>
                 </div>
@@ -1990,8 +2284,11 @@ const UploadPhoto = () => {
                     marginTop: '15px',
                     marginBottom: '10px'
                   }}>
+                    <p style={{color: '#0083B5', margin: '0 0 5px 0', fontWeight: 'bold', fontSize: '14px'}}>
+                      <i className="fas fa-info-circle"></i> Width: {cropWidthPercentage.toFixed(1)}% of original image
+                    </p>
                     <p style={{color: '#0083B5', margin: '0', fontWeight: 'bold', fontSize: '14px'}}>
-                      <i className="fas fa-info-circle"></i> Width: {cropWidthPercentage}% of original image
+                      <i className="fas fa-info-circle"></i> Height: {cropHeightPercentage.toFixed(1)}% of original image
                     </p>
                   </div>
                 </div>

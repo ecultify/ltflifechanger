@@ -153,7 +153,20 @@ html, body, #root, .app {
     max-width: 85% !important;
   }
   
-  /* DOS2 image positioning - 20px below bumrah, single image */
+  /* SWAPPED: Form container positioned first, before DOS2 image */
+  .left-section .form-container {
+    position: relative !important;
+    margin: 20px auto !important; /* Space above and below */
+    width: 95% !important;
+    z-index: 5 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 15px !important;
+    padding: 15px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    order: 1 !important; /* Explicitly order the form container first */
+  }
+  
+  /* SWAPPED: DOS2 image positioning - 20px below form container */
   .left-dos-container {
     position: relative !important;
     top: 0 !important;
@@ -165,25 +178,30 @@ html, body, #root, .app {
     z-index: 5 !important;
     display: flex !important;
     justify-content: center !important;
+    order: 2 !important; /* Explicitly order the DOS2 image after form */
   }
   
-  .left-dos-container img {
+  /* NEW: Add DOS1 image after form container and DOS2 image */
+  .left-dos1-container {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 20px 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+    display: flex !important;
+    justify-content: center !important;
+    order: 3 !important; /* Explicitly order the DOS1 image last */
+  }
+  
+  .left-dos-container img,
+  .left-dos1-container img {
     max-width: 85% !important;
     width: 85% !important;
     margin: 0 auto !important;
     display: block !important;
-  }
-  
-  /* Form container positioned 20px below DOS2 image */
-  .left-section .form-container {
-    position: relative !important;
-    margin: 20px auto 20px auto !important; /* 20px space from DOS2 and 20px bottom margin */
-    width: 95% !important;
-    z-index: 5 !important;
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 15px !important;
-    padding: 15px !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
   }
   
   /* Make Upload Your Photo text smaller in mobile form container */
@@ -202,6 +220,12 @@ html, body, #root, .app {
     background: transparent !important;
     box-shadow: none !important;
     border: none !important;
+  }
+  
+  /* Force flex-direction column and respect the order property */
+  .left-section {
+    display: flex !important;
+    flex-direction: column !important;
   }
   
   /* Additional styling for stepper elements to make it feel integrated */

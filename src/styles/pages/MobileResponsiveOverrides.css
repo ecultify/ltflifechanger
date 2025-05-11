@@ -96,8 +96,8 @@
         /* Prevent text from wrapping */
         font-size: 30px !important;
         /* Larger font to match bigger logo */
-        left: calc(50% - 40px) !important;
-        /* Moved 20px to the right from previous position */
+        left: calc(50% - 30px) !important;
+        /* Moved 10px more to the right (from -40px to -30px) */
         transform: translateX(-50%) rotate(-5deg) !important;
         /* Center perfectly with logo while maintaining tilt */
     }
@@ -107,8 +107,8 @@
         /* Prevent text from wrapping */
         font-size: 30px !important;
         /* Larger font to match bigger logo */
-        left: calc(50% - 50px) !important;
-        /* Moved 20px to the right from previous position */
+        left: calc(50% - 40px) !important;
+        /* Moved 10px more to the right (from -50px to -40px) */
         transform: translateX(-50%) rotate(-5deg) !important;
         /* Center perfectly with logo while maintaining tilt */
     }
@@ -125,8 +125,8 @@
         /* Larger text */
         font-weight: 700 !important;
         /* Bolder text */
-        padding: 8px 28px !important;
-        /* Reduced height but wider */
+        padding: 8px 30px !important;
+        /* Wider button with more horizontal padding */
         box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #264E72 !important;
         display: flex !important;
         align-items: center !important;
@@ -139,7 +139,12 @@
         left: 0 !important;
         right: 0 !important;
         width: auto !important;
-        max-width: 80% !important;
+        min-width: 250px !important;
+        /* Added minimum width to prevent text wrapping */
+        max-width: 90% !important;
+        /* Increased from 80% to 90% for more space */
+        white-space: nowrap !important;
+        /* Prevent text from wrapping */
     }
     /* Make the arrow icon bigger */
     .poster-btn span {
@@ -147,6 +152,23 @@
         /* Bigger arrow */
         margin-left: 8px !important;
         font-weight: 700 !important;
+    }
+    /* Add specific styling for extra small screens */
+    @media (max-width: 480px) {
+        /* Ensure button text doesn't wrap on very small screens */
+        .hero-section .hero-content .hero-text-container .poster-btn,
+        .hero-section .hero-content .hero-text-container .btn-neo.poster-btn {
+            font-size: 18px !important; /* Slightly smaller font */
+            padding: 8px 20px !important; /* Reduce horizontal padding */
+            min-width: 220px !important; /* Maintain enough width */
+            white-space: nowrap !important; /* Ensure text doesn't wrap */
+        }
+        
+        /* Make the arrow proportional to the smaller font */
+        .poster-btn span {
+            font-size: 20px !important;
+            margin-left: 6px !important;
+        }
     }
     /* Adjust images in mobile view */
     .mobile-frame-container {

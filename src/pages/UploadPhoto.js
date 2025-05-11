@@ -504,6 +504,9 @@ const UploadPhoto = () => {
     const croppedWidth = imgWidth - leftOffset - rightOffset;
     const croppedHeight = imgHeight - topOffset - bottomOffset;
     
+    // Calculate the aspect ratio of the cropped area
+    const croppedAspectRatio = croppedWidth / croppedHeight;
+    
     console.log('Generating cropped image with dimensions:', {
       originalWidth: imgWidth,
       originalHeight: imgHeight,
@@ -513,6 +516,8 @@ const UploadPhoto = () => {
       bottomOffset,
       croppedWidth,
       croppedHeight,
+      croppedAspectRatio,
+      posterAspectRatio,
       percentages: {
         left: leftCropPercentage,
         right: rightCropPercentage,
@@ -1598,6 +1603,12 @@ const UploadPhoto = () => {
       const containerWidth = rect.width;
       const containerHeight = rect.height;
       
+      // Get the image dimensions
+      const imgWidth = imgRef.current.naturalWidth;
+      const imgHeight = imgRef.current.naturalHeight;
+      const containerAspectRatio = containerWidth / containerHeight;
+      const imageAspectRatio = imgWidth / imgHeight;
+      
       // For horizontal handles
       if (isDraggingLeft || isDraggingRight) {
         // Calculate the mouse position relative to the container as a percentage
@@ -1612,6 +1623,25 @@ const UploadPhoto = () => {
           // Ensure we don't crop too much (keep at least 20% width)
           if (positionX + rightCropPercentage <= 80) {
             setLeftCropPercentage(positionX);
+            
+            // Adjust top and bottom to maintain aspect ratio
+            if (showFixedRatioBox) {
+              // Calculate new width percentage
+              const newWidthPercentage = 100 - positionX - rightCropPercentage;
+              
+              // Calculate new height required to maintain the poster aspect ratio
+              const newHeightPercentage = (newWidthPercentage / posterAspectRatio) * (imageAspectRatio);
+              
+              // Calculate how much to crop from top and bottom (evenly)
+              const totalHeightToCrop = 100 - newHeightPercentage;
+              const topBottomCrop = totalHeightToCrop / 2;
+              
+              // Update top and bottom crop percentages
+              if (topBottomCrop >= 0 && topBottomCrop <= 40) {
+                setTopCropPercentage(topBottomCrop);
+                setBottomCropPercentage(topBottomCrop);
+              }
+            }
           }
         } else if (isDraggingRight) {
           // Convert to right crop percentage (from right edge)
@@ -1619,6 +1649,25 @@ const UploadPhoto = () => {
           // Ensure we don't crop too much (keep at least 20% width)
           if (leftCropPercentage + rightPos <= 80) {
             setRightCropPercentage(rightPos);
+            
+            // Adjust top and bottom to maintain aspect ratio
+            if (showFixedRatioBox) {
+              // Calculate new width percentage
+              const newWidthPercentage = 100 - leftCropPercentage - rightPos;
+              
+              // Calculate new height required to maintain the poster aspect ratio
+              const newHeightPercentage = (newWidthPercentage / posterAspectRatio) * (imageAspectRatio);
+              
+              // Calculate how much to crop from top and bottom (evenly)
+              const totalHeightToCrop = 100 - newHeightPercentage;
+              const topBottomCrop = totalHeightToCrop / 2;
+              
+              // Update top and bottom crop percentages
+              if (topBottomCrop >= 0 && topBottomCrop <= 40) {
+                setTopCropPercentage(topBottomCrop);
+                setBottomCropPercentage(topBottomCrop);
+              }
+            }
           }
         }
       }
@@ -1636,6 +1685,25 @@ const UploadPhoto = () => {
           // Ensure we don't crop too much (keep at least 20% height)
           if (positionY + bottomCropPercentage <= 80) {
             setTopCropPercentage(positionY);
+            
+            // Adjust left and right to maintain aspect ratio
+            if (showFixedRatioBox) {
+              // Calculate new height percentage
+              const newHeightPercentage = 100 - positionY - bottomCropPercentage;
+              
+              // Calculate new width required to maintain the poster aspect ratio
+              const newWidthPercentage = (newHeightPercentage * posterAspectRatio) / (imageAspectRatio);
+              
+              // Calculate how much to crop from left and right (evenly)
+              const totalWidthToCrop = 100 - newWidthPercentage;
+              const leftRightCrop = totalWidthToCrop / 2;
+              
+              // Update left and right crop percentages
+              if (leftRightCrop >= 0 && leftRightCrop <= 40) {
+                setLeftCropPercentage(leftRightCrop);
+                setRightCropPercentage(leftRightCrop);
+              }
+            }
           }
         } else if (isDraggingBottom) {
           // Convert to bottom crop percentage (from bottom edge)
@@ -1643,6 +1711,25 @@ const UploadPhoto = () => {
           // Ensure we don't crop too much (keep at least 20% height)
           if (topCropPercentage + bottomPos <= 80) {
             setBottomCropPercentage(bottomPos);
+            
+            // Adjust left and right to maintain aspect ratio
+            if (showFixedRatioBox) {
+              // Calculate new height percentage
+              const newHeightPercentage = 100 - topCropPercentage - bottomPos;
+              
+              // Calculate new width required to maintain the poster aspect ratio
+              const newWidthPercentage = (newHeightPercentage * posterAspectRatio) / (imageAspectRatio);
+              
+              // Calculate how much to crop from left and right (evenly)
+              const totalWidthToCrop = 100 - newWidthPercentage;
+              const leftRightCrop = totalWidthToCrop / 2;
+              
+              // Update left and right crop percentages
+              if (leftRightCrop >= 0 && leftRightCrop <= 40) {
+                setLeftCropPercentage(leftRightCrop);
+                setRightCropPercentage(leftRightCrop);
+              }
+            }
           }
         }
       }
@@ -1713,30 +1800,48 @@ const UploadPhoto = () => {
                'Aspect ratio:', imgHeight / imgWidth);
     
     // For portrait images, determine optimal crop sides
-    // Auto-calculate optimal crop margins to have minimal empty space
-    // Default values for standard portrait image (like 3:4)
-    let leftRightCropPercentage = 10; // Default 10% sides
+    // Set initial crop to match poster aspect ratio - this ensures what you see is what you get
+    // Poster has width:height ratio of approximately 0.56 (9:16)
     
-    // If very tall and narrow portrait (greater than 16:9)
-    if (imgHeight / imgWidth > 1.78) {
-      leftRightCropPercentage = 5; // Reduce side crop to only 5%
-    }
-    // If closer to square
-    else if (imgHeight / imgWidth < 1.3) {
-      leftRightCropPercentage = 15; // Increase side crop to 15%
+    // Calculate the crop percentages to match the poster's fixed dimensions
+    const targetAspectRatio = posterAspectRatio; // width/height
+    const imgAspectRatio = imgWidth / imgHeight;
+    
+    let leftRightCropPercentage = 10; // Default
+    let topBottomCropPercentage = 0; // Default
+    
+    // If image is more portrait than the poster (narrower)
+    if (imgAspectRatio < targetAspectRatio) {
+      // Need to crop from top and bottom to match poster ratio
+      const targetHeight = imgWidth / targetAspectRatio;
+      const heightDiff = imgHeight - targetHeight;
+      topBottomCropPercentage = (heightDiff / imgHeight) * 50; // Divide by 2 and convert to percentage
+      leftRightCropPercentage = 0; // No need to crop sides
+    } 
+    // If image is less portrait than the poster (wider)
+    else {
+      // Need to crop from sides to match poster ratio
+      const targetWidth = imgHeight * targetAspectRatio;
+      const widthDiff = imgWidth - targetWidth;
+      leftRightCropPercentage = (widthDiff / imgWidth) * 50; // Divide by 2 and convert to percentage
+      topBottomCropPercentage = 0; // No need to crop top/bottom
     }
     
-    // Set initial crop values
+    // Set initial crop values to match poster dimensions
     setLeftCropPercentage(leftRightCropPercentage);
     setRightCropPercentage(leftRightCropPercentage);
-    setTopCropPercentage(0);
-    setBottomCropPercentage(0);
+    setTopCropPercentage(topBottomCropPercentage);
+    setBottomCropPercentage(topBottomCropPercentage);
     
     // Generate initial crop
     setTimeout(() => {
       generateCroppedImage();
     }, 100);
   };
+
+  // Add new state to track poster aspect ratio
+  const [posterAspectRatio, setPosterAspectRatio] = useState(0.56); // 9:16 aspect ratio (width/height)
+  const [showFixedRatioBox, setShowFixedRatioBox] = useState(true);
 
   return (
     <div className="upload-page">
@@ -2089,6 +2194,17 @@ const UploadPhoto = () => {
           <div className="preview-modal">
             <div className="preview-modal-header">
               <h2>Crop Your Image</h2>
+              <div className="fixed-ratio-toggle">
+                <label className="switch">
+                  <input 
+                    type="checkbox" 
+                    checked={showFixedRatioBox}
+                    onChange={() => setShowFixedRatioBox(!showFixedRatioBox)}
+                  />
+                  <span className="slider round"></span>
+                </label>
+                <span className="toggle-label">Lock poster proportions</span>
+              </div>
               <button
                 className="modal-close-btn"
                 onClick={() => {
@@ -2166,6 +2282,23 @@ const UploadPhoto = () => {
                       }}
                     ></div>
                     
+                    {/* Poster frame guide overlay - shows the exact dimensions that will be used in final poster */}
+                    {showFixedRatioBox && (
+                      <div 
+                        className="poster-frame-guide"
+                        style={{
+                          left: `${leftCropPercentage}%`,
+                          right: `${rightCropPercentage}%`,
+                          top: `${topCropPercentage}%`,
+                          bottom: `${bottomCropPercentage}%`
+                        }}
+                      >
+                        <div className="poster-frame-label">
+                          <i className="fas fa-info-circle"></i> This is how your image will appear in the poster
+                        </div>
+                      </div>
+                    )}
+
                     {/* Left draggable line */}
                     <div 
                       className="crop-line left-line"

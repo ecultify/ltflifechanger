@@ -370,7 +370,7 @@ const SharePoster = () => {
             
             // If we have crop data, adjust based on the crop settings
             if (cropData) {
-              console.log('Applying flexible crop data:', cropData);
+              console.log('Applying crop data as mask:', cropData);
               
               // Calculate target width (47.29% of frame width)
               const targetWidth = canvas.width * 0.4729;
@@ -379,37 +379,34 @@ const SharePoster = () => {
               // Set the width to the target
               scaledWidth = targetWidth;
               
-              // If we have aspect ratio information, use it to calculate height
-              // but keep the top position fixed
+              // If we have aspect ratio information, use it to calculate the proper height
+              // preserving the aspect ratio of the cropped portion
               if (cropData.aspectRatio) {
                 // Calculate height based on the cropped aspect ratio
                 // aspectRatio = width / height, so height = width / aspectRatio
-                const newHeight = scaledWidth / cropData.aspectRatio;
+                const naturalHeight = scaledWidth / cropData.aspectRatio;
                 
-                // Allow the height to be larger than bumrahHeight
-                // This means the image might extend below the poster
-                scaledHeight = newHeight;
+                // Use the natural height based on aspect ratio
+                scaledHeight = naturalHeight;
                 
-                console.log('Using aspect ratio for flexible height:', {
+                console.log('Using mask approach with original proportions:', {
                   aspectRatio: cropData.aspectRatio,
                   targetWidth,
-                  calculatedHeight: newHeight,
-                  originalBumrahHeight: bumrahHeight,
-                  heightDifference: (newHeight - bumrahHeight)
+                  naturalHeight,
+                  cropSettings: cropData
                 });
               }
               
-              console.log('Final dimensions with fluid height:', { 
+              console.log('Final mask dimensions (original proportions):', { 
                 width: scaledWidth, 
-                height: scaledHeight,
-                isHeightExtended: scaledHeight > bumrahHeight
+                height: scaledHeight
               });
             }
             
             // Position to place user on the left side of Bumrah
             // Position is adjusted to account for proper placement
             // Moved 15px more to the right as requested
-            const userX = (canvas.width * 0.08) - 95 + 15; // Moved 15px more to the right
+            const userX = (canvas.width * 0.08) - 95 + 15 + 2; // Added 2px more to the right
             
             // IMPORTANT: Keep the TOP position fixed regardless of height
             // Instead of positioning from the bottom, position from the top
@@ -435,8 +432,41 @@ const SharePoster = () => {
               // Clear the offscreen canvas first
               offCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
               
-              // Draw the image preserving its aspect ratio
-              offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
+              if (cropData) {
+                console.log('Using crop data to extract just the cropped portion of the image (mask approach)');
+                
+                // For vertically cropped images, we want to maintain original proportions
+                // Calculate the source dimensions based on crop percentages
+                const sourceWidth = userImg.width * (cropData.widthPercentage / 100);
+                const sourceHeight = userImg.height * (cropData.heightPercentage / 100);
+                const sourceX = userImg.width * (cropData.leftPercentage / 100);
+                const sourceY = userImg.height * (cropData.topPercentage / 100);
+                
+                console.log('Source dimensions for cropped portion (mask):', {
+                  sourceX, sourceY, sourceWidth, sourceHeight
+                });
+                
+                // Important change: Force the image to fill the entire height allocation
+                // This ensures no gap at the bottom of the container
+                // Calculate the fixed height allocation based on Bumrah's height
+                const fixedHeight = bumrahHeight;
+                
+                // Now ensure the scaledHeight matches the fixed height
+                scaledHeight = fixedHeight;
+                
+                // Draw only the cropped portion, but force it to fill the entire height
+                offCtx.drawImage(
+                  userImg, 
+                  sourceX, sourceY, sourceWidth, sourceHeight,
+                  0, 0, scaledWidth, scaledHeight
+                );
+                
+                console.log('Successfully filled entire container height with cropped image');
+              } else {
+                // If no crop data, use the entire image
+                offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
+              }
+              
               console.log('Successfully drew user image to offscreen canvas');
               
               // Log the image data for debugging
@@ -451,12 +481,28 @@ const SharePoster = () => {
               
               // Try an alternative drawing approach
               try {
-                console.log('Attempting alternative drawing approach with natural dimensions');
-                offCtx.drawImage(
-                  userImg, 
-                  0, 0, userImg.naturalWidth, userImg.naturalHeight,
-                  0, 0, scaledWidth, scaledHeight
-                );
+                console.log('Attempting alternative drawing approach');
+                
+                if (cropData) {
+                  // Try to apply crop using natural dimensions
+                  const sourceWidth = userImg.naturalWidth * (cropData.widthPercentage / 100);
+                  const sourceHeight = userImg.naturalHeight * (cropData.heightPercentage / 100);
+                  const sourceX = userImg.naturalWidth * (cropData.leftPercentage / 100);
+                  const sourceY = userImg.naturalHeight * (cropData.topPercentage / 100);
+                  
+                  offCtx.drawImage(
+                    userImg, 
+                    sourceX, sourceY, sourceWidth, sourceHeight,
+                    0, 0, scaledWidth, scaledHeight
+                  );
+                } else {
+                  offCtx.drawImage(
+                    userImg, 
+                    0, 0, userImg.naturalWidth, userImg.naturalHeight,
+                    0, 0, scaledWidth, scaledHeight
+                  );
+                }
+                
                 console.log('Alternative drawing approach succeeded');
               } catch (altError) {
                 console.error('Alternative drawing approach also failed:', altError);

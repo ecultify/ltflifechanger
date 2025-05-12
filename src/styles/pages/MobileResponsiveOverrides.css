@@ -20,7 +20,8 @@
         /* Center alignment */
         z-index: 2 !important;
         position: absolute !important;
-        margin-top: 20px !important; /* Additional top space */
+        margin-top: 20px !important;
+        /* Additional top space */
     }
     /* Center the text elements - using more specific selector */
     .hero-section .hero-content .hero-text-container {
@@ -158,12 +159,15 @@
         /* Ensure button text doesn't wrap on very small screens */
         .hero-section .hero-content .hero-text-container .poster-btn,
         .hero-section .hero-content .hero-text-container .btn-neo.poster-btn {
-            font-size: 18px !important; /* Slightly smaller font */
-            padding: 8px 20px !important; /* Reduce horizontal padding */
-            min-width: 220px !important; /* Maintain enough width */
-            white-space: nowrap !important; /* Ensure text doesn't wrap */
+            font-size: 18px !important;
+            /* Slightly smaller font */
+            padding: 8px 20px !important;
+            /* Reduce horizontal padding */
+            min-width: 220px !important;
+            /* Maintain enough width */
+            white-space: nowrap !important;
+            /* Ensure text doesn't wrap */
         }
-        
         /* Make the arrow proportional to the smaller font */
         .poster-btn span {
             font-size: 20px !important;
@@ -184,6 +188,19 @@
         position: relative !important;
         z-index: 1 !important;
         /* Put behind testimonial cards */
+    }
+    /* Specific styling for mask images 4, 5, and mask group base in mobile view */
+    .profile-carousel-image.mask-group,
+    .profile-carousel-image.mask-group-4,
+    .profile-carousel-image.mask-group-5 {
+        width: 150% !important;
+        /* Make these specific images significantly larger */
+        height: 150% !important;
+        transform: translate(-17.5%, -17.5%) !important;
+        /* Center the enlarged image */
+        object-fit: cover !important;
+        z-index: 2 !important;
+        /* Ensure it appears above other elements */
     }
     .mobile-frame-container .profile-image-container {
         transform: translateY(0) !important;
@@ -218,14 +235,16 @@
         /* Changed from cover to contain */
         object-position: bottom !important;
     }
-    
     /* Specific styles for mask group 0, 4, and 5 - make them larger */
     .mobile-frame-container .profile-carousel-image.mask-group-base,
     .mobile-frame-container .profile-carousel-image.mask-group-4,
     .mobile-frame-container .profile-carousel-image.mask-group-5 {
-        width: 110% !important; /* Make them 10% larger than normal */
-        height: 330px !important; /* Make them taller */
-        transform: translateX(-5%) !important; /* Center the enlarged image */
+        width: 110% !important;
+        /* Make them 10% larger than normal */
+        height: 330px !important;
+        /* Make them taller */
+        transform: translateX(-5%) !important;
+        /* Center the enlarged image */
     }
     .mobile-frame-container .group-30a-image {
         position: relative !important;
@@ -241,43 +260,47 @@
     }
     /* Fix testimonial container positioning for autoscroll carousel */
     .testimonial-container {
-        margin-top: -20px !important; /* Pulled up carousel by 15px (from -5px to -20px) - CHANGE 2 */
+        margin-top: -20px !important;
+        /* Pulled up carousel by 15px (from -5px to -20px) - CHANGE 2 */
         position: relative !important;
         z-index: 2 !important;
         /* Put in front of the images */
         padding-top: 0 !important;
-        overflow: hidden !important; /* Hide scrolling */
+        overflow: hidden !important;
+        /* Hide scrolling */
     }
     /* Make testimonial cards bigger height-wise - CHANGE 3 */
     .testimonial-card {
         min-width: 100% !important;
-        height: 515px !important; /* Reduced height by 15px from 530px to 515px */
-        transition: opacity 0.5s ease !important; /* Only keep opacity transition, remove transform transitions */
+        height: 515px !important;
+        /* Reduced height by 15px from 530px to 515px */
+        transition: opacity 0.5s ease !important;
+        /* Only keep opacity transition, remove transform transitions */
         margin: 0 auto !important;
         display: block !important;
     }
     .testimonial-container {
-        height: 535px !important; /* Reduced height by 15px from 550px to 535px */
-        margin-bottom: 20px !important; /* Added more space between testimonials and dots */
+        height: 535px !important;
+        /* Reduced height by 15px from 550px to 535px */
+        margin-bottom: 20px !important;
+        /* Added more space between testimonials and dots */
     }
-    
     /* Testimonial wrapper for autoscroll */
     .testimonial-wrapper {
         display: flex !important;
         transition: transform 0.5s ease !important;
     }
-    
     /* Carousel dots container styling - CHANGE 4 */
     .carousel-dots-container {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        margin: 15px auto 40px auto !important; /* Increased bottom margin to add more space - CHANGE 4 */
+        margin: 15px auto 40px auto !important;
+        /* Increased bottom margin to add more space - CHANGE 4 */
         position: relative !important;
         z-index: 3 !important;
         width: 100% !important;
     }
-    
     .carousel-dot {
         width: 10px !important;
         height: 10px !important;
@@ -287,35 +310,35 @@
         cursor: pointer !important;
         transition: all 0.3s ease !important;
     }
-    
     .carousel-dot.active {
         background-color: white !important;
         transform: scale(1.2) !important;
     }
-    
     /* CHANGE 5 - Reduce section 2 title rotation and font size to fit on one line */
     .section-2-title-container {
         transform: rotate(-1deg) !important;
-        margin-top: -72px !important; /* Further pushed up by 20px from -32px */
+        margin-top: -72px !important;
+        /* Further pushed up by 20px from -32px */
         position: absolute !important;
         left: 0 !important;
         right: 0 !important;
-        margin-left: auto !important; 
+        margin-left: auto !important;
         margin-right: auto !important;
         width: 100% !important;
         z-index: 100 !important;
         margin-bottom: 25px !important;
     }
-    
     /* Section 2 title - extreme font size reduction and spacing compression to fit on one line */
     .section-2-title {
         white-space: nowrap !important;
-        font-size: 6px !important; /* Further reduced from 7px to 6px */
+        font-size: 6px !important;
+        /* Further reduced from 7px to 6px */
         width: auto !important;
         text-align: center !important;
         overflow: visible !important;
         display: inline-block !important;
-        padding: 4px 6px !important; /* Further reduced padding */
+        padding: 4px 6px !important;
+        /* Further reduced padding */
         position: relative !important;
         z-index: 1 !important;
         left: 0 !important;
@@ -323,38 +346,42 @@
         transform-origin: center !important;
         max-width: none !important;
         line-height: 1 !important;
-        letter-spacing: -0.7px !important; /* More negative letter spacing */
-        word-spacing: -0.5px !important; /* Adding negative word spacing */
+        letter-spacing: -0.7px !important;
+        /* More negative letter spacing */
+        word-spacing: -0.5px !important;
+        /* Adding negative word spacing */
     }
-
     /* Override any conflicting media queries with even stronger selectors */
     @media (max-width: 768px) {
-        .section-2-title, 
-        .section-2 .section-2-title, 
+        .section-2-title,
+        .section-2 .section-2-title,
         .section-2 .container .section-2-title,
         html body .section-2-title,
         html body .section-2 .section-2-title,
         body .section-2 .container .section-2-title {
             white-space: nowrap !important;
-            font-size: 6px !important; /* Further reduced */
+            font-size: 6px !important;
+            /* Further reduced */
             line-height: 1 !important;
             max-width: none !important;
-            padding: 3px 5px !important; /* Further reduced padding */
-            letter-spacing: -0.7px !important; /* More negative letter spacing */
-            word-spacing: -0.5px !important; /* Adding negative word spacing */
+            padding: 3px 5px !important;
+            /* Further reduced padding */
+            letter-spacing: -0.7px !important;
+            /* More negative letter spacing */
+            word-spacing: -0.5px !important;
+            /* Adding negative word spacing */
         }
     }
-    
     /* Video container - pushed down by 25px */
     .section-2 .video-container {
-        margin-top: 65px !important; /* Increased from 25px to ensure more space from title */
+        margin-top: 65px !important;
+        /* Increased from 25px to ensure more space from title */
     }
-    
     /* Section 2 container needs additional padding */
     .section-2 .container {
-        padding-top: 40px !important; /* Added top padding to create more space */
+        padding-top: 40px !important;
+        /* Added top padding to create more space */
     }
-    
     /* Increase Start Creating button size */
     .section-2 .start-btn {
         font-size: 20px !important;
@@ -372,62 +399,83 @@
     }
     /* Section 3 improvements */
     .section-3 {
-        min-height: 635px !important; /* Reduced height by 15px from 650px to 635px */
-        padding-bottom: 0px !important; /* Removed bottom padding */
-        padding-top: 50px !important; /* Significantly increased top padding */
-        position: relative !important; /* For absolute positioning */
+        min-height: 635px !important;
+        /* Reduced height by 15px from 650px to 635px */
+        padding-bottom: 0px !important;
+        /* Removed bottom padding */
+        padding-top: 50px !important;
+        /* Significantly increased top padding */
+        position: relative !important;
+        /* For absolute positioning */
     }
-    
     .section-3 .loan-disbursement-container {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        max-width: 300px !important; /* Reduced max-width */
-        margin: 0 auto !important; /* Centered */
+        max-width: 300px !important;
+        /* Reduced max-width */
+        margin: 0 auto !important;
+        /* Centered */
         text-align: center !important;
         position: relative !important;
-        padding-top: 0px !important; /* Removed top padding */
-        margin-top: 0px !important; /* Removed negative margin */
+        padding-top: 0px !important;
+        /* Removed top padding */
+        margin-top: 0px !important;
+        /* Removed negative margin */
     }
     .section-3 .logo-image {
-        width: 200px !important; /* Reduced logo size */
+        width: 200px !important;
+        /* Reduced logo size */
         display: block !important;
-        margin: 0 auto 5px auto !important; /* Reduced spacing - CHANGE 6 */
+        margin: 0 auto 5px auto !important;
+        /* Reduced spacing - CHANGE 6 */
         position: relative !important;
-        top: -30px !important; /* Pushed down by 10px (from -40px to -30px) */
+        top: -30px !important;
+        /* Pushed down by 10px (from -40px to -30px) */
         z-index: 10 !important;
     }
     .section-3 .loan-text-carousel {
         width: 100% !important;
         text-align: center !important;
         position: relative !important;
-        margin-top: -55px !important; /* Pulled up by 5px (from -50px to -55px) */
+        margin-top: -55px !important;
+        /* Pulled up by 5px (from -50px to -55px) */
         margin-bottom: 0 !important;
     }
     /* Title (top line) font styling */
     .section-3 .loan-title {
-        font-size: 20px !important; /* Increased font size by 2px */
-        font-weight: 400 !important; /* Regular font weight */
-        line-height: 1.2 !important; /* Reduced line height for tighter spacing */
-        margin-bottom: 5px !important; /* Reduced spacing - CHANGE 6 */
-        margin-top: 5px !important; /* Reduced spacing - CHANGE 6 */
+        font-size: 20px !important;
+        /* Increased font size by 2px */
+        font-weight: 400 !important;
+        /* Regular font weight */
+        line-height: 1.2 !important;
+        /* Reduced line height for tighter spacing */
+        margin-bottom: 5px !important;
+        /* Reduced spacing - CHANGE 6 */
+        margin-top: 5px !important;
+        /* Reduced spacing - CHANGE 6 */
     }
-    
     /* Subtitle (bottom line) font styling */
     .section-3 .in-minutes {
-        font-size: 28px !important; /* Increased font size by 2px */
-        font-weight: 700 !important; /* Bold font weight */
-        line-height: 1.3 !important; /* Added line height for better spacing */
-        margin-top: 5px !important; /* Reduced spacing - CHANGE 6 */
-        margin-bottom: 5px !important; /* Reduced spacing - CHANGE 6 */
+        font-size: 28px !important;
+        /* Increased font size by 2px */
+        font-weight: 700 !important;
+        /* Bold font weight */
+        line-height: 1.3 !important;
+        /* Added line height for better spacing */
+        margin-top: 5px !important;
+        /* Reduced spacing - CHANGE 6 */
+        margin-bottom: 5px !important;
+        /* Reduced spacing - CHANGE 6 */
     }
-    
     .section-3 .start-btn {
         font-size: 16px !important;
-        padding: 6px 20px !important; /* Smaller height */
+        padding: 6px 20px !important;
+        /* Smaller height */
         font-weight: 700 !important;
-        margin: 10px auto !important; /* Reduced spacing - CHANGE 6 */
+        margin: 10px auto !important;
+        /* Reduced spacing - CHANGE 6 */
         position: relative !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -441,78 +489,91 @@
         /* Reduced left margin */
         font-weight: 700 !important;
     }
-    
     /* Adjust the section 3 desktop image */
     .section-3-desktop-image {
-        margin-top: 0px !important; /* Reset margin to position at bottom */
-        width: 100vw !important; /* Full viewport width */
+        margin-top: 0px !important;
+        /* Reset margin to position at bottom */
+        width: 100vw !important;
+        /* Full viewport width */
         text-align: center !important;
-        overflow: visible !important; /* Allow overflow to prevent cutting off */
-        position: absolute !important; /* Position absolutely */
-        left: 0 !important; /* Reset left position */
-        right: 0 !important; /* Ensure full width coverage */
-        bottom: 0 !important; /* Ensure image touches bottom */
+        overflow: visible !important;
+        /* Allow overflow to prevent cutting off */
+        position: absolute !important;
+        /* Position absolutely */
+        left: 0 !important;
+        /* Reset left position */
+        right: 0 !important;
+        /* Ensure full width coverage */
+        bottom: 0 !important;
+        /* Ensure image touches bottom */
     }
-    
     .section-3-desktop-image img {
-        width: 170vw !important; /* Even wider for bigger appearance */
-        max-width: none !important; /* Override max-width constraints */
+        width: 170vw !important;
+        /* Even wider for bigger appearance */
+        max-width: none !important;
+        /* Override max-width constraints */
         height: auto !important;
         position: relative !important;
-        left: -35% !important; /* Position proportionally to ensure it reaches both sides */
-        z-index: 1 !important; /* Ensure image appears above other elements */
-        object-fit: cover !important; /* Ensure image covers the container */
-        display: block !important; /* Fix layout issues */
-        margin-bottom: -2px !important; /* Ensure no gap at bottom */
+        left: -35% !important;
+        /* Position proportionally to ensure it reaches both sides */
+        z-index: 1 !important;
+        /* Ensure image appears above other elements */
+        object-fit: cover !important;
+        /* Ensure image covers the container */
+        display: block !important;
+        /* Fix layout issues */
+        margin-bottom: -2px !important;
+        /* Ensure no gap at bottom */
     }
-    
     /* OTP Verification page mobile improvements */
     @media (max-width: 768px) {
         /* OTP page overall container */
         .otp-page {
             min-height: 100vh !important;
-            padding-top: 0px !important; /* Reduced from 20px to 0px */
+            padding-top: 0px !important;
+            /* Reduced from 20px to 0px */
             position: relative !important;
         }
-        
         /* Logo container positioning */
         .otp-page .logo-container {
-            margin-bottom: 0px !important; /* Reduced from 20px to 0px */
+            margin-bottom: 0px !important;
+            /* Reduced from 20px to 0px */
             position: relative !important;
-            top: -35px !important; 
+            top: -35px !important;
             left: 25px !important;
-            margin-top: 20px !important; /* Reduced from 30px to 20px */
+            margin-top: 20px !important;
+            /* Reduced from 30px to 20px */
         }
-        
         /* Bumrah image - pulled up correctly */
         .otp-page .bumrah-container {
             position: relative !important;
             text-align: center !important;
             margin-bottom: -10px !important;
-            margin-top: -65px !important; /* Changed from -40px to -65px to pull up by 25px more */
+            margin-top: -65px !important;
+            /* Changed from -40px to -65px to pull up by 25px more */
             z-index: 2 !important;
-            height: auto !important; 
+            height: auto !important;
             min-height: 415px !important;
             padding: 0 !important;
             overflow: visible !important;
         }
-        
         .otp-page .bumrah-image {
             width: 520px !important;
             height: auto !important;
             display: inline-block !important;
             max-width: 100% !important;
             transform: scale(1.2) !important;
-            margin-top: 0px !important; /* Reduced from 10px to 0px */
+            margin-top: 0px !important;
+            /* Reduced from 10px to 0px */
             position: relative !important;
             top: 0 !important;
         }
-        
         /* Form container position */
         .otp-page .form-container {
             position: relative !important;
             z-index: 2 !important;
-            margin-top: -15px !important; /* Changed from -95px to -70px to push down by 25px */
+            margin-top: -15px !important;
+            /* Changed from -95px to -70px to push down by 25px */
             background-color: white !important;
             border-top-left-radius: 20px !important;
             border-top-right-radius: 20px !important;
@@ -521,50 +582,52 @@
             padding-top: 30px !important;
             padding-bottom: 30px !important;
             margin-bottom: 20px !important;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
         }
-        
         /* Mobile stepper container spacing */
         .otp-page .form-container .mobile-stepper-container {
-            margin-bottom: 25px !important; /* Add significant space below stepper */
+            margin-bottom: 25px !important;
+            /* Add significant space below stepper */
         }
-        
         /* Consistent padding for form content */
         .otp-page .form-container {
             padding-left: 20px !important;
             padding-right: 20px !important;
         }
-        
         /* Title and subtitle styling for mobile */
         .otp-page .form-container h2.form-title,
         .otp-page .form-container h2.form-subtitle {
             text-align: left !important;
             font-weight: 700 !important;
-            padding-left: 0 !important; /* Remove left padding to align with other content */
-            font-size: 28px !important; /* Increased size and made identical */
-            line-height: 1 !important; /* Extra tight line spacing */
+            padding-left: 0 !important;
+            /* Remove left padding to align with other content */
+            font-size: 28px !important;
+            /* Increased size and made identical */
+            line-height: 1 !important;
+            /* Extra tight line spacing */
             font-family: 'Poppins', sans-serif !important;
         }
-        
         /* Title specific styling */
         .otp-page .form-container h2.form-title {
-            margin-bottom: -2px !important; /* Create tighter overlap */
+            margin-bottom: -2px !important;
+            /* Create tighter overlap */
         }
-        
         /* Subtitle specific styling */
         .otp-page .form-container h2.form-subtitle {
-            margin-top: 0 !important; /* Remove space above subtitle */
-            margin-bottom: 15px !important; /* Add space below subtitle */
+            margin-top: 0 !important;
+            /* Remove space above subtitle */
+            margin-bottom: 15px !important;
+            /* Add space below subtitle */
         }
-        
         /* Ensure form description has the same alignment */
         .otp-page .form-container .form-description {
             text-align: left !important;
             padding-left: 0 !important;
-            font-size: 14px !important; /* Smaller font size to fit on 2 lines */
-            line-height: 1.3 !important; /* Tighter line height */
+            font-size: 14px !important;
+            /* Smaller font size to fit on 2 lines */
+            line-height: 1.3 !important;
+            /* Tighter line height */
         }
-        
         /* Hide the original checkbox completely */
         input#consent {
             opacity: 0 !important;
@@ -578,17 +641,16 @@
             white-space: nowrap !important;
             border: 0 !important;
         }
-        
         /* Create a custom styled checkbox label */
         .consent-container label {
             position: relative !important;
-            padding-left: 22px !important; /* Space for custom checkbox */
+            padding-left: 22px !important;
+            /* Space for custom checkbox */
             cursor: pointer !important;
             display: inline-block !important;
             font-size: 12px !important;
             line-height: 1.3 !important;
         }
-        
         /* Create a custom checkbox appearance */
         .consent-container label::before {
             content: '' !important;
@@ -602,14 +664,12 @@
             background-color: white !important;
             box-sizing: border-box !important;
         }
-        
         /* Ensure proper alignment and spacing for consent container */
         .otp-page .form-container .consent-container,
         .consent-container {
             margin: 10px 0 !important;
             padding: 0 !important;
         }
-        
         /* Ensure label text is properly sized and positioned */
         .consent-container label,
         .otp-page .form-container .consent-container label {
@@ -620,7 +680,6 @@
             display: inline-block !important;
         }
     }
-    
     /* AddDetails page mobile improvements */
     @media (max-width: 768px) {
         /* Hide desktop stepper */
@@ -628,7 +687,6 @@
         .right-section .fixed-stepper-container {
             display: none !important;
         }
-        
         /* Use UploadPhoto background for entire AddDetails page */
         .details-page {
             background-image: url('../../../public/images/adddetails/UploadPhoto+AddDetails.png') !important;
@@ -643,43 +701,47 @@
             display: flex !important;
             flex-direction: column !important;
         }
-        
         /* Hide original left section background */
         .details-page .left-section {
-            display: none !important; /* Hide the left section completely on mobile */
+            display: none !important;
+            /* Hide the left section completely on mobile */
         }
-        
         /* Form container with rounded corners on all sides */
         .details-page .right-section {
             border-radius: 25px !important;
-            margin: 160px 15px 20px 15px !important; /* Top margin to position below the logo and images */
-            padding: 0 !important; /* Remove padding to let the form container handle it */
+            margin: 160px 15px 20px 15px !important;
+            /* Top margin to position below the logo and images */
+            padding: 0 !important;
+            /* Remove padding to let the form container handle it */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
             position: relative !important;
             z-index: 5 !important;
-            background-color: transparent !important; /* Make transparent so form container shows */
+            background-color: transparent !important;
+            /* Make transparent so form container shows */
             overflow-y: visible !important;
-            width: calc(100% - 30px) !important; /* Account for margins */
+            width: calc(100% - 30px) !important;
+            /* Account for margins */
             display: block !important;
         }
-        
         /* Additional rounded corners fix for the form container */
         .details-page .right-section .form-container {
-            border-radius: 20px !important; /* Rounded corners on ALL sides */
-            overflow: hidden !important; /* Ensure content doesn't overflow rounded corners */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            border-radius: 20px !important;
+            /* Rounded corners on ALL sides */
+            overflow: hidden !important;
+            /* Ensure content doesn't overflow rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
             margin-bottom: 15px !important;
             background-color: white !important;
             padding: 15px !important;
-            padding-bottom: 35px !important; /* Increased from default 15px to 35px (added 20px) */
+            padding-bottom: 35px !important;
+            /* Increased from default 15px to 35px (added 20px) */
         }
-        
         /* Layer1 image - push down by another 15px to 135px total */
         .mobile-layer {
-            margin-top: 135px !important; /* Changed from 120px to 135px to push down by 15px more */
-            margin-bottom: -2px !important; 
+            margin-top: 135px !important;
+            /* Changed from 120px to 135px to push down by 15px more */
+            margin-bottom: -2px !important;
         }
-
         /* Style for mobile stepper in upload photo and add details pages */
         .form-container .fixed-stepper,
         .details-page .right-section .fixed-stepper {
@@ -693,28 +755,35 @@
             background-color: #fff !important;
             border-radius: 8px !important;
         }
-        
         /* Move Generate Tagline section up by 20px */
         .details-page .right-section .form-group:has(label[for="tagline"]) {
-            margin-top: -10px !important; /* Reduced by 20px from its previous value */
+            margin-top: -10px !important;
+            /* Reduced by 20px from its previous value */
         }
-        
         /* Fixed height tagline display with horizontal scrolling - desktop-like behavior */
         .details-page .right-section .tagline-display-area,
         .details-page .right-section .tagline-display {
-            min-height: 42px !important; /* Fixed height */
-            height: 42px !important; /* Fixed height */
-            max-height: 42px !important; /* Fixed height */
-            overflow-y: hidden !important; /* No vertical scrolling */
-            overflow-x: auto !important; /* Only horizontal scrolling */
+            min-height: 42px !important;
+            /* Fixed height */
+            height: 42px !important;
+            /* Fixed height */
+            max-height: 42px !important;
+            /* Fixed height */
+            overflow-y: hidden !important;
+            /* No vertical scrolling */
+            overflow-x: auto !important;
+            /* Only horizontal scrolling */
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
             padding: 4px 8px !important;
             font-size: 13px !important;
-            line-height: 36px !important; /* Match height - padding for single line */
-            white-space: nowrap !important; /* Keep text on single line */
-            text-overflow: clip !important; /* Show content without ellipsis */
+            line-height: 36px !important;
+            /* Match height - padding for single line */
+            white-space: nowrap !important;
+            /* Keep text on single line */
+            text-overflow: clip !important;
+            /* Show content without ellipsis */
             display: block !important;
             resize: none !important;
             position: relative !important;
@@ -722,9 +791,9 @@
             background-color: #f9f9f9 !important;
             margin: 0 !important;
             text-align: left !important;
-            padding-top: 10px !important; /* Add padding instead of vertical-align */
+            padding-top: 10px !important;
+            /* Add padding instead of vertical-align */
         }
-        
         /* Ensure no height change on focus or active states */
         .details-page .right-section .tagline-display-area:focus,
         .details-page .right-section .tagline-display:focus,
@@ -732,21 +801,21 @@
         .details-page .right-section .tagline-display:active,
         .details-page .right-section .tagline-display-area:hover,
         .details-page .right-section .tagline-display:hover {
-            height: 42px !important; 
+            height: 42px !important;
             min-height: 42px !important;
             max-height: 42px !important;
             overflow-y: hidden !important;
             overflow-x: auto !important;
         }
-        
         /* Additional styling to prevent any height changes */
-        .details-page .right-section .tagline-display-area > div,
-        .details-page .right-section .tagline-display > div,
+        .details-page .right-section .tagline-display-area>div,
+        .details-page .right-section .tagline-display>div,
         .details-page .right-section .tagline-display-area input,
         .details-page .right-section .tagline-display input {
             padding: 0 !important;
             margin: 0 !important;
-            height: 34px !important; /* Fixed height for content */
+            height: 34px !important;
+            /* Fixed height for content */
             min-height: 34px !important;
             max-height: 34px !important;
             line-height: 34px !important;
@@ -755,7 +824,6 @@
             overflow: visible !important;
             text-overflow: clip !important;
         }
-
         /* Specifically target any input fields within the tagline display */
         .details-page .right-section .tagline-display input,
         .details-page .right-section .tagline-display-area input {
@@ -765,7 +833,6 @@
             box-shadow: none !important;
             width: auto !important;
         }
-        
         /* Mobile camera container styles */
         .mobile-camera-container {
             position: relative;
@@ -776,13 +843,11 @@
             background-color: #000;
             margin-bottom: 15px;
         }
-        
         .mobile-camera-container .camera-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
         .mobile-camera-container .person-outline-overlay {
             position: absolute;
             top: 0;
@@ -795,13 +860,11 @@
             justify-content: center;
             pointer-events: none;
         }
-        
         .mobile-camera-container .outline-image {
             width: 80%;
             max-width: 250px;
             opacity: 0.8;
         }
-        
         .mobile-camera-container .positioning-guide {
             position: absolute;
             bottom: 70px;
@@ -813,7 +876,6 @@
             font-size: 14px;
             border-radius: 4px;
         }
-        
         .mobile-camera-container .camera-controls {
             position: absolute;
             bottom: 15px;
@@ -823,7 +885,6 @@
             justify-content: center;
             gap: 20px;
         }
-        
         .mobile-camera-container .camera-btn {
             width: 50px;
             height: 50px;
@@ -835,31 +896,25 @@
             font-size: 18px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-        
         .mobile-camera-container .camera-btn.active {
             background-color: #4CAF50;
             color: white;
         }
-        
         .mobile-camera-container .camera-btn.disabled {
             background-color: #cccccc;
             color: #666666;
         }
-        
         .mobile-camera-container .camera-btn.cancel {
             background-color: #f44336;
             color: white;
         }
-        
         /* Styles for face detection status */
         .mobile-camera-container .person-outline-overlay.face-detected .outline-image {
             border: 2px solid yellow;
         }
-        
         .mobile-camera-container .person-outline-overlay.face-in-position .outline-image {
             border: 2px solid #4CAF50;
         }
-        
         .form-container .progress-step,
         .details-page .right-section .progress-step {
             display: flex !important;
@@ -867,7 +922,6 @@
             align-items: center !important;
             position: relative !important;
         }
-        
         .form-container .step-circle,
         .details-page .right-section .step-circle {
             width: 24px !important;
@@ -880,14 +934,12 @@
             font-size: 12px !important;
             margin-bottom: 4px !important;
         }
-        
         .form-container .step-label,
         .details-page .right-section .step-label {
             font-size: 10px !important;
             text-align: center !important;
             white-space: nowrap !important;
         }
-        
         /* Mobile optimized keyword container for Add Details */
         .details-page .right-section .keywords-input-container {
             padding: 6px 8px !important;
@@ -895,14 +947,12 @@
             height: auto !important;
             max-height: none !important;
         }
-        
         /* Mobile optimized keyword tags */
         .details-page .right-section .keyword-tag {
             padding: 2px 5px !important;
             font-size: 10px !important;
             margin: 1px !important;
         }
-        
         /* Mobile optimized tagline container */
         .details-page .right-section .tagline-input-container {
             width: 100% !important;
@@ -911,7 +961,6 @@
             box-sizing: border-box !important;
             padding: 0 !important;
         }
-        
         /* Mobile optimized tagline display - with minimal styling for plain text */
         .details-page .right-section .tagline-display-area,
         .details-page .right-section .tagline-display {
@@ -919,10 +968,12 @@
             max-width: 100% !important;
             box-sizing: border-box !important;
             overflow: hidden !important;
-            height: 42px !important; /* Fixed height that never changes */
+            height: 42px !important;
+            /* Fixed height that never changes */
             min-height: 42px !important;
             max-height: 42px !important;
-            padding: 1px 4px !important; /* Minimal padding */
+            padding: 1px 4px !important;
+            /* Minimal padding */
             text-align: left !important;
             font-size: 13px !important;
             line-height: 1.5 !important;
@@ -932,13 +983,17 @@
             -webkit-line-clamp: 2 !important;
             -webkit-box-orient: vertical !important;
             display: -webkit-box !important;
-            resize: none !important; /* Prevent resizing */
-            vertical-align: top !important; /* Align text to top */
-            margin: 0 !important; /* Remove margins */
-            border: 1px solid #ccc !important; /* Simple border */
-            background-color: #f9f9f9 !important; /* Very light background */
+            resize: none !important;
+            /* Prevent resizing */
+            vertical-align: top !important;
+            /* Align text to top */
+            margin: 0 !important;
+            /* Remove margins */
+            border: 1px solid #ccc !important;
+            /* Simple border */
+            background-color: #f9f9f9 !important;
+            /* Very light background */
         }
-        
         /* Additional important style to handle text alignment correctly */
         .details-page .right-section .tagline-display-area div,
         .details-page .right-section .tagline-display div {
@@ -947,7 +1002,6 @@
             text-align: left !important;
             vertical-align: top !important;
         }
-        
         /* Better text truncation for mobile */
         .profile-bio {
             line-clamp: 2 !important;
@@ -958,31 +1012,26 @@
             display: -webkit-box !important;
             -webkit-box-orient: vertical !important;
         }
-        
         /* Smaller form labels and inputs for mobile */
         .details-page .right-section label {
             font-size: 12px !important;
             margin-bottom: 3px !important;
         }
-        
         .details-page .right-section .form-input,
         .details-page .right-section .form-select {
             font-size: 12px !important;
             padding: 5px 8px !important;
             height: 30px !important;
         }
-        
         /* Tighter vertical spacing between form groups */
         .details-page .right-section .form-group {
             margin-bottom: 8px !important;
         }
-        
         /* Form title mobile adjustments */
         .details-page .right-section .form-title {
             font-size: 20px !important;
             margin-bottom: 8px !important;
         }
-        
         .form-container .progress-line {
             height: 2px;
             flex-grow: 1;
@@ -990,18 +1039,15 @@
             position: relative;
             top: -8px;
         }
-        
         /* Remove the current background image div */
-        .details-page .right-section > div[style*="backgroundImage"] {
+        .details-page .right-section>div[style*="backgroundImage"] {
             display: none !important;
         }
-        
         /* Reset the margin-top of the right-content */
         .details-page .right-content {
             background: transparent !important;
             overflow: visible !important;
         }
-        
         /* Text alignment fixes for mobile */
         .details-page .form-group.tagline-field {
             display: block !important;
@@ -1009,7 +1055,6 @@
             margin-right: 0 !important;
             /* No margin on mobile */
         }
-        
         /* Style the left section for mobile view */
         .details-page .left-section {
             display: flex !important;
@@ -1022,40 +1067,38 @@
             overflow: visible !important;
             position: relative !important;
         }
-        
         /* Adjust the form container to connect with the image - pushed down by 55px */
         .details-page .right-section .right-content .form-container,
         body .details-page .form-container {
             position: relative !important;
             padding-top: 50px !important;
-            margin-top: 10px !important; /* Changed from 40px to 10px to pull it up by 30px */
+            margin-top: 10px !important;
+            /* Changed from 40px to 10px to pull it up by 30px */
             border-radius: 20px !important;
             background-color: white !important;
-            z-index: 2 !important; /* Ensure it's above the Layer1 image */
+            z-index: 2 !important;
+            /* Ensure it's above the Layer1 image */
             box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1) !important;
             overflow: hidden !important;
         }
-        
         /* Directly target any possible selector that might have flat corners */
         .details-page.form-container,
         .details-page .form-container,
-        .details-page > .form-container,
+        .details-page>.form-container,
         .form-container,
         #root .details-page .form-container {
-            border-radius: 20px !important; /* Rounded corners on ALL sides */
+            border-radius: 20px !important;
+            /* Rounded corners on ALL sides */
         }
-        
         /* Additionally ensure the right-section background doesn't override form styles */
         .details-page .right-section {
             background: transparent !important;
         }
-        
         /* Make sure the right-content container allows the form to have rounded corners */
         .details-page .right-content {
             background: transparent !important;
             overflow: visible !important;
         }
-        
         /* Container for all three images */
         .details-page .mobile-left-images {
             display: flex !important;
@@ -1064,151 +1107,163 @@
             width: 100% !important;
             height: 100% !important;
         }
-        
         /* Logo image at the top - bigger and pushed up */
         .details-page .mobile-logo-image {
             width: 100% !important;
-            max-width: 800px !important; /* Increased from 700px to 800px for bigger logo */
-            margin: -40px auto 20px auto !important; /* Changed from -15px to -40px to push up by 25px */
+            max-width: 800px !important;
+            /* Increased from 700px to 800px for bigger logo */
+            margin: -40px auto 20px auto !important;
+            /* Changed from -15px to -40px to push up by 25px */
             display: block !important;
             position: relative !important;
             left: 50% !important;
             transform: translateX(-50%) !important;
         }
-        
         /* Group image in the middle - pushed up by 45px total */
         .details-page .mobile-group-image {
             width: 220px !important;
-            margin: -80px auto 30px auto !important; /* Changed from -35px to -80px to push up by 45px */
+            margin: -80px auto 30px auto !important;
+            /* Changed from -35px to -80px to push up by 45px */
             display: block !important;
         }
-        
         /* People image at the bottom - pushed down further by 15px */
         .details-page .mobile-people-image {
             width: 100% !important;
             max-height: 180px !important;
             object-fit: contain !important;
             object-position: bottom center !important;
-            margin-bottom: 35px !important; /* Changed from -10px to 35px to push down by 45px total */
+            margin-bottom: 35px !important;
+            /* Changed from -10px to 35px to push down by 45px total */
             display: block !important;
             position: relative !important;
-            z-index: 1 !important; /* Ensure it's behind the form container */
+            z-index: 1 !important;
+            /* Ensure it's behind the form container */
         }
-        
         /* Add stepper indicator inside the form container */
         .details-page .form-container {
             position: relative !important;
-            padding-top: 30px !important; /* Reduced from 50px to 30px to push content up */
+            padding-top: 30px !important;
+            /* Reduced from 50px to 30px to push content up */
         }
-        
         /* Move the stepper up by 20px */
         .details-page .mobile-stepper-container {
             margin-top: -20px !important;
             margin-bottom: 10px !important;
             position: relative !important;
         }
-        
         /* Hide desktop stepper */
         .details-page .fixed-stepper-container {
             display: none !important;
         }
-        
         /* Optimize keyword suggestions layout for mobile - make much smaller */
         .details-page .right-section .suggested-keywords {
             display: flex !important;
             flex-wrap: wrap !important;
-            gap: 3px !important; /* Increased spacing */
+            gap: 3px !important;
+            /* Increased spacing */
             width: 100% !important;
             max-width: 100% !important;
-            margin-bottom: 10px !important; /* Increased margin */
+            margin-bottom: 10px !important;
+            /* Increased margin */
             align-items: flex-start !important;
             height: auto !important;
             max-height: none !important;
-            min-height: 36px !important; /* Increased height */
+            min-height: 36px !important;
+            /* Increased height */
             overflow: visible !important;
-            padding: 3px 3px 3px 0 !important; /* Increased padding */
+            padding: 3px 3px 3px 0 !important;
+            /* Increased padding */
             position: relative !important;
             z-index: 1 !important;
-            justify-content: flex-start !important; /* Left alignment */
+            justify-content: flex-start !important;
+            /* Left alignment */
         }
-        
         /* Compact keyword chips for mobile view - increased from ultra-compact */
         .details-page .right-section .suggested-keyword {
-            font-size: 11px !important; /* Slightly larger font */
-            padding: 1px 5px !important; /* Increased padding */
-            margin: 1px 2px 1px 0 !important; /* Maintained spacing */
-            border-radius: 3px !important; /* Larger radius */
+            font-size: 11px !important;
+            /* Slightly larger font */
+            padding: 1px 5px !important;
+            /* Increased padding */
+            margin: 1px 2px 1px 0 !important;
+            /* Maintained spacing */
+            border-radius: 3px !important;
+            /* Larger radius */
             white-space: nowrap !important;
             flex: 0 0 auto !important;
             display: inline-flex !important;
             align-items: center !important;
-            height: 16px !important; /* Increased height */
+            height: 16px !important;
+            /* Increased height */
             max-height: 16px !important;
             min-height: 16px !important;
-            line-height: 1.1 !important; /* Improved line height */
+            line-height: 1.1 !important;
+            /* Improved line height */
             font-weight: 500 !important;
             color: #0055a5 !important;
             background-color: #e6f2ff !important;
-            border: 1px solid #99ccff !important; /* Standard border */
+            border: 1px solid #99ccff !important;
+            /* Standard border */
         }
-        
         /* Compact keyword section */
         .details-page .right-section .form-group:has(.keywords-input-container) {
             margin-bottom: 5px !important;
         }
-        
         /* Add gap between keyword section and tagline section - reduced */
         .details-page .right-section .form-group:has(label[for="tagline"]) {
-            margin-top: 8px !important; /* Reduced from 12px */
+            margin-top: 8px !important;
+            /* Reduced from 12px */
             padding-top: 0 !important;
         }
-        
         /* Tighter spacing for buttons */
         .details-page .right-section .tagline-buttons {
             width: 100% !important;
             display: flex !important;
             justify-content: space-between !important;
             gap: 5px !important;
-            margin-top: 3px !important; /* Reduced from 5px */
+            margin-top: 3px !important;
+            /* Reduced from 5px */
         }
     }
-    
     /* CHANGE 7 - Footer mobile adjustments */
     @media (max-width: 768px) {
         .footer .container {
             flex-direction: column;
-            gap: 10px; /* Reduced from 15px */
+            gap: 10px;
+            /* Reduced from 15px */
             text-align: center;
         }
-        
         .copyright {
-            font-size: 10px !important; /* Reduced font size from 12px - CHANGE 7 */
+            font-size: 10px !important;
+            /* Reduced font size from 12px - CHANGE 7 */
             flex: none;
             width: 100%;
             order: 2;
-            white-space: normal !important; /* Changed from nowrap to normal to allow wrapping - CHANGE 7 update */
+            white-space: normal !important;
+            /* Changed from nowrap to normal to allow wrapping - CHANGE 7 update */
             display: flex !important;
-            flex-direction: column !important; /* Force the CIN to a new line - CHANGE 7 update */
+            flex-direction: column !important;
+            /* Force the CIN to a new line - CHANGE 7 update */
         }
-        
         .copyright .company-name {
-            margin-bottom: 3px !important; /* Add spacing between company name and CIN */
+            margin-bottom: 3px !important;
+            /* Add spacing between company name and CIN */
         }
-        
         .social {
             width: 100%;
             flex-direction: column;
-            gap: 5px; /* Reduced from 10px - CHANGE 7 */
+            gap: 5px;
+            /* Reduced from 10px - CHANGE 7 */
             order: 1;
         }
-        
         .social p {
-            font-size: 12px !important; /* Reduced font size - CHANGE 7 */
+            font-size: 12px !important;
+            /* Reduced font size - CHANGE 7 */
         }
-        
         .social-icon {
-            width: 25px !important; /* Reduced icon size from 30px - CHANGE 7 */
-            height: 25px !important; /* Reduced icon size from 30px - CHANGE 7 */
+            width: 25px !important;
+            /* Reduced icon size from 30px - CHANGE 7 */
+            height: 25px !important;
+            /* Reduced icon size from 30px - CHANGE 7 */
         }
     }
 }

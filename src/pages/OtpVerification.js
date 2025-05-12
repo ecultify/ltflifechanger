@@ -592,7 +592,7 @@ const MobileFormContent = ({
     </h2>{" "}
     <h2 className="form-subtitle" style={{ textAlign: "center" }}>
       {" "}
-      First delivery 's yours!{" "}
+      First delivery's yours!{" "}
     </h2>{" "}
     <p className="form-description" style={{ textAlign: "center" }}>
       Enter your phone number to receive a One - Time Password(OTP) for

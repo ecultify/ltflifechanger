@@ -607,11 +607,12 @@ const SharePoster = () => {
           // Ensure tagline is properly retrieved and preserved
           let tagline = '';
           if (userData && userData.tagline) {
-            tagline = userData.tagline.trim();
-            console.log('Using tagline from userData:', tagline);
+            // Add 2-3 extra words to the tagline as requested
+            tagline = userData.tagline.trim() + ' with excellence and impact';
+            console.log('Using enhanced tagline from userData:', tagline);
           } else {
-            tagline = 'I transform businesses with innovation and expertise';
-            console.log('Using default tagline');
+            tagline = 'I transform businesses with innovation and expertise with excellence and impact';
+            console.log('Using default enhanced tagline');
           }
           // Keep asterisks for highlighting in drawTextWithBoldedWords function
           
@@ -662,6 +663,10 @@ const SharePoster = () => {
             // Combine both sources for a comprehensive list of words to bold
             selectedKeywords = [...new Set([...selectedKeywords, ...highlightedKeywords])];
             console.log('Combined keywords to bold:', selectedKeywords);
+            
+            // Ensure keywords are properly normalized for matching (lowercase, trimmed)
+            selectedKeywords = selectedKeywords.map(keyword => keyword.trim()).filter(keyword => keyword.length > 0);
+            console.log('Normalized keywords to bold:', selectedKeywords);
           } catch (e) {
             console.error('Error parsing keywords:', e);
           }
@@ -710,37 +715,70 @@ const SharePoster = () => {
                 // Exact match
                 if (segmentLower === keywordLower) return true;
                 
-                // Segment contains keyword (full word check)
-                if (segmentLower.includes(keywordLower) && 
-                    (segmentLower.startsWith(keywordLower) || 
-                     segmentLower.endsWith(keywordLower) || 
-                     segmentLower.includes(' ' + keywordLower + ' '))) {
-                  return true;
+                // Word boundary check for better matching
+                const segmentWithBoundaries = ` ${segmentLower} `;
+                const keywordWithBoundaries = ` ${keywordLower} `;
+                
+                // Check if segment is part of the keyword (with word boundaries)
+                if (` ${segment} `.toLowerCase().includes(` ${keyword} `.toLowerCase())) return true;
+                
+                // Segment contains keyword (more flexible matching)
+                if (segmentLower.includes(keywordLower)) {
+                  // Check for word boundaries or if it's at the start/end
+                  if (segmentLower === keywordLower || 
+                      segmentLower.startsWith(`${keywordLower} `) || 
+                      segmentLower.endsWith(` ${keywordLower}`) || 
+                      segmentLower.includes(` ${keywordLower} `)) {
+                    return true;
+                  }
                 }
                 
                 // Keyword contains segment (for multi-word keywords)
-                if (keywordLower.includes(segmentLower) && 
-                    (keywordLower.startsWith(segmentLower) || 
-                     keywordLower.endsWith(segmentLower) || 
-                     keywordLower.includes(' ' + segmentLower + ' '))) {
-                  return true;
+                if (keywordLower.includes(segmentLower)) {
+                  // Check for word boundaries or if it's at the start/end
+                  if (keywordLower === segmentLower || 
+                      keywordLower.startsWith(`${segmentLower} `) || 
+                      keywordLower.endsWith(` ${segmentLower}`) || 
+                      keywordLower.includes(` ${segmentLower} `)) {
+                    return true;
+                  }
                 }
                 
-                // Simple plural check
-                if ((segmentLower + 's' === keywordLower) || (keywordLower + 's' === segmentLower)) {
+                // Improved plural and singular form checks
+                if ((segmentLower + 's' === keywordLower) || 
+                    (keywordLower + 's' === segmentLower) || 
+                    (segmentLower.endsWith('s') && segmentLower.slice(0, -1) === keywordLower) || 
+                    (keywordLower.endsWith('s') && keywordLower.slice(0, -1) === segmentLower) ||
+                    (segmentLower.endsWith('es') && segmentLower.slice(0, -2) === keywordLower) ||
+                    (keywordLower.endsWith('es') && keywordLower.slice(0, -2) === segmentLower)) {
                   return true;
                 }
                 
                 return false;
               });
               
+              // Debug information for keywords
+              if (process.env.NODE_ENV !== 'production') {
+                console.log(`Word: ${segment}, isKeyword: ${isKeyword}, keywords: ${JSON.stringify(keywords)}`);
+              }
+              
               // Set appropriate font weight and style for better differentiation
               if (isKeyword) {
                 ctx.font = 'bold 46px Poppins, sans-serif'; // Slightly larger for bold words
                 ctx.fillStyle = '#FFFFFF'; // Pure white for bold words
+                // Add text shadow for extra emphasis on keywords
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 3;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
               } else {
                 ctx.font = '45px Poppins, sans-serif';
                 ctx.fillStyle = '#F0F0F0'; // Slightly less bright for non-bold words
+                // Reset shadow for non-bold words
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
               }
               
               // Draw the word

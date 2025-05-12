@@ -530,6 +530,14 @@
         position: relative !important;
         left: 0 !important;
         top: 0 !important;
+        /* Improve scroll performance */
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
+        perspective: 1000 !important;
+        -webkit-perspective: 1000 !important;
+        will-change: transform !important;
+        /* Hide scrollbar but keep functionality */
+        -ms-overflow-style: none !important; /* IE and Edge */
     }
     .mobile-cta-section .cta-banner {
         flex: 0 0 100% !important;
@@ -543,7 +551,13 @@
         align-items: center !important;
         justify-content: center !important;
         box-sizing: border-box !important;
+        /* Enhanced GPU acceleration */
         transform: translateZ(0) !important;
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
+        transform-style: preserve-3d !important;
+        -webkit-transform-style: preserve-3d !important;
+        will-change: transform !important;
     }
     .mobile-cta-section .cta-banner img {
         max-width: 100% !important;
@@ -569,6 +583,9 @@
         height: auto !important;
         min-height: 100% !important;
         position: relative !important;
+        /* Improve scroll performance */
+        overscroll-behavior-y: contain !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     /* Hide the white container completely in mobile view */
     .cta-container {
@@ -580,6 +597,8 @@
     .share-poster-page {
         padding: 20px 15px;
         overflow-x: hidden;
+        /* Prevent body scroll when interacting with carousels */
+        overscroll-behavior: contain;
     }
     /* Keep logo size for smaller screens */
     .header-logo {
@@ -827,10 +846,29 @@
     /* Firefox */
     scrollbar-color: #aaa #f0f0f0;
     /* Firefox: thumb and track color */
+    /* Improve touch scrolling */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Better performance */
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000;
+    -webkit-perspective: 1000;
+    /* Hide scrollbar on mobile but keep functionality */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
 
 /* Custom horizontal scrollbar */
+
+/* Hide scrollbar on mobile */
+@media (max-width: 768px) {
+    .simple-scroll-container::-webkit-scrollbar,
+    .mobile-cta-section .banners-container::-webkit-scrollbar {
+        display: none !important;
+    }
+}
 
 .simple-scroll-container::-webkit-scrollbar {
     height: 8px;

@@ -1224,6 +1224,9 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               marginTop: isMobile ? "-80px" : "0px",
               position: "relative",
               zIndex: 10,
+              minHeight: isMobile ? "auto" : "700px", /* Reduced from 800px to 700px */
+              height: isMobile ? "auto" : "auto", /* Allow expansion beyond minimum on desktop if needed */
+              overflow: isMobile ? "visible" : "visible"
             }}
           >
             {" "}
@@ -1376,9 +1379,14 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             </div>
             {/* Keywords in one row */}{" "}
             <div className="form-row">
-              <div className="form-group" style={{ width: "100%" }}>
+              <div className="form-group" style={{ width: "100%", marginBottom: isMobile ? "10px" : "0px" }}>
                 <label htmlFor="keywords"> Select your keyword <span style={{ color: "red" }}>*</span> </label>{" "}
-                <div className="keywords-input-container border-blue">
+                <div className="keywords-input-container border-blue" style={{
+                  minHeight: isMobile ? "auto" : "60px", /* Increased min-height for multiple keyword rows */
+                  height: "auto",
+                  maxHeight: isMobile ? "auto" : "80px", /* Constrain maximum height */
+                  overflow: "auto"  /* Allow scrolling if too many keywords */
+                }}>
                   <div className="keywords-tags">
                     {" "}
                     {keywords.map((keyword, index) => (
@@ -1396,33 +1404,60 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                     ))}{" "}
                   </div>{" "}
                 </div>{" "}
-                <div className="suggested-keywords">
-                  {" "}
-                  {industryKeywords.length > 0 &&
-                    industryKeywords.slice(0, 10).map((keyword, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        className="suggested-keyword"
-                        onClick={() => handleAddKeyword(keyword)}
-                        disabled={keywords.includes(keyword)}
-                        style={
-                          keywords.includes(keyword)
-                            ? { opacity: 0.5, cursor: "not-allowed" }
-                            : {}
-                        }
-                      >
-                        {keyword}{" "}
-                      </button>
-                    ))}{" "}
+                {/* Fixed height container that will always take up the same vertical space */}
+                <div style={{
+                  position: "relative",
+                  width: "100%",
+                  height: isMobile ? "auto" : "70px", /* Increased fixed height on desktop */
+                  marginBottom: "0px",
+                  maxHeight: isMobile ? "none" : "70px", /* Constrain maximum height */
+                  overflow: "visible"
+                }}>
+                  <div className="suggested-keywords" style={{ 
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    width: "100%",
+                    marginBottom: "0px", 
+                    paddingBottom: "0px"
+                  }}>
+                    {/* Always render the container even if empty to maintain layout */}
+                    {industryKeywords.length > 0 ? (
+                      industryKeywords.slice(0, 10).map((keyword, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          className="suggested-keyword"
+                          onClick={() => handleAddKeyword(keyword)}
+                          disabled={keywords.includes(keyword)}
+                          style={
+                            keywords.includes(keyword)
+                              ? { opacity: 0.5, cursor: "not-allowed" }
+                              : {}
+                          }
+                        >
+                          {keyword}{" "}
+                        </button>
+                      ))
+                    ) : (
+                      <div style={{ visibility: "hidden" }}>
+                        {/* Hidden placeholder buttons to maintain space */}
+                        {[1,2,3,4,5].map(i => (
+                          <button key={i} className="suggested-keyword" style={{ visibility: "hidden" }}>
+                            placeholder
+                          </button>
+                        ))}
+                      </div>
+                    )}{" "}
+                  </div>
                 </div>{" "}
               </div>{" "}
             </div>
-            {/* Tagline in one row */}{" "}
-            <div className="form-row">
+            {/* Tagline in one row - pushed up with negative margin */}{" "}
+            <div className="form-row" style={{ marginTop: isMobile ? "0px" : "-15px" }}>
               <div
                 className="form-group"
-                style={{ width: "100%", marginBottom: "5px" }}
+                style={{ width: "100%", marginBottom: "5px", marginTop: isMobile ? "0px" : "-3px" }}
               >
                 <label
                   htmlFor="tagline"
@@ -1431,9 +1466,10 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                     fontWeight: "500",
                     color: "#333",
                     display: "block",
-                    marginBottom: "5px",
+                    marginBottom: isMobile ? "5px" : "2px", // Reduced bottom margin on desktop
+                    marginTop: isMobile ? "0px" : "-5px", // Negative top margin on desktop
                     fontFamily: "Poppins, sans-serif",
-                    maxHeight: isMobile ? "16px" : "20px", // Increased max-height to accommodate larger font
+                    maxHeight: isMobile ? "16px" : "18px", // Slightly reduced max-height
                     lineHeight: "1.2",
                     textTransform: "none"
                   }}
@@ -1457,10 +1493,10 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                           ...inputStyle,
                           height: "auto",
                           minHeight: "60px",
+                          maxHeight: "80px", /* Reduced to show ~3 lines max */
                           padding: "10px 12px",
-                          overflow: "visible",
+                          overflow: "auto", /* Show scrollbar if text exceeds max height */
                           whiteSpace: "normal",
-                          textOverflow: "unset",
                           wordBreak: "break-word",
                           wordWrap: "break-word",
                           cursor: "text",

@@ -623,7 +623,7 @@ const SharePoster = () => {
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 30; // Further reduced from 31 to 30 to make tagline width smaller from the right
+          const maxLineLength = 32; // Increased from 30 to 32 to increase tagline width from the right by 2px
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines

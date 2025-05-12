@@ -948,6 +948,9 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     setIsTaglineGenerated(false);
   }, [industry]);
 
+  // State for validation errors
+  const [errors, setErrors] = useState({});
+
   // Handle name input with filtering
   const handleNameChange = (e) => {
     const value = e.target.value;
@@ -958,39 +961,54 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
 
   // Handle next button click
   const handleNext = async () => {
-    // Process the tagline to clean up any manual edits
-    let finalTagline = tagline;
-
-    // If tagline has been edited manually, we need to identify any highlighted keywords
-    const highlightedKeywords = keywords.filter((keyword) => {
-      // Check if this keyword appears in the tagline (case insensitive)
-      // Handle both normal and highlighted format (with asterisks)
-      const keywordRegex = new RegExp(`\\*?${keyword}\\*?`, "i");
-      return keywordRegex.test(finalTagline);
-    });
+    // Validate form fields
+    const validationErrors = {};
+    
+    if (!name.trim()) validationErrors.name = "Name is required";
+    if (!industry) validationErrors.industry = "Please select an industry";
+    if (!businessVintage) validationErrors.businessVintage = "Please select business vintage";
+    if (!turnover) validationErrors.turnover = "Please select turnover";
+    if (keywords.length === 0) validationErrors.keywords = "Please select at least one keyword";
+    if (!tagline) validationErrors.tagline = "Please generate a tagline";
+    
+    // If there are validation errors, display them and stop form submission
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      alert("Please fill in all required fields");
+      return;
+    }
+    
+    // Clear any previous errors
+    setErrors({});
 
     // Store form data in sessionStorage instead of localStorage
     sessionStorage.setItem("userName", name);
-    sessionStorage.setItem("companyName", companyName);
+    sessionStorage.setItem("companyName", name); // Using name for company name as well
     sessionStorage.setItem("industry", industry);
     sessionStorage.setItem("businessVintage", businessVintage);
     sessionStorage.setItem("turnover", turnover);
-    // Callback option removed
-
+    
     // Store the original tagline with asterisks for backend processing
-    sessionStorage.setItem("tagline", finalTagline);
+    sessionStorage.setItem("tagline", tagline);
 
     // Also store a clean version of the tagline without asterisks
-    const cleanTagline = finalTagline.replace(/\*(.*?)\*/g, "$1");
+    const cleanTagline = tagline.replace(/\*(.*?)\*/g, "$1");
     sessionStorage.setItem("cleanTagline", cleanTagline);
 
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
     sessionStorage.setItem("selectedKeywords", JSON.stringify(keywords));
 
+    // Identify any highlighted keywords based on tagline content
+    const highlightedWords = keywords.filter((keyword) => {
+      // Check if this keyword appears in the tagline (case insensitive)
+      const keywordRegex = new RegExp(`\\*?${keyword}\\*?`, "i");
+      return keywordRegex.test(tagline);
+    });
+    
     // Store the highlighted keywords separately for the poster generation
     sessionStorage.setItem(
       "highlightedKeywords",
-      JSON.stringify(highlightedKeywords)
+      JSON.stringify(highlightedWords)
     );
     
     // Save the form data to Google Sheets
@@ -998,7 +1016,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       // Prepare the user data object
       const userData = {
         name: name,
-        companyName: companyName,
+        companyName: name, // Using name for company name as well
         industry: industry,
         businessVintage: businessVintage,
         turnover: turnover,
@@ -1194,7 +1212,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             {/* Name and Industry in one row */}{" "}
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="name"> Name </label>{" "}
+                <label htmlFor="name"> Name <span style={{ color: "red" }}>*</span> </label>{" "}
                 <input
                   type="text"
                   id="name"
@@ -1206,7 +1224,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                 />{" "}
               </div>
               <div className="form-group">
-                <label htmlFor="industry"> Industry </label>{" "}
+                <label htmlFor="industry"> Industry <span style={{ color: "red" }}>*</span> </label>{" "}
                 <div className="select-wrapper border-blue">
                   <select
                     id="industry"
@@ -1274,7 +1292,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             {/* Business Vintage and Turnover in one row */}{" "}
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="businessVintage"> Business Vintage </label>{" "}
+                <label htmlFor="businessVintage"> Business Vintage <span style={{ color: "red" }}>*</span> </label>{" "}
                 <div className="select-wrapper border-blue">
                   <select
                     id="businessVintage"
@@ -1295,7 +1313,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                 </div>{" "}
               </div>
               <div className="form-group">
-                <label htmlFor="turnover"> Turnover </label>{" "}
+                <label htmlFor="turnover"> Turnover <span style={{ color: "red" }}>*</span> </label>{" "}
                 <div className="select-wrapper border-blue">
                   <select
                     id="turnover"
@@ -1319,7 +1337,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
             {/* Keywords in one row */}{" "}
             <div className="form-row">
               <div className="form-group" style={{ width: "100%" }}>
-                <label htmlFor="keywords"> Select your keyword </label>{" "}
+                <label htmlFor="keywords"> Select your keyword <span style={{ color: "red" }}>*</span> </label>{" "}
                 <div className="keywords-input-container border-blue">
                   <div className="keywords-tags">
                     {" "}
@@ -1380,7 +1398,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
                     textTransform: "none"
                   }}
                 >
-                  Generate Tagline
+                  Generate Tagline <span style={{ color: "red" }}>*</span>
                 </label>{" "}
                 <div
                   className="tagline-row"

@@ -730,20 +730,15 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         messages: [
           {
             role: "system",
-            content: systemMessage,
+            content: `${systemMessage}
+            
+CRITICAL INSTRUCTION: You MUST include ALL of these keywords in the tagline: ${keywords.join(", ")}. Do not skip any keywords; all ${keywords.length} keywords must be included and properly highlighted with asterisks (*). This is a firm requirement.`,
           },
           {
             role: "user",
-            content: userMessage,
-          },
-          // Add an explicit confirmation step to ensure it includes ALL keywords
-          {
-            role: "assistant",
-            content: "I'll create a tagline that includes ALL of these keywords: " + keywords.join(", "),
-          },
-          {
-            role: "user",
-            content: `Remember, it's CRITICAL that you include ALL ${keywords.length} keywords. Your tagline MUST contain every single keyword highlighted with asterisks. Please verify you've included all of them before finalizing.`,
+            content: `${userMessage}
+            
+IMPORTANT: Make sure to include ALL of these ${keywords.length} keywords in your tagline: ${keywords.join(", ")}. Don't skip any. Highlight each one with asterisks.`,
           },
         ],
         temperature: isRegeneration ? temperature : 0.7, // Lower temperature for first generation to ensure keyword inclusion
@@ -768,35 +763,109 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       // Extract the generated tagline from the response
       let generatedTagline = response.data.choices[0].message.content.trim();
       
-      // Check if it contains all keywords before proceeding
-      const allKeywordsIncluded = keywords.every(keyword => {
-        const keywordPattern = new RegExp(`\\*${keyword}\\*`, 'i');
-        return keywordPattern.test(generatedTagline);
+      // Check if all keywords are included in the tagline
+      const missingKeywords = keywords.filter(keyword => {
+        // Create a regex pattern to find the keyword with asterisks
+        const keywordPattern = new RegExp(`\\*${keyword}\\*|\\*${keyword}s\\*|\\*${keyword.slice(0, -1)}\\*`, 'i');
+        return !keywordPattern.test(generatedTagline);
       });
       
-      console.log("All keywords included in tagline?", allKeywordsIncluded);
+      // Log the check results
+      console.log("Missing keywords:", missingKeywords);
       
-      // If not all keywords are included, retry with a fallback approach
-      if (!allKeywordsIncluded) {
-        console.warn("WARNING: Not all keywords were included in the generated tagline!");
-        const missingKeywords = keywords.filter(keyword => {
-          const keywordPattern = new RegExp(`\\*${keyword}\\*`, 'i');
-          return !keywordPattern.test(generatedTagline);
-        });
-        console.warn("Missing keywords:", missingKeywords);
+      // If not all keywords are included, make another attempt with a more forceful approach
+      if (missingKeywords.length > 0) {
+        console.warn(`Not all keywords included in the tagline. Missing: ${missingKeywords.join(", ")}`);
         
-        // Generate a fallback tagline with clear inclusion of all keywords
-        let fallbackTagline = "I ";
-        keywords.forEach((keyword, index) => {
-          fallbackTagline += `*${keyword}* `;
-          if (index < keywords.length - 2) {
-            fallbackTagline += "and ";
+        // Try again with a more explicit second-attempt prompt
+        const secondAttemptData = {
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert tagline creator. Your ONLY job is to create a tagline that includes ALL of these keywords: ${keywords.join(", ")}. Each keyword MUST be highlighted with asterisks.`
+            },
+            {
+              role: "user",
+              content: `Create a first-person tagline (7-10 words) that MUST include ALL of these keywords: ${keywords.join(", ")}. 
+              
+These keywords were missing from your previous attempt: ${missingKeywords.join(", ")}. Please make sure each keyword is highlighted with asterisks (*keyword*). The tagline should be professional and related to the ${industry || "business"} industry. Return ONLY the tagline.`
+            }
+          ],
+          temperature: 0.5, // Lower temperature for more precision
+          max_tokens: 100
+        };
+        
+        console.log("Making second attempt with more explicit instructions");
+        const secondResponse = await axios.post(
+          "https://api.openai.com/v1/chat/completions",
+          secondAttemptData,
+          { headers }
+        );
+        
+        const secondTagline = secondResponse.data.choices[0].message.content.trim();
+        
+        // Check if the second attempt contains all missing keywords
+        const stillMissingKeywords = missingKeywords.filter(keyword => {
+          const keywordPattern = new RegExp(`\\*${keyword}\\*|\\*${keyword}s\\*|\\*${keyword.slice(0, -1)}\\*`, 'i');
+          return !keywordPattern.test(secondTagline);
+        });
+        
+        if (stillMissingKeywords.length === 0) {
+          // Second attempt succeeded in including all missing keywords
+          console.log("Second attempt successful, all keywords included");
+          generatedTagline = secondTagline;
+        } else {
+          // If second attempt still failed, use a fallback approach to ensure all keywords
+          console.warn("Second attempt also failed to include all keywords. Using manual fallback approach");
+          
+          // Preserve the generated tagline if it includes at least some of the keywords
+          if (missingKeywords.length < keywords.length) {
+            console.log("Using best generated tagline and manually incorporating missing keywords");
+            // Use whichever tagline has more of the keywords included
+            const firstAttemptMissingCount = missingKeywords.length;
+            const secondAttemptMissingCount = stillMissingKeywords.length;
+            
+            // Choose the better attempt
+            const betterTagline = firstAttemptMissingCount <= secondAttemptMissingCount 
+              ? generatedTagline 
+              : secondTagline;
+            
+            // Add a suffix phrase with the missing keywords
+            let finalKeywords = firstAttemptMissingCount <= secondAttemptMissingCount
+              ? missingKeywords
+              : stillMissingKeywords;
+              
+            // Create a phrase that incorporates the remaining keywords
+            let suffix = " with ";
+            finalKeywords.forEach((keyword, index) => {
+              suffix += `*${keyword}* `;
+              if (index < finalKeywords.length - 2) {
+                suffix += "and ";
+              }
+            });
+            suffix += "excellence";
+            
+            generatedTagline = betterTagline + suffix;
+          } else {
+            // If no keywords were included, create a complete fallback
+            console.warn("Creating complete fallback tagline with all keywords");
+            
+            // Generate a simple tagline that includes all keywords
+            let fallbackTagline = `I deliver ${industry || "business"} success with `;
+            
+            keywords.forEach((keyword, index) => {
+              fallbackTagline += `*${keyword}* `;
+              if (index < keywords.length - 2) {
+                fallbackTagline += "and ";
+              } else if (index === keywords.length - 2) {
+                fallbackTagline += "and ";
+              }
+            });
+            
+            generatedTagline = fallbackTagline;
           }
-        });
-        fallbackTagline += "for exceptional results";
-        
-        console.log("Using fallback tagline with all keywords explicitly included:", fallbackTagline);
-        generatedTagline = fallbackTagline;
+        }
       }
 
       // Remove any quotation marks, periods, or other unwanted characters (but preserve asterisks)
@@ -863,49 +932,49 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
 
   // Fallback tagline generation in case API doesn't work
   const generateFallbackTagline = () => {
-    // Enhanced industry-specific tagline templates with placeholders for keywords
+    // Enhanced industry-specific tagline templates with placeholders for up to 5 keywords
     const industryTaglines = {
       manufacturing: {
         templates: [
-          "I craft {keyword1} products with {keyword2} and unparalleled expertise",
-          "I engineer {keyword1} solutions with {keyword2} and precision manufacturing",
-          "I deliver {keyword1} manufacturing with {keyword2} and exceptional quality",
+          "I craft *{keyword1}* products with *{keyword2}* *{keyword3}* and *{keyword4}* *{keyword5}* expertise",
+          "I deliver *{keyword1}* *{keyword2}* manufacturing with *{keyword3}* *{keyword4}* and *{keyword5}* quality",
+          "I provide *{keyword1}* *{keyword2}* *{keyword3}* solutions with *{keyword4}* and *{keyword5}* precision",
         ],
       },
       retail: {
         templates: [
-          "I provide {keyword1} shopping experiences with {keyword2} customer service",
-          "I offer {keyword1} products with {keyword2} and personalized attention",
-          "I create {keyword1} retail environments with {keyword2} and satisfaction guaranteed",
+          "I create *{keyword1}* *{keyword2}* shopping with *{keyword3}* *{keyword4}* and *{keyword5}* service",
+          "I offer *{keyword1}* *{keyword2}* products with *{keyword3}* *{keyword4}* and *{keyword5}* care",
+          "I deliver *{keyword1}* *{keyword2}* *{keyword3}* retail with *{keyword4}* and *{keyword5}* satisfaction",
         ],
       },
       services: {
         templates: [
-          "I deliver {keyword1} services with {keyword2} and professional expertise",
-          "I provide {keyword1} solutions with {keyword2} and client-focused dedication",
-          "I offer {keyword1} support with {keyword2} and customized approaches",
+          "I provide *{keyword1}* *{keyword2}* services with *{keyword3}* *{keyword4}* and *{keyword5}* expertise",
+          "I deliver *{keyword1}* *{keyword2}* *{keyword3}* solutions with *{keyword4}* and *{keyword5}* dedication",
+          "I offer *{keyword1}* *{keyword2}* support with *{keyword3}* *{keyword4}* and *{keyword5}* approaches",
         ],
       },
       finance: {
         templates: [
-          "I secure {keyword1} futures with {keyword2} financial strategies",
-          "I build {keyword1} portfolios with {keyword2} and expert guidance",
-          "I create {keyword1} financial plans with {keyword2} and personalized solutions",
+          "I build *{keyword1}* *{keyword2}* futures with *{keyword3}* *{keyword4}* and *{keyword5}* strategies",
+          "I create *{keyword1}* *{keyword2}* *{keyword3}* portfolios with *{keyword4}* and *{keyword5}* guidance",
+          "I provide *{keyword1}* *{keyword2}* financial plans with *{keyword3}* *{keyword4}* and *{keyword5}* solutions",
         ],
       },
       technology: {
         templates: [
-          "I transform businesses with {keyword1} technology and {keyword2} solutions",
-          "I develop {keyword1} systems with {keyword2} and cutting-edge innovation",
-          "I deliver {keyword1} digital experiences with {keyword2} technical expertise",
+          "I transform *{keyword1}* businesses with *{keyword2}* *{keyword3}* *{keyword4}* and *{keyword5}* solutions",
+          "I develop *{keyword1}* *{keyword2}* systems with *{keyword3}* *{keyword4}* and *{keyword5}* innovation",
+          "I deliver *{keyword1}* *{keyword2}* *{keyword3}* experiences with *{keyword4}* and *{keyword5}* expertise",
         ],
       },
       // Default templates for other industries
       default: {
         templates: [
-          "I deliver {keyword1} results with {keyword2} and professional expertise",
-          "I provide {keyword1} solutions with {keyword2} and exceptional quality",
-          "I create {keyword1} experiences with {keyword2} and dedicated service",
+          "I deliver *{keyword1}* *{keyword2}* results with *{keyword3}* *{keyword4}* and *{keyword5}* expertise",
+          "I provide *{keyword1}* *{keyword2}* *{keyword3}* solutions with *{keyword4}* and *{keyword5}* quality",
+          "I create *{keyword1}* *{keyword2}* experiences with *{keyword3}* *{keyword4}* and *{keyword5}* service",
         ],
       },
     };
@@ -914,8 +983,13 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     const fillTemplate = (template, keywordsToUse) => {
       let result = template;
       keywordsToUse.forEach((keyword, index) => {
-        result = result.replace(`{keyword${index + 1}}`, keyword);
+        const placeholder = `*{keyword${index + 1}}*`;
+        result = result.replace(placeholder, `*${keyword}*`);
       });
+      // Remove any remaining placeholders
+      result = result.replace(/\*\{keyword\d+\}\*/g, "");
+      // Clean up multiple spaces
+      result = result.replace(/\s+/g, " ").trim();
       return result;
     };
 
@@ -941,43 +1015,60 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     const selectedTemplate =
       templates[Math.floor(Math.random() * templates.length)];
 
-    // Determine how many keywords are needed in this template
-    const keywordPlaceholderCount = (
-      selectedTemplate.match(/{keyword\d+}/g) || []
-    ).length;
-
-    // Prepare keywords to use (either user selected or generics if needed)
+    // Prepare keywords to use
     let keywordsToUse = [];
 
     if (keywords.length > 0) {
-      // Use all user keywords if possible
-      if (keywords.length >= keywordPlaceholderCount) {
-        // Shuffle the keywords and pick the needed amount
-        const shuffled = [...keywords].sort(() => 0.5 - Math.random());
-        keywordsToUse = shuffled.slice(0, keywordPlaceholderCount);
-      } else {
-        // Use all available user keywords
-        keywordsToUse = [...keywords];
-
-        // Fill remaining slots with generic keywords
-        const remainingSlots = keywordPlaceholderCount - keywords.length;
-        const shuffledGeneric = [...genericKeywords].sort(
-          () => 0.5 - Math.random()
+      // Use all user keywords
+      keywordsToUse = [...keywords];
+      
+      // If we have less than 5 keywords, we'll fill the rest with generics
+      if (keywordsToUse.length < 5) {
+        // Get generic keywords that are not already in user keywords
+        const availableGenericKeywords = genericKeywords.filter(
+          generic => !keywords.includes(generic)
         );
-        const additionalKeywords = shuffledGeneric.slice(0, remainingSlots);
-        keywordsToUse = [...keywordsToUse, ...additionalKeywords];
+        // Shuffle them
+        const shuffledGeneric = [...availableGenericKeywords].sort(() => 0.5 - Math.random());
+        // Take what we need to fill up to 5
+        const additionalKeywords = shuffledGeneric.slice(0, 5 - keywordsToUse.length);
+        // Add to our keywords
+        keywordsToUse.push(...additionalKeywords);
       }
     } else {
-      // No user keywords, use only generic ones
+      // No user keywords, use 5 generic ones
       const shuffled = [...genericKeywords].sort(() => 0.5 - Math.random());
-      keywordsToUse = shuffled.slice(0, keywordPlaceholderCount);
+      keywordsToUse = shuffled.slice(0, 5);
     }
 
     // Generate the final tagline
     const generatedTagline = fillTemplate(selectedTemplate, keywordsToUse);
 
+    // Save the tagline to state
     setTagline(generatedTagline);
     setIsTaglineGenerated(true);
+    
+    // Save to session storage
+    sessionStorage.setItem('tagline', generatedTagline);
+    
+    // Extract and save highlighted keywords
+    try {
+      const highlightedWords = [];
+      const regex = /\*(.*?)\*/g;
+      let match;
+      while ((match = regex.exec(generatedTagline)) !== null) {
+        if (match[1] && match[1].trim().length > 0) {
+          highlightedWords.push(match[1].trim());
+        }
+      }
+      
+      // If we found highlighted words in the tagline, save them
+      if (highlightedWords.length > 0) {
+        sessionStorage.setItem('highlightedKeywords', JSON.stringify(highlightedWords));
+      }
+    } catch (e) {
+      console.error('Error extracting highlighted keywords:', e);
+    }
   };
 
   // Reset keywords when industry changes

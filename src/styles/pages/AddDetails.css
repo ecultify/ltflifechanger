@@ -429,10 +429,10 @@ label {
 
 /* Two-line tagline display area */
 .tagline-display-area {
-  height: 38px !important; /* Reduced height for single line */
+  height: 38px !important; /* Fixed height for single line */
   min-height: 38px !important;
   max-height: 38px !important;
-  overflow: hidden !important;
+  overflow: hidden !important; /* Hide overflow content */
   margin-bottom: 0 !important;
   display: flex !important;
   align-items: center !important;
@@ -448,19 +448,20 @@ label {
   height: 38px !important;
   min-height: 38px !important;
   max-height: 38px !important;
-  overflow: hidden !important;
+  overflow: hidden !important; /* Hide overflow text */
   padding: 0px 8px !important;
   line-height: 38px !important;
   display: flex !important;
   align-items: center !important;
-  white-space: nowrap !important; /* Prevent wrapping */
-  overflow-x: hidden !important; /* Hide overflow text */
+  white-space: normal !important; /* Changed from nowrap to allow word wrapping */
+  overflow-x: auto !important; /* Allow horizontal scrolling if needed */
   text-overflow: ellipsis !important; /* Add ellipsis for overflow */
   font-size: 14px !important;
   border: 1px solid #ddd !important;
   background-color: white !important;
   width: 100% !important;
   border-radius: 4px !important;
+  word-wrap: break-word !important; /* Break long words if needed */
 }
 
 /* Tagline row layout */
@@ -560,21 +561,24 @@ select {
   
   /* Desktop-specific styles for tagline */
   .tagline-display-area {
-    height: 60px !important; /* Reduced from 70px to 60px to make it more compact */
+    height: 60px !important; /* Fixed height */
     min-height: 60px !important;
     max-height: 60px !important;
     margin-bottom: 10px !important; /* Reduced from 15px */
+    overflow: hidden !important; /* Hide overflow */
   }
   
   .tagline-display {
-    height: 60px !important; /* Reduced from 70px to 60px */
+    height: 60px !important; /* Fixed height */
     min-height: 60px !important;
     max-height: 60px !important;
     padding: 5px 8px !important; /* Significantly reduced padding from 10px 15px */
     font-size: 16px !important; /* Reduced from 18px */
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
+    white-space: normal !important; /* Allow word wrapping */
+    overflow: auto !important; /* Add scrollbars if needed */
+    word-wrap: break-word !important; /* Break long words if needed */
   }
   
   /* Remove spacing between words */

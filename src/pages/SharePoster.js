@@ -612,12 +612,12 @@ const SharePoster = () => {
           // Ensure tagline is properly retrieved and preserved
           let tagline = '';
           if (userData && userData.tagline) {
-            // Add 2-3 extra words to the tagline as requested
-            tagline = userData.tagline.trim() + ' with excellence and impact';
-            console.log('Using enhanced tagline from userData:', tagline);
+            // Use the exact tagline from userData without adding extra words
+            tagline = userData.tagline.trim();
+            console.log('Using tagline from userData:', tagline);
           } else {
-            tagline = 'I transform businesses with innovation and expertise with excellence and impact';
-            console.log('Using default enhanced tagline');
+            tagline = 'I transform businesses with innovation and expertise';
+            console.log('Using default tagline');
           }
           // Keep asterisks for highlighting in drawTextWithBoldedWords function
           
@@ -1066,7 +1066,9 @@ const SharePoster = () => {
           // Add tagline with Poppins font
           ctx.font = 'italic 31.5px Poppins, sans-serif'; // Increased from 28px to 31.5px (28 + 3.5)
           const tagline = userData.tagline || 'Your Tagline';
-          const words = tagline.split(' ');
+          // Remove any asterisks from the tagline for cleaner display
+          const cleanTagline = tagline.replace(/\*/g, '');
+          const words = cleanTagline.split(' ');
           let line = '';
           let y = 450;
           

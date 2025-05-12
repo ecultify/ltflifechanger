@@ -129,8 +129,8 @@ label[for="keywords"] {
     /* Fixed height to prevent expansion */
     max-height: 65px !important;
     /* Fixed max-height to match */
-    overflow: visible !important;
-    /* No scrolling */
+    overflow: hidden !important;
+    /* Changed to hidden to prevent content from extending the box */
     margin-bottom: 15px !important;
     position: relative !important;
 }
@@ -152,17 +152,41 @@ label[for="keywords"] {
     /* Left-align text like regular text boxes */
     white-space: normal !important;
     /* Allow text to wrap */
-    text-overflow: initial !important;
-    /* Remove ellipsis */
+    text-overflow: ellipsis !important;
+    /* Show ellipsis for overflow */
     box-sizing: border-box !important;
     width: 100% !important;
     line-height: 1.5 !important;
     font-size: 14px !important;
     border-color: #0083B5 !important;
-    white-space: pre-wrap !important;
-    /* Ensure line breaks are respected */
     word-wrap: break-word !important;
     /* Break long words if needed */
+}
+
+
+/* Desktop-specific tagline display overrides */
+@media (min-width: 769px) {
+    .tagline-display-area,
+    .details-page .tagline-display-area, 
+    .right-section .tagline-display-area,
+    .form-container .tagline-display-area {
+        min-height: 60px !important;
+        height: 60px !important;
+        max-height: 60px !important;
+        overflow: hidden !important;
+    }
+    
+    .tagline-display,
+    .details-page .tagline-display,
+    .right-section .tagline-display,
+    .form-container .tagline-display {
+        min-height: 55px !important;
+        height: 55px !important;
+        max-height: 55px !important;
+        overflow: auto !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
 }
 
 

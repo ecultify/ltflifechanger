@@ -526,6 +526,8 @@
         will-change: transform !important;
         transform: translateZ(0) !important;
         z-index: 1 !important;
+        /* Use native touch handling for smoother scrolling */
+        touch-action: pan-x pinch-zoom !important;
     }
     .mobile-cta-section .cta-carousel {
         width: 100% !important;
@@ -540,7 +542,7 @@
         overflow-x: auto !important;
         overflow-y: hidden !important;
         scroll-snap-type: x mandatory !important;
-        scroll-behavior: smooth !important;
+        scroll-behavior: auto !important; /* Changed from smooth to auto for better touch handling */
         -webkit-overflow-scrolling: touch !important;
         width: 100% !important;
         height: 100% !important;
@@ -551,8 +553,8 @@
         position: relative !important;
         left: 0 !important;
         top: 0 !important;
-        /* Use translate3d for hardware acceleration */
-        transform: translate3d(0,0,0) !important;
+        /* Simplified hardware acceleration for better performance */
+        transform: translateZ(0) !important;
         backface-visibility: hidden !important;
         -webkit-backface-visibility: hidden !important;
         perspective: 1000 !important;
@@ -561,6 +563,8 @@
         /* Hide scrollbar completely */
         -ms-overflow-style: none !important; 
         scrollbar-width: none !important;
+        /* Improve touch response */
+        touch-action: pan-x !important;
     }
     
     /* Force hiding scroll bars */
@@ -889,10 +893,10 @@
     /* Firefox */
     scrollbar-color: #aaa #f0f0f0;
     /* Firefox: thumb and track color */
-    /* Improve touch scrolling */
+    /* Improve touch scrolling - changed to auto for better native scrolling */
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    /* Better performance */
+    scroll-behavior: auto;
+    /* Better performance - simplified for smoother experience */
     will-change: transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -900,6 +904,8 @@
     -webkit-perspective: 1000;
     /* Hide scrollbar on mobile but keep functionality */
     -ms-overflow-style: none; /* IE and Edge */
+    /* Improve touch response */
+    touch-action: pan-x;
 }
 
 

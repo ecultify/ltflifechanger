@@ -776,27 +776,13 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       
       console.log("All keywords included in tagline?", allKeywordsIncluded);
       
-      // If not all keywords are included, retry with a fallback approach
+      // If not all keywords are included, add a warning log
       if (!allKeywordsIncluded) {
         console.warn("WARNING: Not all keywords were included in the generated tagline!");
-        const missingKeywords = keywords.filter(keyword => {
+        console.warn("Missing keywords:", keywords.filter(keyword => {
           const keywordPattern = new RegExp(`\\*${keyword}\\*`, 'i');
           return !keywordPattern.test(generatedTagline);
-        });
-        console.warn("Missing keywords:", missingKeywords);
-        
-        // Generate a fallback tagline with clear inclusion of all keywords
-        let fallbackTagline = "I ";
-        keywords.forEach((keyword, index) => {
-          fallbackTagline += `*${keyword}* `;
-          if (index < keywords.length - 2) {
-            fallbackTagline += "and ";
-          }
-        });
-        fallbackTagline += "for exceptional results";
-        
-        console.log("Using fallback tagline with all keywords explicitly included:", fallbackTagline);
-        generatedTagline = fallbackTagline;
+        }));
       }
 
       // Remove any quotation marks, periods, or other unwanted characters (but preserve asterisks)

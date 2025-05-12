@@ -408,9 +408,14 @@ const SharePoster = () => {
             // Moved 15px more to the right as requested
             const userX = (canvas.width * 0.08) - 95 + 15 + 2; // Added 2px more to the right
             
+            // Check if this is a back camera photo vs. selfie
+            const isBackCameraPhoto = userData && userData.isSelfieMode === false;
+            console.log('Is back camera photo?', isBackCameraPhoto);
+            
             // IMPORTANT: Keep the TOP position fixed regardless of height
             // Instead of positioning from the bottom, position from the top
-            const userY = (canvas.height - bumrahHeight) + 110 - 18 + 30 + 55 + 5 + 5; // This keeps top position fixed
+            // For back camera photos, push up by additional 10px as requested
+            const userY = (canvas.height - bumrahHeight) + 110 - 18 + 30 + 55 + 5 + 5 - (isBackCameraPhoto ? 10 : 0); // This keeps top position fixed, with extra adjustment for back camera
             
             // Apply the calculated placement
             console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });

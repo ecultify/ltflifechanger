@@ -348,31 +348,45 @@ const UploadPhoto = () => {
       offsetX = (video.videoWidth - canvasWidth) / 2;
       offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to focus on face
     } else {
-      // For back camera (full body shots), use 3:5 aspect ratio to capture more body
-      const targetAspect = 3 / 5;
+      // For back camera (full body shots), use 4:6 aspect ratio to capture more of the image
+      // Changed from 3:5 to 4:6 for better full-body capture on mobile
+      const targetAspect = 4 / 6;
 
-      if (videoAspect > targetAspect) {
-        // Video is wider than target aspect, use full height and calculated width
-        canvasHeight = video.videoHeight;
-        canvasWidth = video.videoHeight * targetAspect;
-      } else {
-        // Video is taller than target aspect, use full width and calculated height
-        canvasWidth = video.videoWidth;
-        canvasHeight = video.videoWidth / targetAspect;
+      // Always use maximum available video dimensions for back camera to capture more
+      canvasWidth = video.videoWidth;
+      canvasHeight = video.videoHeight;
+      
+      // If video aspect is significantly different from target, apply minimal cropping
+      if (Math.abs(videoAspect - targetAspect) > 0.2) {
+        if (videoAspect > targetAspect) {
+          // Video is wider, adjust width while keeping full height
+          canvasWidth = video.videoHeight * targetAspect;
+        } else {
+          // Video is taller, adjust height while keeping full width
+          canvasHeight = video.videoWidth / targetAspect;
+        }
       }
 
-      // Calculate centering offsets to position the image properly
-      // Shift the vertical offset up more to better include the body
+      // Calculate centering offsets with preference to capture more upper body
       offsetX = (video.videoWidth - canvasWidth) / 2;
-      offsetY = (video.videoHeight - canvasHeight) / 3; // Position higher to include more body
+      // Reduce the vertical offset to include more of the body in the frame
+      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to include more body
     }
 
-    // Force portrait mode (height > width)
+    // Force portrait mode (height > width) but with better handling for back camera
     if (canvasWidth > canvasHeight) {
-      // Swap dimensions to ensure portrait orientation
-      const temp = canvasWidth;
-      canvasWidth = canvasHeight;
-      canvasHeight = temp * 1.25; // Make it a bit taller for better composition
+      if (isSelfieMode) {
+        // For selfie, swap dimensions to ensure portrait orientation
+        const temp = canvasWidth;
+        canvasWidth = canvasHeight;
+        canvasHeight = temp * 1.25; // Make it a bit taller for better composition
+      } else {
+        // For back camera, use a more carefully calculated aspect ratio
+        // to preserve more of the image content
+        const temp = canvasWidth;
+        canvasWidth = canvasHeight;
+        canvasHeight = temp * 1.5; // Make it taller to capture more body height
+      }
     }
 
     // Set canvas dimensions
@@ -422,15 +436,27 @@ const UploadPhoto = () => {
         // Set the file for processing
         setFile(newFile);
 
-        // Reset crop state
+        // Reset crop state with specific values based on camera mode
         setCompletedCrop(null);
         setCroppedImageUrl(null);
-        setLeftCropPercentage(10);
-        setRightCropPercentage(10);
-        setTopCropPercentage(0);
-        setBottomCropPercentage(0);
-        setCropWidthPercentage(80);
-        setCropHeightPercentage(100);
+        
+        if (isSelfieMode) {
+          // Standard selfie crop values
+          setLeftCropPercentage(10);
+          setRightCropPercentage(10);
+          setTopCropPercentage(0);
+          setBottomCropPercentage(0);
+          setCropWidthPercentage(80);
+          setCropHeightPercentage(100);
+        } else {
+          // Optimized back camera crop values - wider frame to capture more
+          setLeftCropPercentage(5);
+          setRightCropPercentage(5);
+          setTopCropPercentage(0);
+          setBottomCropPercentage(0);
+          setCropWidthPercentage(90); // Wider crop area
+          setCropHeightPercentage(100);
+        }
         
         // Show crop modal instead of preview modal
         setShowCropModal(true);

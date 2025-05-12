@@ -4,7 +4,7 @@
 
 // Industry to directory mapping
 const industryToDirectoryMap = {
-    manufacturing: 'manufacturing',
+    manufacturing: 'Manufacturing',
     retail: 'Retail & Wholesale Trade',
     services: 'Services',
     food: 'Food & Beverage',
@@ -53,7 +53,6 @@ export const getRandomTemplateForIndustry = async(industry) => {
         try {
             // In a browser environment, we can't directly access the file system
             // So we'll simulate the file structure for the specific industry
-            // In a real implementation, you might need to use an API endpoint to get this list
             const templateFiles = await simulateGetTemplateFiles(targetDirectory);
 
             if (templateFiles && templateFiles.length > 0) {
@@ -87,13 +86,13 @@ export const getRandomTemplateForIndustry = async(industry) => {
 const simulateGetTemplateFiles = async(directory) => {
     // Actual template files for each industry based on directory structure
     const templateFiles = {
-        'manufacturing': ['Frame 15164.png', 'Frame 15165.png', 'Frame 15166.png', 'Frame 15167.png', 'Frame 15168.png'],
+        'Manufacturing': ['Frame 15164.png', 'Frame 15165.png', 'Frame 15166.png', 'Frame 15167.png', 'Frame 15168.png'],
         'Retail & Wholesale Trade': ['Frame 15169.png', 'Frame 15170.png', 'Frame 15171.png', 'Frame 15172.png', 'Frame 15173.png'],
-        'Services': ['Frame 15174.png', 'Frame 15178.png'],
+        'Services': ['Frame 15174.png', 'Frame 15175.png', 'Frame 15176.png', 'Frame 15177.png', 'Frame 15178.png'],
         'Food & Beverage': ['Frame 15179.png', 'Frame 15180.png', 'Frame 15181.png', 'Frame 15182.png', 'Frame 15183.png'],
         'Construction & Real Estate': ['Frame 15184.png', 'Frame 15185.png', 'Frame 15186.png', 'Frame 15187.png', 'Frame 15188.png'],
         'Healthcare': ['Frame 15189.png', 'Frame 15190.png', 'Frame 15191.png', 'Frame 15192.png', 'Frame 15193.png'],
-        'Agriculture & Allied Activities': ['Frame 15194.png', 'Frame 15195.png', 'Frame 15196.png', 'Frame 15197.png', 'Frame 15198.png'],
+        'Agriculture & Allied Activities': ['Frame 15194.png', 'Frame 15195.png', 'Frame 15196.png', 'Frame 15197.png', 'Frame 15198.png', 'Frame 15199.png', 'Frame 15200.png', 'Frame 15201.png', 'Frame 15202.png', 'Frame 15203.png'],
         'Education & Training': ['Frame 15199.png', 'Frame 15200.png', 'Frame 15201.png', 'Frame 15202.png', 'Frame 15203.png'],
         'Transport & Logistics': ['Frame 15204.png', 'Frame 15205.png', 'Frame 15206.png', 'Frame 15207.png', 'Frame 15208.png'],
         'IT & Tech Services': ['Frame 15209.png', 'Frame 15210.png', 'Frame 15211.png', 'Frame 15212.png', 'Frame 15213.png'],

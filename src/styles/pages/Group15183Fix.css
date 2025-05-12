@@ -1,0 +1,13 @@
+/* Fix for Group15183 image position on desktop */
+
+/* Target specifically the left-group-image with high specificity */
+.details-page .left-section .left-group-container .left-group-image {
+  margin-left: 0px !important; /* Moved an additional 10px to the left (no margin) */
+}
+
+/* Make sure this only applies to desktop */
+@media (min-width: 769px) {
+  .details-page .left-section .left-group-container .left-group-image {
+    margin-left: 0px !important; /* Moved an additional 10px to the left (no margin) */
+  }
+}

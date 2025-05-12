@@ -642,13 +642,28 @@ const SharePoster = () => {
           
           // Get selected keywords from session storage (or default to empty array)
           let selectedKeywords = [];
+          let highlightedKeywords = [];
+          
           try {
+            // Get the explicitly selected keywords
             const storedKeywords = sessionStorage.getItem('selectedKeywords');
             if (storedKeywords) {
               selectedKeywords = JSON.parse(storedKeywords);
+              console.log('Loaded selected keywords:', selectedKeywords);
             }
+            
+            // Also get any highlighted keywords extracted from asterisks
+            const storedHighlightedKeywords = sessionStorage.getItem('highlightedKeywords');
+            if (storedHighlightedKeywords) {
+              highlightedKeywords = JSON.parse(storedHighlightedKeywords);
+              console.log('Loaded highlighted keywords:', highlightedKeywords);
+            }
+            
+            // Combine both sources for a comprehensive list of words to bold
+            selectedKeywords = [...new Set([...selectedKeywords, ...highlightedKeywords])];
+            console.log('Combined keywords to bold:', selectedKeywords);
           } catch (e) {
-            console.error('Error parsing selected keywords:', e);
+            console.error('Error parsing keywords:', e);
           }
           
           // Tagline styling - using Poppins font and increased font size by 3.5
@@ -660,44 +675,97 @@ const SharePoster = () => {
           const taglineStartY = canvas.height * 0.10 - 2; // Further reduced by 2px as requested
           const taglineLineHeight = 55;
           
-          // Function to handle drawing text with certain words in bold
+          // Enhanced function to handle drawing text with certain words in bold
           const drawTextWithBoldedWords = (line, x, y, keywords) => {
-            // Process the text to handle asterisk-highlighted words
-            // First, split the line into segments (words and possibly with asterisks)
-            const segments = line.split(' ');
+            // First check if there are any asterisks in the line to extract immediate highlights
+            const asteriskMatches = line.match(/\*(.*?)\*/g);
+            if (asteriskMatches) {
+              // Extract words from the asterisks
+              const immediateHighlights = asteriskMatches.map(match => match.replace(/\*/g, '').trim());
+              // Add to keywords array if not already there
+              immediateHighlights.forEach(word => {
+                if (word && !keywords.includes(word)) {
+                  keywords.push(word);
+                }
+              });
+            }
+            
+            // Remove all asterisks for clean processing
+            const cleanLine = line.replace(/\*/g, '');
+            // Split on spaces for word-by-word processing
+            const segments = cleanLine.split(' ');
             let currentX = x;
             
             segments.forEach((segment, index) => {
-              // Check if this segment has asterisks for highlighting
-              const hasAsterisks = segment.includes('*');
+              if (!segment || segment.trim().length === 0) return;
               
-              // Clean up the segment (remove asterisks) for display
-              const cleanSegment = segment.replace(/\*/g, '');
+              // Enhanced keyword detection - check for exact match, partial match, or plurals
+              const isKeyword = keywords.some(keyword => {
+                // Skip empty keywords
+                if (!keyword || keyword.trim().length === 0) return false;
+                
+                const segmentLower = segment.toLowerCase().trim();
+                const keywordLower = keyword.toLowerCase().trim();
+                
+                // Exact match
+                if (segmentLower === keywordLower) return true;
+                
+                // Segment contains keyword (full word check)
+                if (segmentLower.includes(keywordLower) && 
+                    (segmentLower.startsWith(keywordLower) || 
+                     segmentLower.endsWith(keywordLower) || 
+                     segmentLower.includes(' ' + keywordLower + ' '))) {
+                  return true;
+                }
+                
+                // Keyword contains segment (for multi-word keywords)
+                if (keywordLower.includes(segmentLower) && 
+                    (keywordLower.startsWith(segmentLower) || 
+                     keywordLower.endsWith(segmentLower) || 
+                     keywordLower.includes(' ' + segmentLower + ' '))) {
+                  return true;
+                }
+                
+                // Simple plural check
+                if ((segmentLower + 's' === keywordLower) || (keywordLower + 's' === segmentLower)) {
+                  return true;
+                }
+                
+                return false;
+              });
               
-              // Determine if word should be bold (either contains asterisks or matches keywords)
-              const isKeyword = hasAsterisks || keywords.some(keyword => 
-                cleanSegment.toLowerCase().includes(keyword.toLowerCase()) ||
-                keyword.toLowerCase().includes(cleanSegment.toLowerCase())
-              );
-              
-              // Set appropriate font weight
+              // Set appropriate font weight and style for better differentiation
               if (isKeyword) {
-                ctx.font = 'bold 45.5px Poppins, sans-serif';
-                ctx.fillStyle = 'white'; // Changed to white for better visibility
+                ctx.font = 'bold 46px Poppins, sans-serif'; // Slightly larger for bold words
+                ctx.fillStyle = '#FFFFFF'; // Pure white for bold words
               } else {
-                ctx.font = '45.5px Poppins, sans-serif';
-                ctx.fillStyle = 'white'; // Changed to white for better visibility
+                ctx.font = '45px Poppins, sans-serif';
+                ctx.fillStyle = '#F0F0F0'; // Slightly less bright for non-bold words
               }
               
-              // Draw the cleaned word (without asterisks)
-              ctx.fillText(cleanSegment, currentX, y);
+              // Draw the word
+              ctx.fillText(segment, currentX, y);
               
-              // Move x position for next word (add space width)
-              const wordWidth = ctx.measureText(cleanSegment).width;
+              // Move x position for next word
+              const wordWidth = ctx.measureText(segment).width;
               const spaceWidth = ctx.measureText(' ').width;
               currentX += wordWidth + spaceWidth;
             });
           };
+          
+          // Double-check tagline for any asterisks to ensure we catch all highlighted words
+          taglineLines.forEach(line => {
+            const asteriskMatches = line.match(/\*(.*?)\*/g);
+            if (asteriskMatches) {
+              asteriskMatches.forEach(match => {
+                const word = match.replace(/\*/g, '').trim();
+                if (word && !selectedKeywords.includes(word)) {
+                  selectedKeywords.push(word);
+                  console.log('Added highlighted word from tagline:', word);
+                }
+              });
+            }
+          });
           
           // Draw each line with keywords bolded - moved right by 3px and reduced width from right by 3px
           taglineLines.forEach((line, index) => {

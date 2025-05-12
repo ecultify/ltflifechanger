@@ -1,853 +1,998 @@
 /* Import Poppins font */
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* Share Poster Page Styles */
+
 .share-poster-page {
-  display: flex;
-  min-height: calc(100vh - 30px); /* Adjusted for footer only, header removed */
-  width: 100%;
-  font-family: 'Poppins', sans-serif;
-  background-color: #0a1a34;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 40px;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box; /* Include padding in width calculation */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-  position: relative; /* For absolute positioning of the half-cut container */
+    display: flex;
+    min-height: calc(100vh - 30px);
+    /* Adjusted for footer only, header removed */
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0a1a34;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 40px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    /* Include padding in width calculation */
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
+    position: relative;
+    /* For absolute positioning of the half-cut container */
 }
+
 
 /* Logo container styles - ensure it's positioned at top left for desktop */
+
 .logo-container {
-  position: absolute !important;
-  top: 20px !important;
-  left: 20px !important;
-  transform: none !important; /* Remove any transform that might be centering the logo */
-  z-index: 100 !important;
-  text-align: left !important; /* Ensure text alignment is left */
-  width: auto !important; /* Reset any width constraints */
-  margin: 0 !important; /* Reset any margins */
+    position: absolute !important;
+    top: 20px !important;
+    left: 20px !important;
+    transform: none !important;
+    /* Remove any transform that might be centering the logo */
+    z-index: 100 !important;
+    text-align: left !important;
+    /* Ensure text alignment is left */
+    width: auto !important;
+    /* Reset any width constraints */
+    margin: 0 !important;
+    /* Reset any margins */
 }
 
+
 /* Ensure logo is properly sized and aligned */
+
 .header-logo {
-  width: 150px;
-  height: auto;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  margin-left: 0 !important; /* Reset any left margin */
+    width: 150px;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-left: 0 !important;
+    /* Reset any left margin */
 }
 
 .header-logo:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
+
 
 /* Main content container - pushed down by 20px */
+
 .share-poster-content {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  gap: 30px; /* Reduced from 80px to 30px to bring controls closer to poster */
-  align-items: flex-start;
-  box-sizing: border-box; /* Include gaps in width calculation */
-  margin-left: 40px; /* Move the entire content 40px to the right */
-  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    gap: 30px;
+    /* Reduced from 80px to 30px to bring controls closer to poster */
+    align-items: flex-start;
+    box-sizing: border-box;
+    /* Include gaps in width calculation */
+    margin-left: 40px;
+    /* Move the entire content 40px to the right */
+    margin-top: 35px;
+    /* Increased from 15px to 35px (added 20px) */
 }
+
 
 /* Left side - Poster template - pushed down by 20px */
+
 .poster-container {
-  flex: 1;
-  max-width: 380px;
-  margin-right: 0; /* Removed margin to bring controls closer to poster */
-  position: relative;
-  z-index: 10; /* Ensure poster is above any overlapping elements */
-  box-sizing: border-box; /* Include margin in width calculation */
-  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
+    flex: 1;
+    max-width: 380px;
+    margin-right: 0;
+    /* Removed margin to bring controls closer to poster */
+    position: relative;
+    z-index: 10;
+    /* Ensure poster is above any overlapping elements */
+    box-sizing: border-box;
+    /* Include margin in width calculation */
+    margin-top: 35px;
+    /* Increased from 15px to 35px (added 20px) */
 }
+
 
 /* Neo brutalism poster frame - reduced white border */
+
 .poster-frame {
-  background-color: #ffffff; /* White background */
-  border: 2px solid #ffffff; /* Reduced from 4px to 2px */
-  border-radius: 0; /* Make corners sharp */
-  padding: 10px; /* Reduced from 20px to 10px */
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3/4;
-  box-sizing: border-box; /* Include padding and border in width calculation */
+    background-color: #ffffff;
+    /* White background */
+    border: 2px solid #ffffff;
+    /* Reduced from 4px to 2px */
+    border-radius: 0;
+    /* Make corners sharp */
+    padding: 10px;
+    /* Reduced from 20px to 10px */
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    box-sizing: border-box;
+    /* Include padding and border in width calculation */
 }
 
+
 /* Shadow layers for neo-brutalism effect */
+
 .poster-frame::after {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 100%;
-  height: 100%;
-  background-color: #FFC107; /* Yellow background */
-  z-index: -1;
-  border: 4px solid #FFC107; /* Yellow border to match background */
-  box-sizing: border-box; /* Include border in width calculation */
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 100%;
+    height: 100%;
+    background-color: #FFC107;
+    /* Yellow background */
+    z-index: -1;
+    border: 4px solid #FFC107;
+    /* Yellow border to match background */
+    box-sizing: border-box;
+    /* Include border in width calculation */
 }
 
 .poster-frame::before {
-  content: '';
-  position: absolute;
-  top: 12px; /* Reduced from 16px to 12px */
-  left: 12px; /* Reduced from 16px to 12px */
-  width: 100%;
-  height: 100%;
-  background-color: #0083B5; /* Blue background */
-  z-index: -2;
-  border: 4px solid #0083B5; /* Blue border to match background */
-  box-sizing: border-box; /* Include border in width calculation */
+    content: '';
+    position: absolute;
+    top: 12px;
+    /* Reduced from 16px to 12px */
+    left: 12px;
+    /* Reduced from 16px to 12px */
+    width: 100%;
+    height: 100%;
+    background-color: #0083B5;
+    /* Blue background */
+    z-index: -2;
+    border: 4px solid #0083B5;
+    /* Blue border to match background */
+    box-sizing: border-box;
+    /* Include border in width calculation */
 }
+
 
 /* Content area */
+
 .content-area {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box; /* Include any padding in width calculation */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    /* Include any padding in width calculation */
 }
 
+
 /* Text section - pushed down by 20px */
+
 .text-section {
-  margin-bottom: 25px;
-  width: 100%; /* Ensure full width */
-  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
+    margin-bottom: 25px;
+    width: 100%;
+    /* Ensure full width */
+    margin-top: 35px;
+    /* Increased from 15px to 35px (added 20px) */
 }
 
 .text-section h2 {
-  font-size: 26px;
-  font-weight: 700;
-  margin: 5px 0;
-  color: #fff;
-  line-height: 1.3;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 5px 0;
+    color: #fff;
+    line-height: 1.3;
 }
 
 .text-section span {
-  color: #FFC107;
+    color: #FFC107;
 }
 
+
 /* User info section - pushed down by 20px */
+
 .user-info-section {
-  margin-bottom: 20px;
-  width: 100%; /* Ensure full width */
-  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
+    margin-bottom: 20px;
+    width: 100%;
+    /* Ensure full width */
+    margin-top: 35px;
+    /* Increased from 15px to 35px (added 20px) */
 }
 
 .user-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .user-icon {
-  width: 28px;
-  height: 28px;
-  background-color: #FFC107;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #0a1a34;
-  flex-shrink: 0; /* Prevent icon from shrinking */
+    width: 28px;
+    height: 28px;
+    background-color: #FFC107;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a1a34;
+    flex-shrink: 0;
+    /* Prevent icon from shrinking */
 }
 
 .user-details {
-  font-size: 14px;
-  color: #fff;
+    font-size: 14px;
+    color: #fff;
 }
 
 .contact-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #fff;
-  margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 15px;
 }
 
 .contact-info i {
-  color: #FFC107;
+    color: #FFC107;
 }
 
+
 /* Business tags - pushed down by 20px */
+
 .business-tag {
-  background-color: #FFC107;
-  color: #0a1a34;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-block;
-  margin-bottom: 10px;
-  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
+    background-color: #FFC107;
+    color: #0a1a34;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 10px;
+    margin-top: 35px;
+    /* Increased from 15px to 35px (added 20px) */
 }
 
 .game-changer-text {
-  color: #FFC107;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 1px;
+    color: #FFC107;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
+
 
 /* Right side - Controls section - pushed down by 20px */
+
 .controls-section {
-  flex: 1;
-  max-width: 350px;
-  padding-left: 20px; /* Added 20px spacing between poster and content */
-  padding-top: 60px; /* Increased from 40px to 60px (added 20px) */
-  box-sizing: border-box; /* Include padding in width calculation */
-  position: relative; /* Make it relatively positioned instead of sticky */
-  top: auto; /* Remove sticky positioning */
+    flex: 1;
+    max-width: 350px;
+    padding-left: 35px;
+    /* Increased from 20px to 25px for the additional 5px gap */
+    padding-top: 60px;
+    /* Increased from 40px to 60px (added 20px) */
+    box-sizing: border-box;
+    /* Include padding in width calculation */
+    position: relative;
+    /* Make it relatively positioned instead of sticky */
+    top: auto;
+    /* Remove sticky positioning */
 }
 
+
 /* Controls Section Title - pushed down by 20px */
+
 .section-title {
-  font-size: 38px; /* Increased font size */
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 10px; /* Reduced margin to decrease line spacing */
-  line-height: 1.1; /* Reduced line height for tighter text */
-  max-width: 350px; /* Reduced width */
-  margin-top: 35px; /* Increased from 15px to 35px (added 20px) */
+    font-size: 38px;
+    /* Increased font size */
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+    /* Reduced margin to decrease line spacing */
+    line-height: 1.1;
+    /* Reduced line height for tighter text */
+    max-width: 350px;
+    /* Reduced width */
+    margin-top: 35px;
+    /* Increased from 15px to 35px (added 20px) */
 }
 
 .section-subtitle {
-  font-size: 16px;
-  color: #e0e0e0;
-  margin-bottom: 20px; /* Reduced spacing */
-  line-height: 1.3; /* Tighter line height */
-  max-width: 350px; /* Match title width */
+    font-size: 16px;
+    color: #e0e0e0;
+    margin-bottom: 20px;
+    /* Reduced spacing */
+    line-height: 1.3;
+    /* Tighter line height */
+    max-width: 350px;
+    /* Match title width */
 }
 
 .download-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 15px;
-  background-color: #FFC107;
-  color: #000;
-  border: none;
-  border-radius: 8px; /* Rounded corners */
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  transition: background-color 0.2s;
-  box-sizing: border-box; /* Include padding and border in width calculation */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 15px;
+    background-color: #FFC107;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    /* Rounded corners */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+    /* Include padding and border in width calculation */
 }
 
 .download-btn:hover {
-  background-color: #e6b000;
+    background-color: #e6b000;
 }
 
 .download-btn i {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 .another-shot {
-  margin-top: 20px;
-  max-width: 350px; /* Match other elements width */
+    margin-top: 20px;
+    max-width: 350px;
+    /* Match other elements width */
 }
 
 .another-shot-text {
-  font-size: 14px;
-  color: #e0e0e0;
-  margin-bottom: 10px;
+    font-size: 14px;
+    color: #e0e0e0;
+    margin-bottom: 10px;
 }
 
 .make-another-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 15px;
-  background-color: #FFC107;
-  color: #000;
-  border: none;
-  border-radius: 8px; /* Rounded corners */
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  transition: background-color 0.2s;
-  box-sizing: border-box; /* Include padding and border in width calculation */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 15px;
+    background-color: #FFC107;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    /* Rounded corners */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+    /* Include padding and border in width calculation */
 }
 
 .make-another-btn:hover {
-  background-color: #e6b000;
+    background-color: #e6b000;
 }
 
 .make-another-btn i {
-  font-size: 18px;
+    font-size: 18px;
 }
 
+
 /* Enhanced mobile responsiveness for SharePoster page */
+
 @media (max-width: 992px) {
-  .share-poster-content {
-    flex-direction: column;
-    align-items: center;
-    gap: 60px;
-    max-width: 450px; /* Limit width on tablet */
-  }
-  
-  .poster-container {
-    margin-right: 0;
-    margin-bottom: 40px;
-    max-width: 350px;
-  }
-  
-  .controls-section {
-    padding-left: 0;
-    padding-top: 25px; /* Maintain vertical spacing in tablet view */
-    max-width: 380px;
-    text-align: center;
-    width: 100%;
-  }
+    .share-poster-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 60px;
+        max-width: 450px;
+        /* Limit width on tablet */
+    }
+    .poster-container {
+        margin-right: 0;
+        margin-bottom: 40px;
+        max-width: 350px;
+    }
+    .controls-section {
+        padding-left: 0;
+        padding-top: 25px;
+        /* Maintain vertical spacing in tablet view */
+        max-width: 380px;
+        text-align: center;
+        width: 100%;
+    }
 }
 
 @media (max-width: 768px) {
-  /* Ensure mobile poster page is properly configured */
-  .share-poster-page {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    padding: 15px !important;
-    overflow-x: hidden !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Fix logo positioning - center on mobile and make non-sticky */
-  .logo-container {
-    position: absolute !important;
-    top: 15px !important;
-    left: 50% !important; /* Center horizontally */
-    transform: translateX(-50%) !important; /* Center horizontally */
-    margin: 0 !important;
-    padding: 0 !important;
-    z-index: 1000 !important;
-    width: auto !important; /* Reset width */
-    text-align: center !important; /* Center text */
-  }
-
-  .header-logo {
-    width: 180px !important;
-    height: auto !important;
-    max-width: 180px !important;
-  }
-
-  /* Fix content layout and centering - add 15px more space */
-  .share-poster-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    width: 100% !important;
-    max-width: 320px !important;
-    margin: 140px auto 0 auto !important; /* Increased from 125px to 140px to push down by 15px more */
-    padding: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    gap: 20px !important;
-  }
-
-  /* Center the poster container */
-  .poster-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    max-width: 320px !important;
-    margin: 0 auto 20px auto !important;
-  }
-
-  /* Center the controls section */
-  .controls-section {
-    width: 100% !important;
-    max-width: 320px !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    text-align: center !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-
-  /* Fix text alignment and spacing */
-  .section-title,
-  .section-subtitle,
-  .another-shot-text {
-    text-align: center !important;
-    width: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  /* Fix button alignment */
-  .download-btn,
-  .make-another-btn {
-    width: 100% !important;
-    margin: 0 auto !important;
-  }
-
-  /* Ensure another shot section is centered */
-  .another-shot {
-    width: 100% !important;
-    margin: 15px auto 0 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-
-  /* Properly fix CTA banner carousel on mobile */
-  .mobile-cta-section {
-    width: 96% !important;
-    max-width: 380px !important; /* Increased from 320px to 380px */
-    margin: 30px auto 30px auto !important; /* Added bottom margin */
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 380px !important;
-    position: relative !important;
-    left: 0 !important;
-    right: 0 !important;
-  }
-
-  .mobile-cta-section .cta-carousel {
-    width: 100% !important;
-    height: 100% !important;
-    position: relative !important;
-    overflow: hidden !important;
-  }
-
-  .mobile-cta-section .banners-container {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    scroll-snap-type: x mandatory !important;
-    scroll-behavior: smooth !important;
-    -webkit-overflow-scrolling: touch !important;
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    scrollbar-width: none !important;
-    gap: 0 !important;
-    position: relative !important;
-    left: 0 !important;
-    top: 0 !important;
-  }
-
-  .mobile-cta-section .cta-banner {
-    flex: 0 0 100% !important;
-    width: 100% !important;
-    min-width: 100% !important;
-    height: 100% !important;
-    scroll-snap-align: center !important;
-    padding: 5px !important; /* Reduced padding from 10px to 5px */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-sizing: border-box !important;
-    transform: translateZ(0) !important;
-  }
-
-  .mobile-cta-section .cta-banner img {
-    max-width: 100% !important;
-    max-height: 360px !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain !important;
-    margin: 0 auto !important;
-    display: block !important;
-    object-position: center !important;
-    transform: scale(0.95) !important; /* Scale down slightly to ensure full visibility */
-  }
-
-  /* Fix overflow issue that causes content shifting */
-  body, html, #root, .app {
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    max-width: 100vw !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 100% !important;
-    position: relative !important;
-  }
-
-  /* Hide the white container completely in mobile view */
-  .cta-container {
-    display: none !important;
-  }
+    /* Ensure mobile poster page is properly configured */
+    .share-poster-page {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 15px !important;
+        overflow-x: hidden !important;
+        min-height: 100vh !important;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    /* Fix logo positioning - center on mobile and make non-sticky */
+    .logo-container {
+        position: absolute !important;
+        top: 15px !important;
+        left: 50% !important;
+        /* Center horizontally */
+        transform: translateX(-50%) !important;
+        /* Center horizontally */
+        margin: 0 !important;
+        padding: 0 !important;
+        z-index: 1000 !important;
+        width: auto !important;
+        /* Reset width */
+        text-align: center !important;
+        /* Center text */
+    }
+    .header-logo {
+        width: 180px !important;
+        height: auto !important;
+        max-width: 180px !important;
+    }
+    /* Fix content layout and centering - add 15px more space */
+    .share-poster-content {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        margin: 140px auto 0 auto !important;
+        /* Increased from 125px to 140px to push down by 15px more */
+        padding: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        gap: 20px !important;
+    }
+    /* Center the poster container */
+    .poster-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        margin: 0 auto 20px auto !important;
+    }
+    /* Center the controls section */
+    .controls-section {
+        width: 100% !important;
+        max-width: 320px !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    /* Fix text alignment and spacing */
+    .section-title,
+    .section-subtitle,
+    .another-shot-text {
+        text-align: center !important;
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    /* Fix button alignment */
+    .download-btn,
+    .make-another-btn {
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+    /* Ensure another shot section is centered */
+    .another-shot {
+        width: 100% !important;
+        margin: 15px auto 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    /* Properly fix CTA banner carousel on mobile */
+    .mobile-cta-section {
+        width: 96% !important;
+        max-width: 380px !important;
+        /* Increased from 320px to 380px */
+        margin: 30px auto 30px auto !important;
+        /* Added bottom margin */
+        overflow: visible !important;
+        height: auto !important;
+        min-height: 380px !important;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    .mobile-cta-section .cta-carousel {
+        width: 100% !important;
+        height: 100% !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    .mobile-cta-section .banners-container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+        scroll-behavior: smooth !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        height: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        scrollbar-width: none !important;
+        gap: 0 !important;
+        position: relative !important;
+        left: 0 !important;
+        top: 0 !important;
+    }
+    .mobile-cta-section .cta-banner {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        height: 100% !important;
+        scroll-snap-align: center !important;
+        padding: 5px !important;
+        /* Reduced padding from 10px to 5px */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        transform: translateZ(0) !important;
+    }
+    .mobile-cta-section .cta-banner img {
+        max-width: 100% !important;
+        max-height: 360px !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        margin: 0 auto !important;
+        display: block !important;
+        object-position: center !important;
+        transform: scale(0.95) !important;
+        /* Scale down slightly to ensure full visibility */
+    }
+    /* Fix overflow issue that causes content shifting */
+    body,
+    html,
+    #root,
+    .app {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
+        position: relative !important;
+    }
+    /* Hide the white container completely in mobile view */
+    .cta-container {
+        display: none !important;
+    }
 }
 
 @media (max-width: 480px) {
-  .share-poster-page {
-    padding: 20px 15px;
-    overflow-x: hidden;
-  }
-  
-  /* Keep logo size for smaller screens */
-  .header-logo {
-    width: 180px !important; /* Keep the same 180px width for consistency */
-  }
-  
-  .poster-container {
-    max-width: 280px;
-    width: 100%;
-    margin-bottom: 5px;
-  }
-  
-  .poster-frame {
-    padding: 15px;
-  }
-  
-  .poster-frame::after {
-    top: 6px;
-    left: 6px;
-  }
-  
-  .poster-frame::before {
-    top: 12px;
-    left: 12px;
-  }
-  
-  .section-title {
-    font-size: 22px;
-    margin-bottom: 8px;
-  }
-  
-  .section-subtitle {
-    font-size: 14px;
-    margin-bottom: 12px;
-  }
-  
-  .controls-section {
-    max-width: 280px;
-    width: 100%;
-    padding-top: 0;
-  }
-  
-  .download-btn, .make-another-btn {
-    font-size: 14px;
-    padding: 10px;
-  }
-  
-  .another-shot {
-    margin-top: 12px;
-  }
+    .share-poster-page {
+        padding: 20px 15px;
+        overflow-x: hidden;
+    }
+    /* Keep logo size for smaller screens */
+    .header-logo {
+        width: 180px !important;
+        /* Keep the same 180px width for consistency */
+    }
+    .poster-container {
+        max-width: 280px;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .poster-frame {
+        padding: 15px;
+    }
+    .poster-frame::after {
+        top: 6px;
+        left: 6px;
+    }
+    .poster-frame::before {
+        top: 12px;
+        left: 12px;
+    }
+    .section-title {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+    .section-subtitle {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    .controls-section {
+        max-width: 280px;
+        width: 100%;
+        padding-top: 0;
+    }
+    .download-btn,
+    .make-another-btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+    .another-shot {
+        margin-top: 12px;
+    }
 }
 
+
 /* User image container */
+
 .user-image-container {
-  margin-top: 15px;
-  margin-bottom: 20px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .user-image {
-  max-width: 70%;
-  max-height: 180px;
-  object-fit: contain;
+    max-width: 70%;
+    max-height: 180px;
+    object-fit: contain;
 }
 
+
 /* Loading overlay */
+
 .loading-overlay {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  width: 100%;
-  padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    width: 100%;
+    padding: 30px;
 }
 
 .loading-overlay .loading-spinner {
-  border: 5px solid rgba(0, 0, 0, 0.1);
-  border-top: 5px solid #FFC107;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #FFC107;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-overlay p {
-  font-size: 20px;
-  color: #fff;
-  font-weight: 500;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 500;
 }
 
+
 /* Error container */
+
 .error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  width: 100%;
-  padding: 30px;
-  max-width: 500px;
-  margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    width: 100%;
+    padding: 30px;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .error-container .error-message {
-  font-size: 18px;
-  color: #FFC107;
-  text-align: center;
-  margin-bottom: 30px;
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 18px;
+    color: #FFC107;
+    text-align: center;
+    margin-bottom: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+
 /* Generated poster image */
+
 .generated-poster {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 0; /* Ensure no rounded corners */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0;
+    /* Ensure no rounded corners */
 }
 
 .poster-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .poster-placeholder p {
-  color: #fff;
-  font-size: 18px;
-  font-weight: 500;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
 }
+
 
 /* Half-cut white container for CTA banners */
+
 .cta-container {
-  position: absolute !important; /* Absolute positioning, not sticky */
-  right: 0;
-  top: 170px; /* Increased from 150px to 170px (added 20px) */
-  bottom: 150px; /* Kept bottom the same */
-  width: 420px; /* Reduced width to make container smaller */
-  background-color: #ffffff;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  overflow: hidden; /* Ensures proper auto-scrolling */
-  z-index: 100;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-  display: flex; /* Ensure flex layout for proper carousel sizing */
-  flex-direction: column; /* Stack children vertically */
-  opacity: 1; /* Ensure container is fully visible */
-  transition: opacity 0.3s ease; /* Smooth transition for visibility */
-  padding: 15px; /* Adjusted padding for smaller container */
+    position: absolute !important;
+    /* Absolute positioning, not sticky */
+    right: 0;
+    top: 170px;
+    /* Increased from 150px to 170px (added 20px) */
+    bottom: 150px;
+    /* Kept bottom the same */
+    width: 420px;
+    /* Reduced width to make container smaller */
+    background-color: #ffffff;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    overflow: hidden;
+    /* Ensures proper auto-scrolling */
+    z-index: 100;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    /* Ensure flex layout for proper carousel sizing */
+    flex-direction: column;
+    /* Stack children vertically */
+    opacity: 1;
+    /* Ensure container is fully visible */
+    transition: opacity 0.3s ease;
+    /* Smooth transition for visibility */
+    padding: 15px;
+    /* Adjusted padding for smaller container */
 }
+
 
 /* CTA Banner Carousel */
+
 .cta-carousel {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Space between banners and indicators */
-  padding: 15px;
-  box-sizing: border-box;
-  position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Space between banners and indicators */
+    padding: 15px;
+    box-sizing: border-box;
+    position: relative;
 }
+
 
 /* Container for banners (auto-rotating functionality) */
+
 .banners-container {
-  width: 100%;
-  flex-grow: 1; /* Take up available space */
-  position: relative;
-  overflow: hidden; /* Prevent content overflow */
-  margin-bottom: 25px; /* Space for indicators */
-  padding: 25px; /* Increased padding around the container */
-  box-sizing: border-box;
-  min-height: 400px; /* Ensuring minimum height for banners container */
+    width: 100%;
+    flex-grow: 1;
+    /* Take up available space */
+    position: relative;
+    overflow: hidden;
+    /* Prevent content overflow */
+    margin-bottom: 25px;
+    /* Space for indicators */
+    padding: 25px;
+    /* Increased padding around the container */
+    box-sizing: border-box;
+    min-height: 400px;
+    /* Ensuring minimum height for banners container */
 }
+
 
 /* Hidden auto-rotate container (maintains functionality while hidden) */
+
 .hidden-auto-rotate {
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
 }
+
 
 /* Simple scrollable container for images */
+
 .simple-scroll-container {
-  width: 100%;
-  display: flex;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  overflow-y: hidden; /* Disable vertical scrolling */
-  padding: 10px 0;
-  gap: 15px;
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #aaa #f0f0f0; /* Firefox: thumb and track color */
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    overflow-y: hidden;
+    /* Disable vertical scrolling */
+    padding: 10px 0;
+    gap: 15px;
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: #aaa #f0f0f0;
+    /* Firefox: thumb and track color */
 }
 
+
 /* Custom horizontal scrollbar */
+
 .simple-scroll-container::-webkit-scrollbar {
-  height: 8px; /* Height for horizontal scrollbar */
-  background-color: transparent;
+    height: 8px;
+    /* Height for horizontal scrollbar */
+    background-color: transparent;
 }
 
 .simple-scroll-container::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 4px;
+    background: #f0f0f0;
+    border-radius: 4px;
 }
 
 .simple-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #aaa;
-  border-radius: 4px;
-  border: 2px solid #f0f0f0;
+    background-color: #aaa;
+    border-radius: 4px;
+    border: 2px solid #f0f0f0;
 }
+
 
 /* Individual banner item for auto-rotation */
+
 .cta-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px; /* Increased padding */
-  box-sizing: border-box;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    /* Increased padding */
+    box-sizing: border-box;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
 
+
 /* Simple image styling in carousel */
+
 .simple-scroll-container a {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 350px;
-  transition: opacity 0.3s ease;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 350px;
+    transition: opacity 0.3s ease;
 }
 
 .simple-scroll-container .active-image {
-  position: relative;
+    position: relative;
 }
+
 
 /* Removing the yellow dot indicator */
+
 .simple-scroll-container .active-image::after {
-  display: none;
+    display: none;
 }
 
+
 /* Active banner styling */
+
 .cta-banner.active {
-  opacity: 1;
-  z-index: 2;
+    opacity: 1;
+    z-index: 2;
 }
 
 .cta-banner img {
-  max-width: 95%; /* Reduced from 100% to give some margin */
-  max-height: 90%; /* Reduced to ensure images don't overflow */
-  object-fit: contain;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-  transform: scale(1); /* Reset scale to prevent overflow */
+    max-width: 95%;
+    /* Reduced from 100% to give some margin */
+    max-height: 90%;
+    /* Reduced to ensure images don't overflow */
+    object-fit: contain;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    transform: scale(1);
+    /* Reset scale to prevent overflow */
 }
 
+
 /* Simple image styling */
+
 .simple-scroll-container img {
-  height: 330px;
-  width: auto;
-  object-fit: contain;
+    height: 330px;
+    width: auto;
+    object-fit: contain;
 }
 
 .cta-banner img:hover {
-  transform: scale(1.05); /* Reduced hover scale to prevent overflow */
+    transform: scale(1.05);
+    /* Reduced hover scale to prevent overflow */
 }
+
 
 /* No indicators needed as we're using horizontal scrolling */
 
+
 /* Placeholder styling */
+
 .cta-placeholder {
-  width: 160px;
-  height: 300px;
-  background-color: #f0f0f0;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  color: #666;
-  font-size: 14px;
-  text-align: center;
-  padding: 10px;
-  margin: 0 auto;
+    width: 160px;
+    height: 300px;
+    background-color: #f0f0f0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+    padding: 10px;
+    margin: 0 auto;
 }
+
 
 /* Removed scroll indicator text */
+
 .scroll-indicator {
-  display: none; /* Hide the scroll indicator completely */
+    display: none;
+    /* Hide the scroll indicator completely */
 }
 
+
 /* Media queries for responsive design */
+
 @media (max-width: 992px) {
-  .cta-container {
-    width: 320px;
-    top: 220px; /* Increased from 200px to 220px (added 20px) */
-    bottom: 200px;
-  }
+    .cta-container {
+        width: 320px;
+        top: 220px;
+        /* Increased from 200px to 220px (added 20px) */
+        bottom: 200px;
+    }
 }
 
 @media (max-width: 768px) {
-  .cta-container {
-    width: 260px;
-    top: 200px; /* Increased from 180px to 200px (added 20px) */
-    bottom: 180px;
-  }
+    .cta-container {
+        width: 260px;
+        top: 200px;
+        /* Increased from 180px to 200px (added 20px) */
+        bottom: 180px;
+    }
 }
 
 @media (max-width: 480px) {
-  .cta-container {
-    width: 200px;
-    top: 180px; /* Increased from 160px to 180px (added 20px) */
-    bottom: 160px;
-  }
-  
-  .cta-placeholder {
-    width: 120px;
-    height: 200px;
-    font-size: 12px;
-  }
+    .cta-container {
+        width: 200px;
+        top: 180px;
+        /* Increased from 160px to 180px (added 20px) */
+        bottom: 160px;
+    }
+    .cta-placeholder {
+        width: 120px;
+        height: 200px;
+        font-size: 12px;
+    }
 }
 
+
 /* Remove unneeded styles that were for the old poster layout */
+
 .user-image-container,
 .user-image,
 .text-section,
@@ -858,6 +1003,6 @@
 .contact-info,
 .business-tag,
 .game-changer-text {
-  /* These styles are no longer needed as the poster is now generated as a single image */
-  display: none;
-} 
+    /* These styles are no longer needed as the poster is now generated as a single image */
+    display: none;
+}

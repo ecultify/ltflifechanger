@@ -7,9 +7,11 @@ import "../styles/pages/AddDetailsScrollFix.css"; // Added scroll fixes for desk
 import "../styles/pages/KeywordSuggestionsFix.css"; // Added fix for keyword suggestions display
 import "../styles/pages/DirectFontOverride.css"; // Added direct override for font and spacing issues
 import "../styles/pages/MobileImageCenter.css"; // Added for centering Group15183 image on mobile
+import "../styles/pages/Group15183Fix.css"; // Added for Group15183 desktop positioning
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { OPENAI_API_KEY } from "../config"; // Import API key from config file
+import { saveUserDataToGoogleSheets } from "../utils/googleSheetsService"; // Import Google Sheets service
 
 // Add this at the top level to provide an alternative for testing
 const testOpenAIAPI = async () => {
@@ -590,6 +592,9 @@ const AddDetails = () => {
       alert("Please select a maximum of 5 keywords");
       return;
     }
+    
+    // Store the selected keywords in session storage for use in the final poster
+    sessionStorage.setItem('selectedKeywords', JSON.stringify(keywords));
 
     console.log("Starting tagline generation with imported API key...");
     console.log(
@@ -713,9 +718,11 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
 
       // Create request data with variables for temperature
       // Increase temperature when regenerating to increase variation
+      // Using a higher base temperature (0.95) for regeneration and adding more variation
+      // based on the regeneration count to ensure more diverse results
       const temperature = isRegeneration
-        ? 0.9 + Math.min(regenerationCount, 3) * 0.05
-        : 0.75;
+        ? 0.95 + Math.min(regenerationCount, 4) * 0.07
+        : 0.8;
 
       // Improved prompt for more meaningful and contextual taglines with highlighted keywords
       const requestData = {
@@ -733,9 +740,10 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
         temperature: temperature, // Higher temperature for regeneration for more variety
         max_tokens: 100,
         // Add presence_penalty when regenerating to encourage different word choices
-        presence_penalty: isRegeneration ? 0.6 : 0.0,
+        // Increased penalties for regeneration to force more variety
+        presence_penalty: isRegeneration ? 0.8 : 0.1,
         // Add frequency penalty when regenerating to discourage repeating phrase patterns
-        frequency_penalty: isRegeneration ? 0.7 : 0.0,
+        frequency_penalty: isRegeneration ? 0.9 : 0.2,
       };
 
       console.log("Request data:", requestData);
@@ -762,6 +770,30 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       // Store the tagline with the keyword highlights intact
       setTagline(generatedTagline);
       setIsTaglineGenerated(true);
+
+      // Save tagline to session storage for use in the final poster
+      sessionStorage.setItem('tagline', generatedTagline);
+      
+      // Extract and save highlighted keywords for backup in case the asterisks get lost
+      // This provides an additional way to identify which words should be bold
+      try {
+        const highlightedWords = [];
+        const regex = /\*(.*?)\*/g;
+        let match;
+        while ((match = regex.exec(generatedTagline)) !== null) {
+          if (match[1] && match[1].trim().length > 0) {
+            highlightedWords.push(match[1].trim());
+          }
+        }
+        
+        // If we found highlighted words in the tagline, save them
+        if (highlightedWords.length > 0) {
+          const allBoldWords = [...keywords, ...highlightedWords];
+          sessionStorage.setItem('highlightedKeywords', JSON.stringify(allBoldWords));
+        }
+      } catch (e) {
+        console.error('Error extracting highlighted keywords:', e);
+      }
     } catch (error) {
       console.error("Error generating tagline:", error);
       console.error(
@@ -925,7 +957,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
   };
 
   // Handle next button click
-  const handleNext = () => {
+  const handleNext = async () => {
     // Process the tagline to clean up any manual edits
     let finalTagline = tagline;
 
@@ -949,10 +981,8 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
     sessionStorage.setItem("tagline", finalTagline);
 
     // Also store a clean version of the tagline without asterisks
-    sessionStorage.setItem(
-      "cleanTagline",
-      finalTagline.replace(/\*(.*?)\*/g, "$1")
-    );
+    const cleanTagline = finalTagline.replace(/\*(.*?)\*/g, "$1");
+    sessionStorage.setItem("cleanTagline", cleanTagline);
 
     // Store keywords as JSON string - using selectedKeywords key for consistency with SharePoster.js
     sessionStorage.setItem("selectedKeywords", JSON.stringify(keywords));
@@ -962,6 +992,37 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
       "highlightedKeywords",
       JSON.stringify(highlightedKeywords)
     );
+    
+    // Save the form data to Google Sheets
+    try {
+      // Prepare the user data object
+      const userData = {
+        name: name,
+        companyName: companyName,
+        industry: industry,
+        businessVintage: businessVintage,
+        turnover: turnover,
+        keywords: keywords,
+        tagline: cleanTagline, // Use the clean version without asterisks
+        // Email and phone could be added here if they were collected in this form
+      };
+      
+      console.log("Saving form data to Google Sheets...");
+      
+      // Save to Google Sheets using the service
+      // We'll do this asynchronously but not wait for completion to avoid delaying navigation
+      saveUserDataToGoogleSheets(userData)
+        .then(result => {
+          console.log("Data successfully saved to Google Sheets:", result);
+        })
+        .catch(error => {
+          console.error("Error saving data to Google Sheets:", error);
+          // Continue with navigation even if Google Sheets save fails
+        });
+    } catch (error) {
+      console.error("Error preparing data for Google Sheets:", error);
+      // Don't block navigation if there's an error with Google Sheets
+    }
 
     // Move to the upload photo page
     navigate("/upload-photo");
@@ -1022,7 +1083,7 @@ Return only the final tagline text with keywords highlighted with asterisks (*ke
               src="/images/adddetails/Group15183.png"
               alt="Group"
               className="left-group-image"
-              style={{ marginTop: "-30px", marginLeft: "70px" }}
+              style={{ marginTop: "-30px", marginLeft: "30px" }}
             />{" "}
           </div>{" "}
           <div className="left-people-container">

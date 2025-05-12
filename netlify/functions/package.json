@@ -1,0 +1,8 @@
+{
+  "name": "netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify serverless functions for LTF Life Changer",
+  "dependencies": {
+    "google-spreadsheet": "^3.3.0"
+  }
+}

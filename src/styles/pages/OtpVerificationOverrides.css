@@ -16,13 +16,20 @@
   /* Ensure form container has relative positioning */
   .form-container {
     position: relative !important;
-    padding-top: 25px !important;
+    padding-top: 55px !important;
     overflow: visible !important;
+    min-height: 580px !important;
   }
 
   /* Apply button should be positioned consistently */
   .verify-btn {
     margin-top: 20px !important;
+  }
+
+  /* Increase the right content container height */
+  .right-content {
+    min-height: 600px !important;
+    margin-top: -20px !important;
   }
 
   /* Make sure the OTP inputs are properly spaced */

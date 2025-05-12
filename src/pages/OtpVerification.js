@@ -3,6 +3,7 @@ import "../styles/pages/OtpVerification.css";
 import "../styles/pages/StepColorOverrides.css"; // Added step color overrides
 import "../styles/components/FixedStepper.css"; // For fixed position stepper
 import "../styles/pages/OtpVerificationOverrides.css"; // Added custom overrides for layout
+import "../styles/pages/OtpScrollFixOverrides.css"; // Added scroll fixes for mobile
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
@@ -23,33 +24,51 @@ const OtpVerification = () => {
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [customerName, setCustomerName] = useState("Customer"); // Default customer name
 
-  // Prevent automatic scroll to top on the same page
+  // Improved scroll handling for smoother experience
   useEffect(() => {
-    let scrollPosition = window.pageYOffset;
+    // Only apply scroll handling if not on mobile
+    if (!isMobile) {
+      let scrollPosition = window.pageYOffset;
+      let isUserScrolling = false;
+      let scrollTimeout;
 
-    // Store scroll position when user scrolls
-    const handleScroll = () => {
-      scrollPosition = window.pageYOffset;
-    };
+      // Store scroll position when user scrolls
+      const handleScroll = () => {
+        isUserScrolling = true;
+        scrollPosition = window.pageYOffset;
+        
+        // Reset the user scrolling flag after a short delay
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          isUserScrolling = false;
+        }, 100);
+      };
 
-    // Function to restore scroll position if auto-scrolled
-    const preventAutoScroll = () => {
-      // If something tries to scroll the page automatically, restore position
-      window.scrollTo(0, scrollPosition);
-    };
+      // Function to restore scroll position only if not user-initiated
+      const preventAutoScroll = () => {
+        // Only prevent auto scrolling if user isn't actively scrolling
+        if (!isUserScrolling) {
+          window.scrollTo({
+            top: scrollPosition,
+            behavior: 'auto' // Use auto instead of smooth for less visual disruption
+          });
+        }
+      };
 
-    // Add event listeners
-    window.addEventListener("scroll", handleScroll, { passive: true });
+      // Add event listeners with passive true for better performance
+      window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Check and restore scroll every 200ms
-    const intervalId = setInterval(preventAutoScroll, 200);
+      // Check less frequently and only when needed
+      const intervalId = setInterval(preventAutoScroll, 500);
 
-    // Cleanup on unmount
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      clearInterval(intervalId);
-    };
-  }, []);
+      // Cleanup on unmount
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        clearTimeout(scrollTimeout);
+        clearInterval(intervalId);
+      };
+    }
+  }, [isMobile]);
 
   // Check if on mobile device
   useEffect(() => {

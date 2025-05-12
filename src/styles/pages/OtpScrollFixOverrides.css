@@ -1,0 +1,81 @@
+/* OTP Verification Page Scroll Fixes for Mobile View */
+
+/* General body/html fixes */
+body, html {
+  overflow-x: hidden;
+  touch-action: pan-y; /* Improve vertical scrolling */
+  height: 100%;
+  min-height: -webkit-fill-available; /* Ensure proper height on iOS */
+}
+
+/* Mobile fixes for the glitchy scrolling */
+@media (max-width: 768px) {
+  /* Fix overall page behavior */
+  .otp-page {
+    position: relative;
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    touch-action: pan-y !important;
+    overscroll-behavior: none !important;
+    -webkit-overflow-scrolling: touch !important; /* Smoother scrolling on iOS */
+  }
+  
+  /* Fix form container scrolling */
+  .right-section.mobile-view {
+    position: relative !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    min-height: 100vh !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Fix form container */
+  .form-container {
+    position: relative !important;
+    overflow: visible !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    will-change: transform; /* Hardware acceleration */
+  }
+  
+  /* Ensure the mobile elements don't cause overflow issues */
+  .bumrah-container {
+    overflow: visible !important;
+    will-change: transform; /* Hardware acceleration */
+  }
+  
+  /* Improve form element behavior */
+  .right-content {
+    overflow: visible !important;
+    touch-action: pan-y !important;
+  }
+  
+  /* Consent modal z-index fix */
+  .consent-modal {
+    z-index: 2001 !important; /* Ensure it's above other elements */
+  }
+  
+  /* Fix for any fixed position elements */
+  .mobile-stepper-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background-color: white !important;
+  }
+  
+  /* Prevent iOS double-tap zoom on inputs */
+  input[type="text"],
+  input[type="tel"],
+  select {
+    touch-action: manipulation !important;
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Ensure OTP inputs are properly sized for mobile */
+  .otp-input {
+    touch-action: manipulation !important;
+  }
+}

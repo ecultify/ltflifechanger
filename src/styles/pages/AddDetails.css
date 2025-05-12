@@ -89,9 +89,9 @@
   display: flex;
   align-items: flex-start; /* Changed from center to flex-start to anchor at top */
   justify-content: center;
-  padding: 40px 30px 120px 30px; /* Increased bottom padding to 120px to add 40px more height from bottom */
+  padding: 40px 30px 160px 30px; /* Increased bottom padding to 160px to add more height from bottom */
   margin-top: 0; /* Removed negative margin */
-  min-height: calc(100vh + 40px); /* Increased to full viewport height plus 40px */
+  min-height: calc(100vh + 80px); /* Increased to full viewport height plus 80px */
   overflow-y: auto; /* Add scrolling if needed */
 }
 

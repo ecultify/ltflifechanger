@@ -1,0 +1,152 @@
+/* AddDetails Page Scroll Fixes for Desktop and Mobile Views */
+
+/* General body/html fixes */
+body, html {
+  overflow-x: hidden;
+  touch-action: pan-y; /* Improve vertical scrolling */
+  height: 100%;
+  min-height: -webkit-fill-available; /* Ensure proper height on iOS */
+}
+
+/* Fixes for both views */
+.details-page {
+  overscroll-behavior: none; /* Prevent bounce effect */
+  -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+  touch-action: pan-y; /* Enable vertical touch scrolling */
+}
+
+/* Desktop view fixes */
+@media (min-width: 769px) {
+  /* Improve scrolling on the right section */
+  .right-section {
+    overscroll-behavior: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+    will-change: transform !important; /* Hardware acceleration */
+    touch-action: pan-y !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Fix for the fixed stepper at the top to prevent glitches */
+  .fixed-stepper-container {
+    will-change: transform !important;
+    transform: translateZ(0) !important; /* Force hardware acceleration */
+    backface-visibility: hidden !important;
+  }
+  
+  /* Ensure form container scrolls properly */
+  .form-container {
+    position: relative !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Prevent input field zoom on iOS */
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  select {
+    font-size: 16px !important; /* Prevent iOS zoom */
+    touch-action: manipulation !important;
+  }
+  
+  /* Improve tagline display scrolling */
+  .tagline-display {
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+  }
+  
+  /* Fix for keyword suggestions container */
+  .suggested-keywords {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overflow-y: hidden !important;
+  }
+}
+
+/* Mobile view fixes */
+@media (max-width: 768px) {
+  /* Fix overall page scrolling */
+  .details-page {
+    height: auto !important;
+    min-height: 100vh !important;
+    position: relative !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Fix right section on mobile */
+  .right-section {
+    position: relative !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    will-change: transform !important;
+  }
+  
+  /* Fix form container on mobile */
+  .form-container {
+    overflow: visible !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    will-change: transform !important;
+    position: relative !important;
+    z-index: 5 !important;
+  }
+  
+  /* Fix for the common glitch with mobile stepper */
+  .details-page .right-section .fixed-stepper {
+    will-change: transform !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+  
+  /* Fix for tagline display on mobile - prevent glitchy touch behavior */
+  .tagline-display-area,
+  .tagline-display {
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important; /* Enable horizontal touch scrolling */
+    will-change: transform !important;
+  }
+  
+  /* Fix for the regenerate button to prevent touch delay */
+  .regenerate-btn {
+    touch-action: manipulation !important;
+  }
+  
+  /* Prevent iOS double-tap zoom on inputs */
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  select,
+  textarea {
+    touch-action: manipulation !important;
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Fix for the form spacing to prevent layout shifts */
+  .form-group {
+    will-change: transform !important;
+    transform: translateZ(0) !important;
+  }
+  
+  /* Prevent keyword container from causing layout shifts */
+  .keywords-container,
+  .keywords-input-container {
+    overflow: visible !important;
+    will-change: transform !important;
+  }
+}
+
+/* Fix for scrolling with modals open */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}

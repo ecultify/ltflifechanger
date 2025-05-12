@@ -1,0 +1,62 @@
+/* Direct font and spacing overrides for AddDetails page */
+
+
+/* Proper spacing between keyword suggestions and tagline on all devices */
+
+.form-group:has(.keywords-input-container) {
+    margin-bottom: 0 !important;
+}
+
+.form-group:has(label[for="tagline"]) {
+    margin-top: 5px !important;
+}
+
+.suggested-keywords {
+    margin-bottom: 5px !important;
+    padding-bottom: 2px !important;
+}
+
+
+/* Ensure the keyword suggestions container has enough height */
+
+.keywords-input-container {
+    min-height: 40px !important;
+}
+
+
+/* Fix font size for Generate Tagline label on all devices */
+
+.form-group label[for="tagline"],
+.right-section .form-group label[for="tagline"],
+.form-container .form-group label[for="tagline"] {
+    font-size: 14px !important;
+    /* Desktop size */
+    font-weight: 500 !important;
+    color: #333 !important;
+    display: block !important;
+    margin-bottom: 5px !important;
+    font-family: 'Poppins', sans-serif !important;
+    text-transform: none !important;
+    line-height: 1.2 !important;
+    max-height: 20px !important;
+}
+
+
+/* Mobile specific adjustments */
+
+@media (max-width: 768px) {
+    /* Optimize spacing on mobile */
+    .form-group:has(.keywords-input-container) {
+        margin-bottom: 5px !important;
+    }
+    .form-group:has(label[for="tagline"]) {
+        margin-top: 0 !important;
+    }
+    /* Ensure the Generate Tagline title matches other form field titles */
+    .form-group label[for="tagline"],
+    .right-section .form-group label[for="tagline"],
+    .form-container .form-group label[for="tagline"] {
+        font-size: 12px !important;
+        max-height: 16px !important;
+    }
+}

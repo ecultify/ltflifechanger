@@ -1,0 +1,130 @@
+/* Fix for the stepper alignment on UploadPhoto page mobile view */
+
+/* Use !important flags to ensure these styles take precedence */
+@media (max-width: 768px) {
+  /* Reset and fix the form container positioning */
+  .upload-page .form-container,
+  .left-section .form-container {
+    position: relative !important;
+    padding-top: 30px !important; /* Increased top padding */
+    padding-bottom: 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  /* Completely reset the stepper container styles */
+  .upload-page .mobile-stepper-container,
+  .upload-page .form-stepper,
+  .left-section .mobile-stepper-container,
+  .left-section .form-stepper {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto 15px auto !important; /* Added bottom margin */
+    padding: 0 !important;
+    position: relative !important;
+    left: 0 !important; /* Reset any offset */
+    transform: none !important; /* Reset any transform */
+  }
+
+  /* Highly specific selector for the mobile stepper to ensure centering */
+  .upload-page .form-container .mobile-stepper,
+  .left-section .form-container .mobile-stepper {
+    background: none !important;
+    box-shadow: none !important;
+    display: flex !important;
+    justify-content: space-between !important; /* Changed to space-between */
+    align-items: center !important;
+    width: 80% !important; /* Reduced width to ensure proper spacing */
+    max-width: 250px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  /* Equal spacing between steps using flexbox */
+  .upload-page .mobile-stepper .progress-step,
+  .left-section .mobile-stepper .progress-step {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 0 0 auto !important; /* Don't allow flex growth, keep fixed size */
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  /* Equal width progress lines */
+  .upload-page .mobile-stepper .progress-line,
+  .left-section .mobile-stepper .progress-line {
+    flex: 1 !important; /* Let lines take remaining space */
+    height: 2px !important;
+    margin: 0 4px !important;
+    position: relative !important;
+    top: -12px !important;
+    z-index: 1 !important;
+  }
+  
+  /* Default style for step circles (steps 1 & 2 - grey) */
+  .upload-page .mobile-stepper .step-circle,
+  .left-section .mobile-stepper .step-circle {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    margin: 0 auto !important;
+    background-color: #999 !important; /* Grey color for steps 1 & 2 */
+    color: white !important;
+  }
+
+  /* Step 3 (Upload) - active step circle in blue */
+  .upload-page .mobile-stepper .progress-step:nth-child(5) .step-circle,
+  .left-section .mobile-stepper .progress-step:nth-child(5) .step-circle {
+    background-color: #0083B5 !important; /* Blue color for step 3 (Upload) */
+  }
+
+  /* Progress lines in blue */
+  .upload-page .mobile-stepper .progress-line,
+  .left-section .mobile-stepper .progress-line {
+    flex: 1 !important; /* Let lines take remaining space */
+    height: 2px !important;
+    margin: 0 4px !important;
+    position: relative !important;
+    top: -12px !important;
+    z-index: 1 !important;
+    background-color: #0083B5 !important; /* Blue color for lines */
+  }
+  
+  /* Default text color (black) for steps 1 & 2 */
+  .upload-page .mobile-stepper .step-label,
+  .left-section .mobile-stepper .step-label {
+    font-size: 10px !important;
+    margin-top: 4px !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    color: #333 !important; /* Black text for steps 1 & 2 */
+  }
+  
+  /* Step 3 (Upload) text in blue */
+  .upload-page .mobile-stepper .progress-step:nth-child(5) .step-label,
+  .left-section .mobile-stepper .progress-step:nth-child(5) .step-label {
+    color: #0083B5 !important; /* Blue text for step 3 (Upload) */
+  }
+  
+  /* Add extra margin below the stepper and adjust title */
+  .upload-page .form-container .form-title,
+  .left-section .form-container .form-title {
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+}

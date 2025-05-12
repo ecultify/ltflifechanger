@@ -1,0 +1,108 @@
+/* Fix for keyword suggestions container to ensure proper display without cutoff */
+
+
+/* Desktop view specific fixes */
+
+@media (min-width: 769px) {
+    /* Target only the suggested keywords container */
+    .suggested-keywords {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        position: relative !important;
+        overflow: visible !important;
+        height: auto !important;
+        /* Allow natural height */
+        min-height: unset !important;
+        /* Remove fixed height constraints */
+        max-height: unset !important;
+        /* Remove fixed height constraints */
+        margin-bottom: 5px !important;
+        /* Reduced bottom margin */
+        padding-bottom: 5px !important;
+        /* Reduced bottom padding */
+        z-index: 1 !important;
+        /* Ensure proper stacking */
+    }
+    /* Ensure the suggested keyword buttons are fully visible */
+    button.suggested-keyword {
+        margin: 3px 4px !important;
+        /* Increased margins between buttons */
+        height: auto !important;
+        /* Allow natural height */
+        min-height: 28px !important;
+        /* Set minimum height */
+        padding: 4px 10px !important;
+        /* Increased padding for better readability */
+        position: relative !important;
+        z-index: 2 !important;
+    }
+    /* Reduce space between keywords container and tagline section */
+    .form-group:has(.keywords-input-container) {
+        margin-bottom: -10px !important;
+        /* Negative margin to pull elements closer */
+        padding-bottom: 0 !important;
+        /* Removed padding */
+        position: relative !important;
+    }
+    /* Move the tagline section closer */
+    .form-group:has(label[for="tagline"]) {
+        margin-top: -5px !important;
+        /* Negative top margin to pull up */
+        position: relative !important;
+        z-index: 1 !important;
+    }
+    /* Ensure the container holding both sections has adequate space */
+    .form-container {
+        padding-bottom: 30px !important;
+        /* Additional bottom padding */
+    }
+}
+
+
+/* Mobile view fixes */
+
+@media (max-width: 768px) {
+    /* Fix font size consistency for Generate Tagline label - using multiple selectors for higher specificity */
+    label[for="tagline"],
+    .form-group label[for="tagline"],
+    .form-row .form-group label[for="tagline"],
+    .details-page .right-section .form-container .form-row .form-group label[for="tagline"],
+    div.form-group>label[for="tagline"],
+    .form-row:nth-child(4) .form-group label,
+    label:contains("Generate Tagline") {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #333 !important;
+        display: block !important;
+        margin-bottom: 5px !important;
+        font-family: 'Poppins', sans-serif !important;
+        text-transform: none !important;
+        line-height: 1.5 !important;
+    }
+    /* Ensure all form labels have consistent styling */
+    .form-group label {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #333 !important;
+        margin-bottom: 5px !important;
+        font-family: 'Poppins', sans-serif !important;
+    }
+    /* Ensure proper spacing on mobile */
+    .form-group:has(.keywords-input-container) {
+        margin-bottom: 5px !important;
+    }
+    /* Fix vertical spacing on mobile */
+    .suggested-keywords {
+        margin-bottom: 10px !important;
+        padding-bottom: 0 !important;
+    }
+}
+
+
+/* Override any conflicting styles */
+
+.suggested-keywords button,
+.keywords-input-container+div,
+.form-group+.form-group {
+    position: relative !important;
+}

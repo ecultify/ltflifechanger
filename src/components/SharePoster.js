@@ -111,7 +111,7 @@ const SharePoster = ({ userData, userImage, containerRef }) => {
             </div>
             
             <!-- Tagline -->
-            <p style="font-size: 18px; max-width: 80%; margin: 0 auto 30px auto; line-height: 1.4;">
+            <p style="font-size: 18px; max-width: 80%; width: calc(80% + 2px); margin: 0 auto 30px auto; line-height: 1.4;">
               "${userData.tagline}"
             </p>
           </div>

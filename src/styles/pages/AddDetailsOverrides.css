@@ -28,16 +28,16 @@
 
 .suggested-keywords {
     margin-top: 5px !important;
-    margin-bottom: 0;
+    margin-bottom: 15px !important; /* Added bottom margin to ensure space for second row */
     padding-top: 5px !important;
+    padding-bottom: 10px !important; /* Added bottom padding */
     border-top: 1px solid #f0f0f0 !important;
     display: flex !important;
     flex-wrap: wrap !important;
-    height: 50px !important;
-    /* Keep at 50px for desktop */
-    max-height: 50px !important;
-    min-height: 50px !important;
-    overflow-y: visible !important;
+    height: auto !important; /* Changed to auto height instead of fixed */
+    min-height: 75px !important;
+    overflow: visible !important; /* Changed to ensure visibility */
+    position: relative !important; /* Added position relative */
 }
 
 
@@ -54,13 +54,13 @@
 /* Desktop suggested keyword buttons - increased size */
 
 html body button.suggested-keyword {
-    height: 26px !important;
-    min-height: 26px !important;
-    max-height: 26px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
     line-height: 1.2 !important;
     font-size: 12px !important;
-    padding: 0 8px !important;
-    margin: 2px !important;
+    padding: 0 10px !important;
+    margin: 3px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -186,6 +186,27 @@ label[for="keywords"] {
     gap: 10px !important;
     width: 100% !important;
     margin-bottom: 15px !important;
+}
+
+/* Desktop-only: Move the tagline section down slightly */
+@media (min-width: 769px) {
+    /* Target the tagline form group specifically */
+    .form-group:has(label[for="tagline"]) {
+        margin-top: 30px !important; /* Increased space above the tagline section */
+        padding-top: 15px !important; /* Additional padding for spacing */
+    }
+    
+    /* Make sure the tagline display area follows the spacing */
+    .tagline-display-area {
+        margin-top: 5px !important;
+    }
+    
+    /* Fix spacing after keyword container to prevent overlap */
+    .form-group:has(.keywords-input-container) {
+        margin-bottom: 20px !important; /* Ensure enough space below keywords */
+        position: relative !important;
+        overflow: visible !important;
+    }
 }
 
 

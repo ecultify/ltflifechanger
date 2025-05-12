@@ -4,6 +4,7 @@ import '../styles/pages/UploadPhoto.css';
 import '../styles/pages/StepColorOverrides.css';
 import '../styles/components/FixedStepper.css';
 import '../styles/pages/UploadPhotoOverrides.css';
+import '../styles/pages/UploadStepperFix.css'; // Added for stepper alignment on mobile
 import axios from 'axios';
 import Loader from '../components/Loader';
 import * as faceapi from 'face-api.js';
@@ -1924,21 +1925,23 @@ const UploadPhoto = () => {
 
             {/* SWAPPED: Form container comes before DOS2 image */}
             <div className="form-container">
-              {/* Mobile stepper indicator - centered and integrated with form */}
-              <div className="fixed-stepper" style={{ boxShadow: 'none', background: 'transparent' }}>
-                <div className="progress-step completed">
-                  <div className="step-circle">1</div>
-                  <div className="step-label">OTP</div>
-                </div>
-                <div className="progress-line active"></div>
-                <div className="progress-step completed">
-                  <div className="step-circle">2</div>
-                  <div className="step-label">Add Details</div>
-                </div>
-                <div className="progress-line active"></div>
-                <div className="progress-step active">
-                  <div className="step-circle">3</div>
-                  <div className="step-label">Upload</div>
+              {/* Mobile stepper inside form - using the exact same structure as AddDetails.js */}
+              <div className="mobile-stepper-container form-stepper">
+                <div className="mobile-stepper">
+                  <div className="progress-step completed">
+                    <div className="step-circle">1</div>
+                    <div className="step-label">OTP</div>
+                  </div>
+                  <div className="progress-line active"></div>
+                  <div className="progress-step completed">
+                    <div className="step-circle">2</div>
+                    <div className="step-label">Add Details</div>
+                  </div>
+                  <div className="progress-line active"></div>
+                  <div className="progress-step active">
+                    <div className="step-circle">3</div>
+                    <div className="step-label">Upload</div>
+                  </div>
                 </div>
               </div>
               

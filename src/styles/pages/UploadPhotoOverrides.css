@@ -7,9 +7,10 @@
   justify-content: center !important;
 }
 
-/* Reposition logo - move it up by 20px from its current position */
+/* Reposition logo - move it up by 20px and left by 15px from its current position */
 .left-logo-container {
   top: 10px !important; /* Reduced from 30px to 10px - moved up by 20px */
+  left: 15px !important; /* Moved 15px to the left (reduced from 30px) */
   margin-top: 0 !important; /* Removed additional margin */
 }
 

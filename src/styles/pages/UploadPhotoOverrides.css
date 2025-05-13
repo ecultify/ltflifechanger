@@ -1085,72 +1085,66 @@ input:checked + .toggle-slider:before {
   background-color: #006a92;
 }
 
-/* Enhanced Camera Modal Styling - with aggressive centering fixes */
+/* Camera modal specific overrides */
 .modal.camera-modal {
   position: fixed !important;
-  inset: 0 !important; /* Use inset instead of top/left/right/bottom */
-  width: 100vw !important; /* Force full viewport width */
-  height: 100vh !important; /* Force full viewport height */
-  z-index: 9999 !important;
-  background-color: rgba(0, 0, 0, 0.9) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
-  /* Removed transform: none to avoid conflict with child element transform */
-  left: 0 !important;
-  right: 0 !important;
-  top: 0 !important;
-  bottom: 0 !important;
-}
-
-.modal-content.camera-content {
-  /* Use absolute positioning with transform for perfect centering */
-  position: absolute !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  
+  margin: 0 !important;
+  max-width: 550px !important;
   width: 90% !important;
-  max-width: 600px !important;
-  height: 90vh !important;
-  max-height: 800px !important;
-  background-color: #000 !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
+  max-height: 90vh !important;
+  z-index: 1000 !important;
   display: flex !important;
   flex-direction: column !important;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
-  /* Removed conflicting margin, left and right properties */
-  max-width: min(600px, 90vw) !important; /* Responsive width */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
 }
 
+/* Camera container style overrides */
 .camera-container {
+  width: 100% !important;
   position: relative !important;
-  flex: 1 !important;
+  background-color: #000 !important;
   display: flex !important;
-  flex-direction: column !important;
   justify-content: center !important;
   align-items: center !important;
   overflow: hidden !important;
-  width: 100% !important;
-  height: calc(100% - 60px) !important;
-  background-color: #000 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
+  min-height: 70vh !important;
 }
 
+/* Camera video element overrides */
 .camera-video {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   background-color: #111 !important;
+}
+
+/* Modal overlay strong styling */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 999 !important;
+}
+
+/* Take selfie modal */
+.take-selfie-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
   margin: 0 !important;
-  padding: 0 !important;
+  z-index: 1000 !important;
 }
 
 /* Improved Person Outline Overlay - ensure it displays properly regardless of camera mode */

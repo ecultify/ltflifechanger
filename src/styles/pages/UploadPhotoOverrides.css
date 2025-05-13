@@ -1085,43 +1085,47 @@ input:checked + .toggle-slider:before {
   background-color: #006a92;
 }
 
-/* Enhanced Camera Modal Styling */
+/* Enhanced Camera Modal Styling - with aggressive centering fixes */
 .modal.camera-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed !important;
+  inset: 0 !important; /* Use inset instead of top/left/right/bottom */
   width: 100vw !important; /* Force full viewport width */
   height: 100vh !important; /* Force full viewport height */
-  z-index: 9999;
-  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 9999 !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  overflow: hidden;
+  overflow: hidden !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
-  transform: none !important; /* Prevent any transforms from affecting position */
+  /* Removed transform: none to avoid conflict with child element transform */
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
 }
 
 .modal-content.camera-content {
-  position: relative;
+  /* Use absolute positioning with transform for perfect centering */
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  
   width: 90% !important;
   max-width: 600px !important;
   height: 90vh !important;
   max-height: 800px !important;
-  background-color: #000;
-  border-radius: 12px;
-  overflow: hidden;
+  background-color: #000 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  margin: 0 auto !important; /* Center horizontally */
-  transform: none !important; /* Ensure no transforms are applied */
-  left: auto !important;
-  right: auto !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  /* Removed conflicting margin, left and right properties */
+  max-width: min(600px, 90vw) !important; /* Responsive width */
 }
 
 .camera-container {
@@ -1135,6 +1139,9 @@ input:checked + .toggle-slider:before {
   width: 100% !important;
   height: calc(100% - 60px) !important;
   background-color: #000 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .camera-video {
@@ -1142,6 +1149,8 @@ input:checked + .toggle-slider:before {
   height: 100% !important;
   object-fit: cover !important;
   background-color: #111 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Improved Person Outline Overlay - ensure it displays properly regardless of camera mode */
@@ -1326,4 +1335,24 @@ input:checked + .toggle-slider:before {
     width: 60px;
     height: 60px;
   }
+}
+
+/* Fix for any transform/positioning issues that might be inherited */
+.modal-header, 
+.camera-container, 
+.camera-controls, 
+.person-outline-overlay {
+  transform: none !important;
+  left: auto !important;
+  right: auto !important;
+}
+
+/* Ensure modal controls don't inherit problematic positioning */
+.modal-header {
+  width: 100% !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  box-sizing: border-box !important;
 } 

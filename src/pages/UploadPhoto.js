@@ -2190,63 +2190,78 @@ const UploadPhoto = () => {
         </div>
       )}
 
-      {/* Camera Modal */}
+      {/* Camera Modal - with absolute positioned wrapper to ensure centering */}
       {showCameraModal && (
-        <div className="modal camera-modal">
-          <div className="modal-content camera-content">
-            <div className="modal-header">
-              <h3>{isSelfieMode ? 'Take a Selfie' : 'Take a Photo'}</h3>
-              <button className="close-btn" onClick={stopCamera}>
-                &times;
-              </button>
-            </div>
-            <div className="camera-container">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="camera-video"
-                onLoadedMetadata={() => {
-                  console.log('Video loaded, ready for capture');
-                }}
-              ></video>
-              
-              {/* Face outline overlay for both selfie and back camera */}
-              <div className="person-outline-overlay">
-                <img src="/images/face-outline.svg" alt="Position guide" className="face-outline" />
-                <div className="camera-instructions">
-                  {isSelfieMode 
-                    ? 'Position yourself from face to waist in the outline'
-                    : 'Position your subject from face to waist in the outline'
-                  }
+        <div className="modal-wrapper" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          backgroundColor: 'rgba(0, 0, 0, 0.9)'
+        }}>
+          <div className="modal camera-modal">
+            <div className="modal-content camera-content">
+              <div className="modal-header">
+                <h3>{isSelfieMode ? 'Take a Selfie' : 'Take a Photo'}</h3>
+                <button className="close-btn" onClick={stopCamera}>
+                  &times;
+                </button>
+              </div>
+              <div className="camera-container">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="camera-video"
+                  onLoadedMetadata={() => {
+                    console.log('Video loaded, ready for capture');
+                  }}
+                ></video>
+                
+                {/* Face outline overlay for both selfie and back camera */}
+                <div className="person-outline-overlay">
+                  <img src="/images/face-outline.svg" alt="Position guide" className="face-outline" />
+                  <div className="camera-instructions">
+                    {isSelfieMode 
+                      ? 'Position yourself from face to waist in the outline'
+                      : 'Position your subject from face to waist in the outline'
+                    }
+                  </div>
                 </div>
-              </div>
-              
-              {/* Improved camera controls */}
-              <div className="camera-controls">
-                <button className="camera-mode-btn" onClick={() => {
-                  stopCamera();
-                  setTimeout(() => activateCamera(!isSelfieMode), 300);
-                }}>
-                  <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
-                  {isSelfieMode ? 'Back Camera' : 'Selfie Mode'}
-                </button>
                 
-                <button
-                  onClick={takePhoto}
-                  className="camera-btn active"
-                  title="Take Photo"
-                >
-                  <i className="fas fa-camera"></i>
-                </button>
+                {/* Improved camera controls */}
+                <div className="camera-controls">
+                  <button className="camera-mode-btn" onClick={() => {
+                    stopCamera();
+                    setTimeout(() => activateCamera(!isSelfieMode), 300);
+                  }}>
+                    <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
+                    {isSelfieMode ? 'Back Camera' : 'Selfie Mode'}
+                  </button>
+                  
+                  <button
+                    onClick={takePhoto}
+                    className="camera-btn active"
+                    title="Take Photo"
+                  >
+                    <i className="fas fa-camera"></i>
+                  </button>
+                  
+                  <button className="camera-cancel-btn" onClick={stopCamera}>
+                    <i className="fas fa-times"></i>
+                    Cancel
+                  </button>
+                </div>
                 
-                <button className="camera-cancel-btn" onClick={stopCamera}>
-                  <i className="fas fa-times"></i>
-                  Cancel
-                </button>
+                <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
               </div>
-              
-              <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
             </div>
           </div>
         </div>

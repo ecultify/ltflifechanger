@@ -86,35 +86,68 @@
     border-color: #666 !important;
   }
   
-  /* More balanced spacing for form container on mobile */
-  .form-container {
+  /* CRITICAL: Force the Bumrah image to be smaller and modify its container positioning */
+  .bumrah-container,
+  div.bumrah-container,
+  [class*="bumrah-container"],
+  div[class*="bumrah-container"] {
+    margin-bottom: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: -18px !important;
+    max-height: 250px !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* CRITICAL: Force the Bumrah image to be smaller with multiple selectors */
+  .bumrah-image,
+  img.bumrah-image,
+  [class*="bumrah-image"],
+  img[class*="bumrah-image"],
+  img[src*="Frame162427"],
+  .bumrah-container img,
+  div.bumrah-container img {
+    max-width: 260px !important;
+    width: 260px !important;
+    height: auto !important;
+    transform: scale(0.9) !important;
+    margin: 0 auto !important;
+    display: block !important;
+    object-fit: contain !important;
+  }
+  
+  /* CRITICAL: Ensure form container overlaps with Bumrah image by using very specific selectors */
+  .form-container,
+  div.form-container,
+  [class*="form-container"],
+  div[class*="form-container"] {
     min-height: auto !important;
     height: auto !important;
-    padding-bottom: 15px !important;
-    max-height: none !important;
+    width: 100% !important;
+    max-width: 450px !important;
+    margin-top: -45px !important;
     margin-bottom: 10px !important;
+    padding-top: 20px !important;
+    padding-bottom: 15px !important;
     overflow: visible !important;
-    margin-top: -45px !important; /* Create 5px overlap with Bumrah image */
+    background-color: white !important;
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+    position: relative !important;
+    z-index: 10 !important;
+    box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Apply these styles even to form containers with inline styles */
+  div[style*="form-container"] {
+    margin-top: -45px !important;
     background-color: white !important;
     border-top-left-radius: 15px !important;
     border-top-right-radius: 15px !important;
     padding-top: 20px !important;
-    box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1) !important; /* Add shadow for depth */
-  }
-  
-  /* Bumrah image container sizing and positioning */
-  .bumrah-container {
-    margin-bottom: 0px !important; /* Ensure no bottom margin */
-    display: flex !important;
-    justify-content: center !important;
-    margin-top: -18px !important;
-  }
-  
-  /* Reduce Bumrah image size */
-  .bumrah-image {
-    max-width: 270px !important; /* Smaller size */
-    height: auto !important;
-    margin: 0 auto !important;
   }
   
   /* Balanced spacing for form content */

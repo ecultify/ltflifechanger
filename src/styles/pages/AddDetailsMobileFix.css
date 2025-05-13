@@ -1,0 +1,25 @@
+/* AddDetailsMobileFix.css - Form container adjustments for mobile view */
+
+@media screen and (max-width: 768px) {
+  /* Ultra-high specificity selectors to ensure overrides */
+  html body .details-page .form-container,
+  body .details-page .form-container,
+  html body .details-page .form-container,
+  .mobile-elements-container+.form-container,
+  body div.form-container,
+  .details-page div.form-container,
+  div[class*="form-container"],
+  html body div.form-container,
+  html body .details-page .right-section .form-container {
+    margin-top: -125px !important; /* Pull up by 15px from -110px */
+    transform: translateY(-10px) !important;
+    position: relative !important;
+    z-index: 100 !important;
+    padding-bottom: 30px !important;
+  }
+  
+  /* JavaScript direct override - this will be used in an inline script */
+  body {
+    --form-container-margin-top: -125px;
+  }
+} 

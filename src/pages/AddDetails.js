@@ -8,6 +8,7 @@ import "../styles/pages/KeywordSuggestionsFix.css"; // Added fix for keyword sug
 import "../styles/pages/DirectFontOverride.css"; // Added direct override for font and spacing issues
 import "../styles/pages/MobileImageCenter.css"; // Added for centering Group15183 image on mobile
 import "../styles/pages/Group15183Fix.css"; // Added for Group15183 desktop positioning
+import "../styles/pages/AddDetailsMobileFix.css"; // Added for form container mobile positioning
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { OPENAI_API_KEY } from "../config"; // Import API key from config file
@@ -96,7 +97,7 @@ const AddDetails = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   // Callback option removed as requested
 
-  // Add resize listener to update mobile state
+  // Check if on mobile device
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -105,6 +106,25 @@ const AddDetails = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  // Apply mobile form positioning override
+  useEffect(() => {
+    if (isMobile) {
+      // Force proper form container margin on mobile
+      setTimeout(() => {
+        try {
+          const formContainer = document.querySelector('.form-container');
+          if (formContainer) {
+            formContainer.style.setProperty('margin-top', '-125px', 'important');
+            formContainer.style.setProperty('z-index', '100', 'important');
+            console.log('Applied form container position override for mobile');
+          }
+        } catch (err) {
+          console.error('Error applying form container position:', err);
+        }
+      }, 100); // Short delay to ensure DOM is ready
+    }
+  }, [isMobile]);
 
   const navigate = useNavigate();
 

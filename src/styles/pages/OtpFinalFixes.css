@@ -1,0 +1,23 @@
+/* Final overrides for OTP page - load this last */
+
+html body .otp-page .bumrah-container img,
+html body .bumrah-image {
+  max-width: 340px !important;
+  width: 340px !important;
+  height: auto !important;
+  transform: scale(1) !important;
+}
+
+html body .otp-page .form-container,
+html body div.form-container {
+  margin-top: -25px !important;
+}
+
+/* Styles applied via JavaScript to ensure they take precedence */
+@media (max-width: 768px) {
+  /* This rule will be added via JS for absolute override */
+  body {
+    --bumrah-image-width: 340px;
+    --form-margin-top: -25px;
+  }
+} 

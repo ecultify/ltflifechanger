@@ -4,6 +4,8 @@ import "../styles/pages/StepColorOverrides.css"; // Added step color overrides
 import "../styles/components/FixedStepper.css"; // For fixed position stepper
 import "../styles/pages/OtpVerificationOverrides.css"; // Added custom overrides for layout
 import "../styles/pages/OtpScrollFixOverrides.css"; // Added scroll fixes for mobile
+import "../styles/pages/OtpMobileOverrides.css"; // Added high-specificity mobile overrides
+import "../styles/pages/OtpFinalFixes.css"; // Final overrides with highest specificity
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
@@ -86,6 +88,35 @@ const OtpVerification = () => {
     // Clean up
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
+  
+  // Apply direct style overrides for mobile view
+  useEffect(() => {
+    if (isMobile) {
+      // Force styles with JavaScript for absolute control
+      setTimeout(() => {
+        try {
+          // Apply styles to Bumrah image
+          const bumrahImages = document.querySelectorAll('.bumrah-image, .bumrah-container img');
+          bumrahImages.forEach(img => {
+            img.style.setProperty('max-width', '340px', 'important');
+            img.style.setProperty('width', '340px', 'important');
+            img.style.setProperty('height', 'auto', 'important');
+            img.style.setProperty('transform', 'scale(1)', 'important');
+          });
+          
+          // Apply styles to form container
+          const formContainers = document.querySelectorAll('.form-container');
+          formContainers.forEach(container => {
+            container.style.setProperty('margin-top', '-25px', 'important');
+          });
+          
+          console.log('Applied direct style overrides for mobile view');
+        } catch (err) {
+          console.error('Error applying direct style overrides:', err);
+        }
+      }, 100); // Short delay to ensure DOM is ready
+    }
+  }, [isMobile]);
 
   // Handle phone number input change
   const handlePhoneNumberChange = (e) => {
@@ -313,10 +344,13 @@ const OtpVerification = () => {
                 minHeight: "180px",
                 display: "flex",
                 justifyContent: "center",
+                alignItems: "center",
                 marginBottom: "0px",
                 marginTop: "-18px",
                 width: "100%",
                 maxWidth: "450px",
+                position: "relative",
+                zIndex: "1"
               }}
             >
               <img
@@ -324,15 +358,15 @@ const OtpVerification = () => {
                 alt="Bumrah"
                 className="bumrah-image"
                 style={{
-                  maxWidth: "270px",
+                  maxWidth: "340px",
+                  width: "340px",
                   margin: "0 auto",
                   display: "block",
                   height: "auto",
+                  transform: "scale(1)",
                   position: "relative",
                   left: "0",
-                  right: "0",
-                  marginLeft: "auto",
-                  marginRight: "auto"
+                  right: "0"
                 }}
               />{" "}
             </div>{" "}
@@ -341,13 +375,14 @@ const OtpVerification = () => {
               style={{
                 width: "100%",
                 maxWidth: "450px",
-                marginTop: "-45px",
-                zIndex: 10,
+                marginTop: "-25px",
+                zIndex: "10",
                 position: "relative",
                 backgroundColor: "white",
                 borderTopLeftRadius: "15px",
                 borderTopRightRadius: "15px",
                 paddingTop: "20px",
+                boxShadow: "0px -5px 15px rgba(0, 0, 0, 0.1)"
               }}
             >
               {" "}

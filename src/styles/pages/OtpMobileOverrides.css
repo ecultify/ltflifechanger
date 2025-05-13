@@ -1,0 +1,59 @@
+/* OTP Mobile-specific overrides with high specificity */
+
+@media screen and (max-width: 768px) {
+  /* Super specific selectors to guarantee these styles apply */
+  body .otp-page .right-section .bumrah-container,
+  body .otp-page div.bumrah-container,
+  body div.bumrah-container {
+    min-height: 180px !important;
+    max-height: 320px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-bottom: 0px !important;
+    margin-top: -18px !important;
+    width: 100% !important;
+    max-width: 450px !important;
+    position: relative !important;
+    z-index: 1 !important;
+    overflow: visible !important;
+  }
+
+  body .otp-page .bumrah-container img,
+  body .otp-page img.bumrah-image,
+  body img.bumrah-image,
+  body img[src*="Frame162427"] {
+    max-width: 340px !important;
+    width: 340px !important;
+    height: auto !important;
+    transform: scale(1) !important;
+    margin: 0 auto !important;
+    display: block !important;
+    object-fit: contain !important;
+  }
+
+  /* Extra-high specificity for the form container to ensure it applies */
+  body .otp-page .form-container,
+  body .otp-page div.form-container,
+  body div.form-container,
+  body div[class="form-container"],
+  body div[style*="form-container"],
+  .right-section div.form-container,
+  .right-section > div > div.form-container {
+    width: 100% !important;
+    max-width: 450px !important;
+    margin-top: -25px !important; /* Changed to push form down more */
+    z-index: 10 !important;
+    position: relative !important;
+    background-color: white !important;
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+    padding-top: 20px !important;
+    box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Additional override specifically for any element with style containing marginTop */
+  *[style*="marginTop"] {
+    margin-top: -25px !important;
+  }
+} 

@@ -6,14 +6,9 @@
 @media (max-width: 768px) {
     .mobile-group {
         display: block !important;
-        margin-left: calc(50% - 135px) !important;
-        /* Adjusted 30px to the right */
-        transform: translateX(-50%) !important;
-        /* Center adjustment */
+        margin: -15px auto 0 !important;
         width: 80% !important;
-        /* Maintain proportion but ensure it's not too large */
         max-width: 300px !important;
-        /* Set maximum width */
         position: relative !important;
     }
     /* Add some extra padding to ensure good spacing */
@@ -30,5 +25,11 @@
 /* Desktop positioning for Group15183 image */
 
 .left-group-image {
-    margin-left: 70px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    max-width: 80% !important;
 }

@@ -2,12 +2,26 @@
 
 /* Target specifically the left-group-image with high specificity */
 .details-page .left-section .left-group-container .left-group-image {
-  margin-left: 0px !important; /* Moved an additional 10px to the left (no margin) */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  max-width: 80% !important;
 }
 
 /* Make sure this only applies to desktop */
 @media (min-width: 769px) {
+  .details-page .left-section .left-group-container {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
   .details-page .left-section .left-group-container .left-group-image {
-    margin-left: 0px !important; /* Moved an additional 10px to the left (no margin) */
+    margin-left: 0 !important;
+    margin-top: -30px !important;
   }
 }

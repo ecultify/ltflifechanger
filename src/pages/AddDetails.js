@@ -1250,7 +1250,7 @@ These keywords were missing from your previous attempt: ${missingKeywords.join("
               src="/images/adddetails/Group15183.png"
               alt="Group"
               className="left-group-image"
-              style={{ marginTop: "-30px", marginLeft: "30px" }}
+              style={{ marginTop: "-30px" }}
             />{" "}
           </div>{" "}
           <div className="left-people-container">
@@ -1306,11 +1306,11 @@ These keywords were missing from your previous attempt: ${missingKeywords.join("
                 className="mobile-group"
                 style={{ 
                   marginTop: "-15px",
-                  marginLeft: "calc(50% - 135px)", /* Adjusted 30px to the right */
-                  transform: "translateX(-50%)", /* Center adjustment */
                   display: "block",
                   width: "80%",
-                  maxWidth: "300px"
+                  maxWidth: "300px",
+                  margin: "-15px auto 0",
+                  position: "relative"
                 }}
               />{" "}
               <img

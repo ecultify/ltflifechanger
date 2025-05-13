@@ -2211,16 +2211,27 @@ const UploadPhoto = () => {
                 }}
               ></video>
               
-              {/* Add back the person outline overlay with improved guidance */}
+              {/* Face outline overlay for both selfie and back camera */}
               <div className="person-outline-overlay">
                 <img src="/images/face-outline.svg" alt="Position guide" className="face-outline" />
                 <div className="camera-instructions">
-                  Position yourself from face to waist
+                  {isSelfieMode 
+                    ? 'Position yourself from face to waist in the outline'
+                    : 'Position your subject from face to waist in the outline'
+                  }
                 </div>
               </div>
               
               {/* Improved camera controls */}
               <div className="camera-controls">
+                <button className="camera-mode-btn" onClick={() => {
+                  stopCamera();
+                  setTimeout(() => activateCamera(!isSelfieMode), 300);
+                }}>
+                  <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
+                  {isSelfieMode ? 'Back Camera' : 'Selfie Mode'}
+                </button>
+                
                 <button
                   onClick={takePhoto}
                   className="camera-btn active"
@@ -2229,12 +2240,9 @@ const UploadPhoto = () => {
                   <i className="fas fa-camera"></i>
                 </button>
                 
-                <button className="camera-mode-btn" onClick={() => {
-                  stopCamera();
-                  setTimeout(() => activateCamera(!isSelfieMode), 300);
-                }}>
-                  <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
-                  {isSelfieMode ? 'Back Camera' : 'Selfie Mode'}
+                <button className="camera-cancel-btn" onClick={stopCamera}>
+                  <i className="fas fa-times"></i>
+                  Cancel
                 </button>
               </div>
               

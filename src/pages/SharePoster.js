@@ -302,12 +302,12 @@ const SharePoster = () => {
                 // Ensure the full image is visible without cutoffs
                 
                 // Position image to cover left side of poster (side by side with template model)
-                const containerWidth = canvas.width * 0.46; // Drastically reduced from 0.52 to 0.46
-                const containerHeight = canvas.height * 0.58; // Drastically reduced from 0.65 to 0.58
+                const containerWidth = canvas.width * 0.50; // Increased from 0.48 to 0.50
+                const containerHeight = canvas.height * 0.64; // Increased from 0.61 to 0.64
                 
                 // Position at bottom left corner for perfect alignment
-                const userX = -27; // Keep the same left position
-                const userY = canvas.height - containerHeight + 39; // Keep the same vertical alignment relative to bottom
+                const userX = -33; // Moved right by 4px from -37 to -33
+                const userY = canvas.height - containerHeight + 29; // Keep same vertical position
                 
                 // Set up the offscreen canvas with these dimensions
                 const offscreenCanvas = document.createElement('canvas');
@@ -568,7 +568,7 @@ const SharePoster = () => {
               // Position on the right side of the canvas
               const rightImageWidth = canvas.width * 0.46; // Keep same width
               const rightImageHeight = canvas.height * 0.63; // Keep same height
-              const rightImageX = canvas.width - rightImageWidth - 25; // Move 15px more to the left (from -10 to -25)
+              const rightImageX = canvas.width - rightImageWidth - 29; // Moved 4px to the right (from -25 to -29)
               const rightImageY = canvas.height - rightImageHeight + 50; // Keep same Y position
               
               console.log('Drawing Group 30a image at final position:', {

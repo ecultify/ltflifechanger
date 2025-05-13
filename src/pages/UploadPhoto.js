@@ -1452,8 +1452,9 @@ const UploadPhoto = () => {
       const constraints = {
         video: {
           facingMode: selfieMode ? 'user' : 'environment',
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          aspectRatio: { ideal: 3/4 }, // Try to get portrait aspect ratio
           // Add advanced constraints for better quality
           advanced: [
             { exposureMode: 'auto' },
@@ -1495,24 +1496,26 @@ const UploadPhoto = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     
-    // Set canvas dimensions to match video aspect ratio
+    // Set canvas dimensions to match standard portrait orientation
+    // Use a consistent aspect ratio for both selfie and regular mode
+    const aspectRatio = 3/4; // Standard portrait aspect ratio
     let canvasWidth, canvasHeight;
     
-    if (isSelfieMode) {
-      // For selfie mode, use portrait ratio to capture face to waist
+    // Calculate dimensions based on video size while maintaining portrait orientation
+    if (video.videoHeight > video.videoWidth) {
+      // Video is already in portrait mode
       canvasHeight = video.videoHeight;
-      canvasWidth = canvasHeight * 0.75; // 3:4 aspect ratio for better waist inclusion
-    } else {
-      // For regular photos, maintain video aspect ratio but ensure portrait orientation
-      canvasHeight = video.videoHeight;
-      canvasWidth = video.videoWidth;
+      canvasWidth = canvasHeight * aspectRatio;
       
-      // If wider than 3:4, crop width to match 3:4 (portrait orientation)
-      const aspectRatio = 3/4; // portrait aspect ratio
-      const idealWidth = canvasHeight * aspectRatio;
-      if (canvasWidth > idealWidth) {
-        canvasWidth = idealWidth;
+      // If calculated width is greater than actual width, adjust
+      if (canvasWidth > video.videoWidth) {
+        canvasWidth = video.videoWidth;
+        canvasHeight = canvasWidth / aspectRatio;
       }
+    } else {
+      // Video is in landscape, force portrait orientation
+      canvasWidth = video.videoHeight * aspectRatio;
+      canvasHeight = video.videoHeight;
     }
     
     // Set canvas dimensions
@@ -1528,19 +1531,9 @@ const UploadPhoto = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Calculate offset for centered crop
-    let offsetX = 0;
-    let offsetY = 0;
-    
-    if (isSelfieMode) {
-      // For selfies, center horizontally
-      offsetX = (video.videoWidth - canvasWidth) / 2;
-      // Position to capture from face to waist - higher positioning to include face with more body
-      offsetY = video.videoHeight * 0.1; // Start from higher up (top 10%) to include head and more body
-    } else {
-      // Center crop for regular photos, biased toward the top to focus on face to waist
-      offsetX = (video.videoWidth - canvasWidth) / 2;
-      offsetY = video.videoHeight * 0.1; // Start from higher up to ensure proper waist inclusion
-    }
+    const offsetX = (video.videoWidth - canvasWidth) / 2;
+    // For selfie mode and regular mode, focus on upper body
+    const offsetY = video.videoHeight * 0.1; // Start from top 10% to include head and body
     
     // Draw the image with the calculated crop
     ctx.drawImage(
@@ -2193,7 +2186,7 @@ const UploadPhoto = () => {
       {/* Camera Modal - with fixed positioning to ensure perfect centering */}
       {showCameraModal && (
         <div className="modal-overlay">
-          <div className="modal camera-modal">
+          <div className={`modal camera-modal ${isSelfieMode ? 'selfie-mode' : ''}`}>
             <div className="modal-header">
               <h3>{isSelfieMode ? 'Take a Selfie' : 'Take a Photo'}</h3>
               <button className="close-btn" onClick={stopCamera}>
@@ -2222,19 +2215,22 @@ const UploadPhoto = () => {
                 </div>
               </div>
               
-              {/* Improved camera controls */}
+              {/* Simplified camera controls */}
               <div className="camera-controls">
-                <button className="camera-mode-btn" onClick={() => {
-                  stopCamera();
-                  setTimeout(() => activateCamera(!isSelfieMode), 300);
-                }}>
-                  <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
-                  {isSelfieMode ? 'Back Camera' : 'Selfie Mode'}
-                </button>
+                {/* Only show mode toggle button when NOT in selfie mode */}
+                {!isSelfieMode && (
+                  <button className="camera-mode-btn" onClick={() => {
+                    stopCamera();
+                    setTimeout(() => activateCamera(true), 300);
+                  }}>
+                    <i className="fas fa-user"></i>
+                    Selfie Mode
+                  </button>
+                )}
                 
                 <button
                   onClick={takePhoto}
-                  className="camera-btn active"
+                  className="camera-btn"
                   title="Take Photo"
                 >
                   <i className="fas fa-camera"></i>

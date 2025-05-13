@@ -1185,7 +1185,7 @@ input:checked + .toggle-slider:before {
   max-width: 90%;
 }
 
-/* Enhanced Camera Controls with improved layout */
+/* Camera controls with improved layout */
 .camera-controls {
   position: absolute;
   bottom: 0;
@@ -1193,7 +1193,7 @@ input:checked + .toggle-slider:before {
   width: 100%;
   padding: 20px;
   display: flex;
-  justify-content: space-between; /* Changed from space-around to space-between */
+  justify-content: center; /* Center all controls */
   align-items: center;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
   z-index: 60;
@@ -1212,28 +1212,45 @@ input:checked + .toggle-slider:before {
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  margin: 0 auto; /* Center button */
-  order: 2; /* Place in the middle */
+  /* Remove margin and positioning that may affect centering */
+  margin: 0;
+  position: relative;
 }
 
+/* Remove active button animation/pulsing effect */
+.camera-btn.active {
+  background-color: white;
+  color: #0083B5;
+  transform: none;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  animation: none;
+}
+
+/* Camera button icon */
 .camera-btn i {
   font-size: 28px;
   color: #0083B5;
 }
 
-.camera-btn:hover, .camera-btn:active {
-  background-color: #0083B5;
-  transform: scale(1.05);
-}
-
-.camera-btn:hover i, .camera-btn:active i {
+/* Camera mode button - position on sides */
+.camera-mode-btn, .camera-cancel-btn {
+  background-color: rgba(255, 255, 255, 0.2);
   color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 15px;
 }
 
-/* Camera mode buttons icons */
-.camera-mode-btn i, .camera-cancel-btn i {
-  font-size: 16px;
-  margin-right: 4px;
+/* Hide camera mode button in selfie mode - use !important to override any inline styles */
+.modal.camera-modal.selfie-mode .camera-mode-btn {
+  display: none !important;
 }
 
 /* Modal Header */
@@ -1349,4 +1366,25 @@ input:checked + .toggle-slider:before {
   left: auto !important;
   right: auto !important;
   box-sizing: border-box !important;
+}
+
+/* Adjust spacing for selfie mode (when mode button is hidden) */
+.modal.camera-modal.selfie-mode .camera-controls {
+  justify-content: space-around !important;
+  padding: 20px 40px !important;
+}
+
+/* Ensure camera button has consistent styling */
+.camera-btn {
+  background-color: white !important;
+  color: #0083B5 !important;
+}
+
+.camera-btn:hover {
+  background-color: #f0f0f0 !important;
+}
+
+/* Ensure cancel button is visible */
+.camera-cancel-btn {
+  min-width: 80px !important;
 } 

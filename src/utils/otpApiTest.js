@@ -65,7 +65,7 @@ function decrypt(encryptedB64) {
  */
 async function testOtpApi(phoneNumber) {
   // API configuration
-  const url = "https://apiclouduat.ltfs.com:1132/LTFSME/api/sendOtps";
+  const url = "/proxy.php?endpoint=sendOtps";
   const headers = {
     "flsId": "VEN03799",
     "lendToken": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MDA2NDA2MyIsImlhdCI6MTcxOTMxMDI1Nywic3ViIjoiSldUIFRlc3QiLCJpc3MiOiJMVCIsImV4cCI6MTcxOTMzOTA1N30.tiz1dlY7KvYf7Y9xxWZ2JqZAWnJCfiOzsSfJqWTNuGw",

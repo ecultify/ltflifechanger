@@ -25,6 +25,7 @@ body, html {
     will-change: transform !important; /* Hardware acceleration */
     touch-action: pan-y !important;
     overflow-x: hidden !important;
+    overflow-y: hidden !important; /* Remove scroll from entire right section */
   }
   
   /* Fix for the fixed stepper at the top to prevent glitches */
@@ -34,11 +35,12 @@ body, html {
     backface-visibility: hidden !important;
   }
   
-  /* Ensure form container scrolls properly */
+  /* Remove scrollbar from form container */
   .form-container {
     position: relative !important;
     overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow-y: hidden !important; /* Remove scrollbar */
+    height: auto !important; /* Allow content to expand naturally */
   }
   
   /* Prevent input field zoom on iOS */
@@ -51,10 +53,12 @@ body, html {
     touch-action: manipulation !important;
   }
   
-  /* Improve tagline display scrolling */
+  /* Keep scrolling for tagline display only */
   .tagline-display {
     -webkit-overflow-scrolling: touch !important;
     scroll-behavior: smooth !important;
+    overflow-y: auto !important; /* Keep scroll here */
+    max-height: 120px !important; /* Set a max height for scrolling */
   }
   
   /* Fix for keyword suggestions container */

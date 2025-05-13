@@ -123,8 +123,16 @@ const SharePoster = () => {
       if (isProcessing) {
         console.log('Poster generation timeout - completing with available data');
         setGeneratedPoster('/images/fallback-poster.png');
-        setLoadingProgress(100);
-        setIsLoading(false);
+        
+        // Use the same smooth progress approach
+        setLoadingProgress(95);
+        setTimeout(() => {
+          setLoadingProgress(100);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1000);
+        }, 700);
+        
         isProcessing = false;
       }
     }, 15000); // 15 seconds timeout
@@ -176,6 +184,10 @@ const SharePoster = () => {
         
         // Progress to 80% after starting image loading
         setTimeout(() => setLoadingProgress(80), 1500);
+        
+        // Slow down progress at 80%, increment to 90% more gradually
+        setTimeout(() => setLoadingProgress(85), 2500);
+        setTimeout(() => setLoadingProgress(90), 3500);
         
         // Add a logging function to track the image loading process
         const trackImageLoading = async (img, description) => {
@@ -290,12 +302,12 @@ const SharePoster = () => {
                 // Ensure the full image is visible without cutoffs
                 
                 // Position image to cover left side of poster (side by side with template model)
-                const containerWidth = canvas.width * 0.57; // Increased from 0.56 to 0.57
-                const containerHeight = canvas.height * 0.72; // Increased from 0.71 to 0.72
+                const containerWidth = canvas.width * 0.46; // Drastically reduced from 0.52 to 0.46
+                const containerHeight = canvas.height * 0.58; // Drastically reduced from 0.65 to 0.58
                 
                 // Position at bottom left corner for perfect alignment
-                const userX = -27; // Moved further left from -22 to -27 (5px more to the left)
-                const userY = canvas.height - containerHeight + 39; // Moved up by 5px from 44 to 39
+                const userX = -27; // Keep the same left position
+                const userY = canvas.height - containerHeight + 39; // Keep the same vertical alignment relative to bottom
                 
                 // Set up the offscreen canvas with these dimensions
                 const offscreenCanvas = document.createElement('canvas');
@@ -360,8 +372,8 @@ const SharePoster = () => {
                     offsetY = 0;
                   }
                   
-                  // Apply 10% margin by scaling down
-                  const scaleFactor = 0.97; // Increased from 0.95 to 0.97 (even less margin)
+                  // Apply margin by scaling down
+                  const scaleFactor = 0.98; // Increased from 0.96 to 0.98 to maximize image size within smaller container
                   drawWidth *= scaleFactor;
                   drawHeight *= scaleFactor;
                   
@@ -1085,11 +1097,16 @@ const SharePoster = () => {
       
       clearTimeout(timeoutId);
       isProcessing = false;
-      // Progress to 100% before completing
-      setLoadingProgress(100);
+      
+      // Progress to 95% first, then to 100% for a smoother final step
+      setLoadingProgress(95);
       setTimeout(() => {
-        setIsLoading(false);
-      }, 800); // Small delay after reaching 100% before hiding the loader
+        setLoadingProgress(100);
+        // Small delay after reaching 100% before hiding the loader
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+      }, 700);
     } catch (err) {
       console.error('Error in poster generation main process:', err);
       setError('Failed to generate poster. Please try again.');
@@ -1289,9 +1306,35 @@ const SharePoster = () => {
       {isLoading ? (
         <div className="loading-overlay">
           <Loader message={loadingStatus} />
-          <div className="progress-bar" style={{ width: '80%', margin: '20px auto 0', height: '6px', backgroundColor: 'rgba(0, 0, 0, 0.1)', borderRadius: '3px', overflow: 'hidden', border: '1px solid #000' }}>
-            <div className="progress-fill" style={{ width: `${loadingProgress}%`, height: '100%', backgroundColor: '#000', borderRadius: '3px', transition: 'width 0.5s ease-in-out' }}></div>
+          <div className="progress-bar" style={{ 
+            width: '80%', 
+            margin: '20px auto 0', 
+            height: '8px', 
+            backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+            borderRadius: '4px', 
+            overflow: 'hidden',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div 
+              className="progress-fill" 
+              style={{ 
+                width: `${loadingProgress}%`, 
+                height: '100%', 
+                backgroundColor: '#0083B5', 
+                borderRadius: '4px', 
+                transition: 'width 0.8s ease-out'
+              }}
+            ></div>
           </div>
+          <p style={{ 
+            textAlign: 'center', 
+            marginTop: '8px', 
+            fontSize: '14px', 
+            color: '#888',
+            fontFamily: 'Poppins, sans-serif'
+          }}>
+            {loadingProgress}% Complete
+          </p>
         </div>
       ) : error ? (
         <div className="error-container">

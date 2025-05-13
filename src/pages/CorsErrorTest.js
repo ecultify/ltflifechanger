@@ -7,6 +7,7 @@ const CorsErrorTest = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [customerName, setCustomerName] = useState('Test User');
   const [otp, setOtp] = useState('');
+  const [detectedOtp, setDetectedOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [corsError, setCorsError] = useState(null);
@@ -50,7 +51,8 @@ const CorsErrorTest = () => {
         setCorsError(response);
         setMessage('CORS error detected! This is good for your documentation.');
       } else if (response.success) {
-        setMessage(`OTP sent successfully! For testing, use: ${response.otp}`);
+        setDetectedOtp(response.otp || '');
+        setMessage(`OTP sent successfully! ${response.otp ? `For testing, use: ${response.otp}` : ''}`);
         setStep('verify');
       } else {
         setMessage('Failed to send OTP. See console for details.');
@@ -164,7 +166,11 @@ const CorsErrorTest = () => {
                       maxLength={6}
                       required
                     />
-                    <small className="form-hint">For testing, you can use 123456</small>
+                    {detectedOtp ? (
+                      <small className="form-hint">Detected OTP: {detectedOtp}</small>
+                    ) : (
+                      <small className="form-hint">For testing, you can use 123456</small>
+                    )}
                   </div>
                   
                   <div className="form-actions">

@@ -681,8 +681,8 @@ label[for="keywords"] {
     body .details-page .form-container,
     html body .details-page .form-container,
     .mobile-elements-container+.form-container {
-        margin-top: -110px !important;
-        /* Adjusted margin to push down 10px */
+        margin-top: -125px !important;
+        /* Adjusted margin to push down by 15px from -110px to -125px */
         transform: translateY(-10px) !important;
         /* Reduced transform to push down 10px */
         position: relative !important;

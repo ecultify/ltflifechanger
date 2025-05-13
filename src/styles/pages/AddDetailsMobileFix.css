@@ -11,7 +11,7 @@
   div[class*="form-container"],
   html body div.form-container,
   html body .details-page .right-section .form-container {
-    margin-top: -125px !important; /* Pull up by 15px from -110px */
+    margin-top: -115px !important; /* Pull up by 15px from -110px */
     transform: translateY(-10px) !important;
     position: relative !important;
     z-index: 100 !important;

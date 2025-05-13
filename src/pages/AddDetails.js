@@ -115,7 +115,7 @@ const AddDetails = () => {
         try {
           const formContainer = document.querySelector('.form-container');
           if (formContainer) {
-            formContainer.style.setProperty('margin-top', '-125px', 'important');
+            formContainer.style.setProperty('margin-top', '-65px', 'important');
             formContainer.style.setProperty('z-index', '100', 'important');
             console.log('Applied form container position override for mobile');
           }

@@ -269,6 +269,168 @@ const SharePoster = () => {
             // Draw the template on the full canvas
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
             console.log('Template image drawn successfully');
+            
+            // Now place the user's image to the left of Bumrah with same height as Bumrah
+            if (userImg.complete && userImg.naturalHeight !== 0) {
+              try {
+                // CRITICAL POSITIONING FIX:
+                // Ensure the full image is visible without cutoffs
+                
+                // Position image to cover left side of poster (side by side with template model)
+                const containerWidth = canvas.width * 0.55; // Slightly increased width from 0.53 to 0.55
+                const containerHeight = canvas.height * 0.70; // Further increased height from 0.67 to 0.70
+                
+                // Position at bottom left corner for perfect alignment
+                const userX = -16; // Keep the same X position
+                const userY = canvas.height - containerHeight + 50; // Keep the same offset
+                
+                // Set up the offscreen canvas with these dimensions
+                const offscreenCanvas = document.createElement('canvas');
+                offscreenCanvas.width = containerWidth;
+                offscreenCanvas.height = containerHeight;
+                const offCtx = offscreenCanvas.getContext('2d');
+                
+                console.log('Image container positioning:', {
+                  x: userX,
+                  y: userY,
+                  width: containerWidth,
+                  height: containerHeight,
+                  canvasWidth: canvas.width,
+                  canvasHeight: canvas.height
+                });
+                
+                // Clear canvas
+                offCtx.clearRect(0, 0, containerWidth, containerHeight);
+                
+                try {
+                  console.log('Drawing user image directly from processedImage URL');
+                  
+                  // SIMPLEST SOLUTION: Create a new image directly from processed image URL
+                  const directImage = new Image();
+                  directImage.crossOrigin = "anonymous";
+                  directImage.src = processedImage;
+                  
+                  // Wait for image to load
+                  await new Promise((resolve) => {
+                    if (directImage.complete) {
+                      resolve();
+                    } else {
+                      directImage.onload = resolve;
+                    }
+                  });
+                  
+                  console.log('Direct image loaded:', {
+                    width: directImage.width,
+                    height: directImage.height,
+                    naturalWidth: directImage.naturalWidth,
+                    naturalHeight: directImage.naturalHeight
+                  });
+                  
+                  // Calculate sizing to ensure full image is visible
+                  const imgAspectRatio = directImage.width / directImage.height;
+                  const containerAspectRatio = containerWidth / containerHeight;
+                  
+                  let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+                  
+                  // Use contain approach to ensure entire image is visible
+                  if (imgAspectRatio > containerAspectRatio) {
+                    // Image is wider - fit to width and center vertically
+                    drawWidth = containerWidth;
+                    drawHeight = containerWidth / imgAspectRatio;
+                    offsetX = 0;
+                    offsetY = (containerHeight - drawHeight) / 2;
+                  } else {
+                    // Image is taller - fit to height and center horizontally
+                    drawHeight = containerHeight;
+                    drawWidth = containerHeight * imgAspectRatio;
+                    offsetX = (containerWidth - drawWidth) / 2;
+                    offsetY = 0;
+                  }
+                  
+                  // Apply 10% margin by scaling down
+                  const scaleFactor = 0.9;
+                  drawWidth *= scaleFactor;
+                  drawHeight *= scaleFactor;
+                  
+                  // Recenter
+                  offsetX = (containerWidth - drawWidth) / 2;
+                  offsetY = (containerHeight - drawHeight) / 2;
+                  
+                  console.log('Drawing direct image:', {
+                    offsetX, offsetY,
+                    drawWidth, drawHeight
+                  });
+                  
+                  // Draw the direct image to the offscreen canvas
+                  offCtx.drawImage(
+                    directImage, 
+                    0, 0, directImage.width, directImage.height,
+                    offsetX, offsetY, drawWidth, drawHeight
+                  );
+                  
+                  // Now draw the offscreen canvas to the main canvas
+                  console.log('Drawing final user image to main canvas');
+                  ctx.drawImage(offscreenCanvas, userX, userY, containerWidth, containerHeight);
+                  
+                } catch (error) {
+                  console.error('Error processing image:', error);
+                }
+                
+                // Black tint has been removed as requested
+                
+                // 3. Apply basic image enhancement (contrast and brightness)
+                try {
+                  // Get image data for manipulation
+                  const imageData = offCtx.getImageData(0, 0, containerWidth, containerHeight);
+                  const data = imageData.data;
+                  
+                  // Increase contrast and brightness slightly
+                  const contrast = 1.1; // Subtle contrast boost
+                  const brightness = 5;  // Slight brightness boost
+                  
+                  for (let i = 0; i < data.length; i += 4) {
+                    // Apply contrast and brightness
+                    data[i] = Math.min(255, Math.max(0, ((data[i] - 128) * contrast) + 128 + brightness));          // red
+                    data[i + 1] = Math.min(255, Math.max(0, ((data[i + 1] - 128) * contrast) + 128 + brightness));  // green
+                    data[i + 2] = Math.min(255, Math.max(0, ((data[i + 2] - 128) * contrast) + 128 + brightness));  // blue
+                  }
+                  
+                  // Put the enhanced image data back
+                  offCtx.putImageData(imageData, 0, 0);
+                  console.log('Image enhancement applied');
+                } catch (enhanceError) {
+                  console.error('Error enhancing image:', enhanceError);
+                  // Continue with unenhanced image if enhancement fails
+                }
+                
+                // Now draw the finalized offscreen canvas to the main canvas at the correct position
+                try {
+                  console.log('Drawing final image to main canvas at:', {
+                    x: userX,
+                    y: userY,
+                    width: containerWidth,
+                    height: containerHeight
+                  });
+                  
+                  // Draw the offscreen canvas to the main canvas
+                  ctx.drawImage(offscreenCanvas, userX, userY, containerWidth, containerHeight);
+                  console.log('Successfully drew image at bottom-left corner');
+                } catch (drawError) {
+                  console.error('Error drawing to main canvas:', drawError);
+                  
+                  // Try a fallback approach if needed
+                  try {
+                    console.log('Attempting fallback drawing approach');
+                    ctx.drawImage(userImg, userX, userY, containerWidth, containerHeight);
+                  } catch (fallbackError) {
+                    console.error('Fallback drawing also failed:', fallbackError);
+                  }
+                }
+              } catch (imageDrawError) {
+                console.error('Error drawing user image:', imageDrawError);
+                // Continue without user image placement
+              }
+            }
           } catch (e) {
             console.error('Error drawing template:', e);
             // Try to reload the image one more time with a direct approach
@@ -335,275 +497,6 @@ const SharePoster = () => {
           }
         }
         
-        // Now place the user's image to the left of Bumrah with same height as Bumrah
-        if (userImg.complete && userImg.naturalHeight !== 0) {
-          try {
-            // Get original image dimensions
-            const userImgWidth = userImg.width;
-            const userImgHeight = userImg.height;
-            console.log('Original image dimensions:', { width: userImgWidth, height: userImgHeight });
-            
-            // Check if we have crop data from the UploadPhoto page
-            let cropData = null;
-            try {
-              const cropDataStr = sessionStorage.getItem('cropData');
-              if (cropDataStr) {
-                cropData = JSON.parse(cropDataStr);
-                console.log('Retrieved crop data:', cropData);
-              }
-            } catch (e) {
-              console.error('Error parsing crop data:', e);
-            }
-            
-            // Get userData for additional metadata
-            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
-            console.log('Retrieved user data:', userData);
-            
-            // Calculate Bumrah's approximate height in the template
-            // Using the full template height (with some small margins)
-            const bumrahHeight = canvas.height * 0.75; // Approximate height of Bumrah on the poster
-            
-            // Initial width and height calculation - but we'll allow height to be fluid
-            const heightScale = bumrahHeight / userImgHeight; // Base height scale
-            let scaledWidth = userImgWidth * heightScale;
-            let scaledHeight = bumrahHeight; // Initial height, but this may change
-            
-            // If we have crop data, adjust based on the crop settings
-            if (cropData) {
-              console.log('Applying crop data as mask:', cropData);
-              
-              // Calculate target width (47.29% of frame width)
-              const targetWidth = canvas.width * 0.4729;
-              console.log('Target width (47.29% of frame):', targetWidth);
-              
-              // Set the width to the target
-              scaledWidth = targetWidth * 1.15; // Increase width by 15%
-              
-              // If we have aspect ratio information, use it to calculate the proper height
-              // preserving the aspect ratio of the cropped portion
-              if (cropData.aspectRatio) {
-                // Calculate height based on the cropped aspect ratio
-                // aspectRatio = width / height, so height = width / aspectRatio
-                const naturalHeight = scaledWidth / cropData.aspectRatio;
-                
-                // Use the natural height based on aspect ratio
-                scaledHeight = naturalHeight;
-                
-                console.log('Using mask approach with original proportions:', {
-                  aspectRatio: cropData.aspectRatio,
-                  targetWidth,
-                  naturalHeight,
-                  cropSettings: cropData
-                });
-              }
-              
-              console.log('Final mask dimensions (original proportions):', { 
-                width: scaledWidth, 
-                height: scaledHeight
-              });
-            }
-            
-            // Position to place user on the left side of Bumrah
-            // Position is adjusted to account for proper placement
-            // Moved 15px more to the right as requested
-            const userX = (canvas.width * 0.08) - 95 + 15 + 2; // Added 2px more to the right
-            
-            // Check if this is a back camera photo vs. selfie
-            const isBackCameraPhoto = userData && userData.isSelfieMode === false;
-            console.log('Is back camera photo?', isBackCameraPhoto);
-            
-            // IMPORTANT: Keep the TOP position fixed regardless of height
-            // Instead of positioning from the bottom, position from the top
-            // For back camera photos, push up by additional 10px as requested
-            const userY = (canvas.height - bumrahHeight) + 110 - 18 + 30 + 55 + 5 + 5 - (isBackCameraPhoto ? 10 : 0); // This keeps top position fixed, with extra adjustment for back camera
-            
-            // Apply the calculated placement
-            console.log('Positioning image at:', { x: userX, y: userY, width: scaledWidth, height: scaledHeight });
-            
-            // Create an offscreen canvas for applying tint and enhancements
-            const offscreenCanvas = document.createElement('canvas');
-            offscreenCanvas.width = scaledWidth;
-            offscreenCanvas.height = scaledHeight;
-            const offCtx = offscreenCanvas.getContext('2d');
-            
-            // Draw the user's image to the offscreen canvas
-            // The image should already be properly cropped, just need to draw it
-            try {
-              console.log('Drawing user image to offscreen canvas with dimensions:', {
-                width: scaledWidth,
-                height: scaledHeight
-              });
-              
-              // Clear the offscreen canvas first
-              offCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
-              
-              if (cropData) {
-                console.log('Using crop data to extract just the cropped portion of the image (mask approach)');
-                
-                // For vertically cropped images, we want to maintain original proportions
-                // Calculate the source dimensions based on crop percentages
-                const sourceWidth = userImg.width * (cropData.widthPercentage / 100);
-                const sourceHeight = userImg.height * (cropData.heightPercentage / 100);
-                const sourceX = userImg.width * (cropData.leftPercentage / 100);
-                const sourceY = userImg.height * (cropData.topPercentage / 100);
-                
-                console.log('Source dimensions for cropped portion (mask):', {
-                  sourceX, sourceY, sourceWidth, sourceHeight
-                });
-                
-                // Important change: Force the image to fill the entire height allocation
-                // This ensures no gap at the bottom of the container
-                // Calculate the fixed height allocation based on Bumrah's height
-                const fixedHeight = bumrahHeight;
-                
-                // Now ensure the scaledHeight matches the fixed height
-                scaledHeight = fixedHeight;
-                
-                // Draw only the cropped portion, but force it to fill the entire height
-                offCtx.drawImage(
-                  userImg, 
-                  sourceX, sourceY, sourceWidth, sourceHeight,
-                  0, 0, scaledWidth, scaledHeight
-                );
-                
-                console.log('Successfully filled entire container height with cropped image');
-              } else {
-                // If no crop data, use the entire image
-                offCtx.drawImage(userImg, 0, 0, scaledWidth, scaledHeight);
-              }
-              
-              console.log('Successfully drew user image to offscreen canvas');
-              
-              // Log the image data for debugging
-              try {
-                const imageData = offCtx.getImageData(0, 0, 5, 5);
-                console.log('Sample of image data (first 5x5 pixels):', imageData.data.slice(0, 100));
-              } catch (e) {
-                console.warn('Could not access image data for debugging:', e);
-              }
-            } catch (drawError) {
-              console.error('Error drawing user image to offscreen canvas:', drawError);
-              
-              // Try an alternative drawing approach
-              try {
-                console.log('Attempting alternative drawing approach');
-                
-                if (cropData) {
-                  // Try to apply crop using natural dimensions
-                  const sourceWidth = userImg.naturalWidth * (cropData.widthPercentage / 100);
-                  const sourceHeight = userImg.naturalHeight * (cropData.heightPercentage / 100);
-                  const sourceX = userImg.naturalWidth * (cropData.leftPercentage / 100);
-                  const sourceY = userImg.naturalHeight * (cropData.topPercentage / 100);
-                  
-                  offCtx.drawImage(
-                    userImg, 
-                    sourceX, sourceY, sourceWidth, sourceHeight,
-                    0, 0, scaledWidth, scaledHeight
-                  );
-                } else {
-                  offCtx.drawImage(
-                    userImg, 
-                    0, 0, userImg.naturalWidth, userImg.naturalHeight,
-                    0, 0, scaledWidth, scaledHeight
-                  );
-                }
-                
-                console.log('Alternative drawing approach succeeded');
-              } catch (altError) {
-                console.error('Alternative drawing approach also failed:', altError);
-              }
-            }
-            
-            // Black tint has been removed as requested
-            
-            // 3. Apply basic image enhancement (contrast and brightness)
-            try {
-              // Get image data for manipulation
-              const imageData = offCtx.getImageData(0, 0, scaledWidth, scaledHeight);
-              const data = imageData.data;
-              
-              // Increase contrast and brightness slightly
-              const contrast = 1.1; // Subtle contrast boost
-              const brightness = 5;  // Slight brightness boost
-              
-              for (let i = 0; i < data.length; i += 4) {
-                // Apply contrast and brightness
-                data[i] = Math.min(255, Math.max(0, ((data[i] - 128) * contrast) + 128 + brightness));          // red
-                data[i + 1] = Math.min(255, Math.max(0, ((data[i + 1] - 128) * contrast) + 128 + brightness));  // green
-                data[i + 2] = Math.min(255, Math.max(0, ((data[i + 2] - 128) * contrast) + 128 + brightness));  // blue
-              }
-              
-              // Put the enhanced image data back
-              offCtx.putImageData(imageData, 0, 0);
-              console.log('Image enhancement applied');
-            } catch (enhanceError) {
-              console.error('Error enhancing image:', enhanceError);
-              // Continue with unenhanced image if enhancement fails
-            }
-            
-            // 4. Now draw the processed image to the main canvas
-            // Note: Background removal is assumed to be already done in the processedImage
-            try {
-              console.log('Drawing final image to main canvas at position:', {
-                x: userX,
-                y: userY,
-                width: scaledWidth,
-                height: scaledHeight
-              });
-              
-              // Check if offscreen canvas has content
-              try {
-                const testData = offCtx.getImageData(0, 0, 1, 1);
-                if (testData.data[3] === 0) {
-                  console.warn('Offscreen canvas appears to be empty or transparent');
-                }
-              } catch (e) {
-                console.warn('Could not test offscreen canvas data:', e);
-              }
-              
-              ctx.drawImage(offscreenCanvas, userX, userY, scaledWidth, scaledHeight);
-              console.log('Successfully drew final image to main canvas');
-            } catch (imgPlacementError) {
-              console.error('Error placing image on poster:', imgPlacementError);
-              
-              // Try a direct drawing approach as fallback
-              try {
-                console.log('Attempting direct drawing approach');
-                ctx.drawImage(userImg, userX, userY, scaledWidth, scaledHeight);
-                console.log('Direct drawing approach succeeded');
-              } catch (directError) {
-                console.error('Direct drawing approach failed:', directError);
-                
-                // Try another fallback with a new image
-                try {
-                  console.log('Attempting fallback with new image');
-                  const fallbackImg = new Image();
-                  fallbackImg.crossOrigin = 'anonymous';
-                  fallbackImg.src = processedImage;
-                  
-                  // Wait for the image to load
-                  await new Promise(resolve => {
-                    fallbackImg.onload = resolve;
-                    setTimeout(resolve, 2000); // Timeout after 2 seconds
-                  });
-                  
-                  if (fallbackImg.complete && fallbackImg.naturalHeight !== 0) {
-                    ctx.drawImage(fallbackImg, userX, userY, scaledWidth, scaledHeight);
-                    console.log('Fallback with new image succeeded');
-                  } else {
-                    console.error('Fallback image failed to load properly');
-                  }
-                } catch (fallbackError) {
-                  console.error('All drawing approaches failed:', fallbackError);
-                }
-              }
-            }
-          } catch (imageDrawError) {
-            console.error('Error drawing user image:', imageDrawError);
-            // Continue without user image placement
-          }
-        }
-        
         setLoadingStatus('Generating your poster...');
         
         try {
@@ -619,61 +512,53 @@ const SharePoster = () => {
             tagline = 'I transform businesses with innovation and expertise';
             console.log('Using default tagline');
           }
-          // Keep asterisks for highlighting in drawTextWithBoldedWords function
           
-          // Split the tagline into multiple lines if needed
-          let taglineLines = [];
-          const maxLineLength = 32; // Increased from 30 to 32 to increase tagline width from the right by 2px
-          
-          if (tagline.length > maxLineLength) {
-            // Break into multiple lines
-            const words = tagline.split(' ');
-            let currentLine = '';
+          // Now draw Group 30a image on the right side with higher z-index
+          try {
+            const group30aImg = new Image();
+            group30aImg.crossOrigin = 'anonymous';
+            group30aImg.src = '/images/section1/Group 30a (1).png'; // Correct path with section1 folder
             
-            words.forEach((word) => {
-              if ((currentLine + word).length < maxLineLength) {
-                currentLine += (currentLine ? ' ' : '') + word;
+            console.log('Loading Group 30a image in final position');
+            
+            // Wait for image to load
+            await new Promise((resolve) => {
+              if (group30aImg.complete) {
+                console.log('Group 30a image already loaded');
+                resolve();
               } else {
-                taglineLines.push(currentLine);
-                currentLine = word;
+                group30aImg.onload = () => {
+                  console.log('Group 30a image loaded successfully in final position');
+                  resolve();
+                };
+                group30aImg.onerror = (err) => {
+                  console.error('Failed to load Group 30a image in final position:', err);
+                  resolve(); // Continue even if image fails
+                };
+                setTimeout(() => resolve(), 3000); // Safety timeout
               }
             });
             
-            if (currentLine) {
-              taglineLines.push(currentLine);
+            if (group30aImg.complete && group30aImg.naturalHeight !== 0) {
+              // Position on the right side of the canvas
+              const rightImageWidth = canvas.width * 0.46; // Keep same width
+              const rightImageHeight = canvas.height * 0.63; // Keep same height
+              const rightImageX = canvas.width - rightImageWidth - 25; // Move 15px more to the left (from -10 to -25)
+              const rightImageY = canvas.height - rightImageHeight + 50; // Keep same Y position
+              
+              console.log('Drawing Group 30a image at final position:', {
+                x: rightImageX,
+                y: rightImageY,
+                width: rightImageWidth,
+                height: rightImageHeight
+              });
+              
+              // Draw the image on top of everything
+              ctx.drawImage(group30aImg, rightImageX, rightImageY, rightImageWidth, rightImageHeight);
+              console.log('Group 30a image drawn successfully in final position');
             }
-          } else {
-            taglineLines = [tagline];
-          }
-          
-          // Get selected keywords from session storage (or default to empty array)
-          let selectedKeywords = [];
-          let highlightedKeywords = [];
-          
-          try {
-            // Get the explicitly selected keywords
-            const storedKeywords = sessionStorage.getItem('selectedKeywords');
-            if (storedKeywords) {
-              selectedKeywords = JSON.parse(storedKeywords);
-              console.log('Loaded selected keywords:', selectedKeywords);
-            }
-            
-            // Also get any highlighted keywords extracted from asterisks
-            const storedHighlightedKeywords = sessionStorage.getItem('highlightedKeywords');
-            if (storedHighlightedKeywords) {
-              highlightedKeywords = JSON.parse(storedHighlightedKeywords);
-              console.log('Loaded highlighted keywords:', highlightedKeywords);
-            }
-            
-            // Combine both sources for a comprehensive list of words to bold
-            selectedKeywords = [...new Set([...selectedKeywords, ...highlightedKeywords])];
-            console.log('Combined keywords to bold:', selectedKeywords);
-            
-            // Ensure keywords are properly normalized for matching (lowercase, trimmed)
-            selectedKeywords = selectedKeywords.map(keyword => keyword.trim()).filter(keyword => keyword.length > 0);
-            console.log('Normalized keywords to bold:', selectedKeywords);
-          } catch (e) {
-            console.error('Error parsing keywords:', e);
+          } catch (rightImageError) {
+            console.error('Error drawing Group 30a image in final position:', rightImageError);
           }
           
           // Tagline styling - using Poppins font and increased font size by 3.5
@@ -681,9 +566,9 @@ const SharePoster = () => {
           ctx.font = 'bold 45.5px Poppins, sans-serif'; // Increased from 42px to 45.5px (42 + 3.5)
           ctx.textAlign = 'left';
           
-          // Calculate vertical spacing for taglines - moved up by additional 2px
-          const taglineStartY = canvas.height * 0.10 - 2; // Further reduced by 2px as requested
-          const taglineLineHeight = 55;
+          // Calculate vertical spacing for taglines - adjusted for better positioning
+          const taglineStartY = canvas.height * 0.09; // Moved up slightly from 0.10 to 0.09
+          const taglineLineHeight = 50; // Reduced from 55 to 50 for tighter line spacing
           
           // Enhanced function to handle drawing text with certain words in bold
           const drawTextWithBoldedWords = (line, x, y, keywords) => {
@@ -796,19 +681,60 @@ const SharePoster = () => {
             });
           };
           
-          // Double-check tagline for any asterisks to ensure we catch all highlighted words
-          taglineLines.forEach(line => {
-            const asteriskMatches = line.match(/\*(.*?)\*/g);
-            if (asteriskMatches) {
-              asteriskMatches.forEach(match => {
-                const word = match.replace(/\*/g, '').trim();
-                if (word && !selectedKeywords.includes(word)) {
-                  selectedKeywords.push(word);
-                  console.log('Added highlighted word from tagline:', word);
-                }
-              });
+          // Split the tagline into multiple lines if needed
+          let taglineLines = [];
+          const maxLineLength = 34; // Reduced from 38 to 36 to decrease tagline width from the right by 10px
+          
+          if (tagline.length > maxLineLength) {
+            // Break into multiple lines
+            const words = tagline.split(' ');
+            let currentLine = '';
+            
+            words.forEach((word) => {
+              if ((currentLine + word).length < maxLineLength) {
+                currentLine += (currentLine ? ' ' : '') + word;
+              } else {
+                taglineLines.push(currentLine);
+                currentLine = word;
+              }
+            });
+            
+            if (currentLine) {
+              taglineLines.push(currentLine);
             }
-          });
+          } else {
+            taglineLines = [tagline];
+          }
+          
+          // Get selected keywords from session storage (or default to empty array)
+          let selectedKeywords = [];
+          let highlightedKeywords = [];
+          
+          try {
+            // Get the explicitly selected keywords
+            const storedKeywords = sessionStorage.getItem('selectedKeywords');
+            if (storedKeywords) {
+              selectedKeywords = JSON.parse(storedKeywords);
+              console.log('Loaded selected keywords:', selectedKeywords);
+            }
+            
+            // Also get any highlighted keywords extracted from asterisks
+            const storedHighlightedKeywords = sessionStorage.getItem('highlightedKeywords');
+            if (storedHighlightedKeywords) {
+              highlightedKeywords = JSON.parse(storedHighlightedKeywords);
+              console.log('Loaded highlighted keywords:', highlightedKeywords);
+            }
+            
+            // Combine both sources for a comprehensive list of words to bold
+            selectedKeywords = [...new Set([...selectedKeywords, ...highlightedKeywords])];
+            console.log('Combined keywords to bold:', selectedKeywords);
+            
+            // Ensure keywords are properly normalized for matching (lowercase, trimmed)
+            selectedKeywords = selectedKeywords.map(keyword => keyword.trim()).filter(keyword => keyword.length > 0);
+            console.log('Normalized keywords to bold:', selectedKeywords);
+          } catch (e) {
+            console.error('Error parsing keywords:', e);
+          }
           
           // Draw each line with keywords bolded - moved right by 3px and reduced width from right by 3px
           taglineLines.forEach((line, index) => {
@@ -843,7 +769,7 @@ const SharePoster = () => {
           if (preloadedPhoneIconRef.current) {
             // Use the preloaded icon which is guaranteed to be loaded
             console.log('Using preloaded phone icon');
-            const iconSize = 32; // Size for the icon
+            const iconSize = 42; // Increased from 32px to 42px to better fill the circle
             ctx.drawImage(
               preloadedPhoneIconRef.current,
               phoneX - iconSize/2, // Center horizontally
@@ -988,7 +914,7 @@ const SharePoster = () => {
           ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
           ctx.font = 'bold 30px Arial'; // Significantly increased font size for better visibility
           ctx.textAlign = 'center';
-          ctx.fillText('Visit – ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
+          ctx.fillText('Visit – LTFGAMECHANGERS.IN', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
           
           console.log('Added URL strip to poster');
         } catch (stripError) {
@@ -1121,7 +1047,7 @@ const SharePoster = () => {
             ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
             ctx.font = 'bold 40px Arial'; // Further increased font size for better visibility
             ctx.textAlign = 'center';
-            ctx.fillText('Visit – ltfgamechangers.in', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
+            ctx.fillText('LTFGAMECHANGERS.IN', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
           } catch (stripError) {
             console.error('Error adding URL strip to fallback poster:', stripError);
           }
@@ -1154,62 +1080,103 @@ const SharePoster = () => {
   }, [processedImage, userData, templatePath]);
 
   useEffect(() => {
-    // Load data from sessionStorage when component mounts
-    setLoadingStatus('Generating your poster...');
-    
-    // Ensure Poppins font is loaded
-    const ensurePoppinsFont = () => {
-      // Check if the font is already added to the document
-      const existingLink = document.querySelector('link[href*="fonts.googleapis.com/css2?family=Poppins"]');
-      
-      if (!existingLink) {
-        // Create link element for Poppins font
-        const fontLink = document.createElement('link');
-        fontLink.rel = 'stylesheet';
-        fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
-        document.head.appendChild(fontLink);
-        
-        // Create a span element to trigger font loading
-        const span = document.createElement('span');
-        span.style.fontFamily = 'Poppins, sans-serif';
-        span.style.visibility = 'hidden';
-        span.textContent = 'Font loader';
-        document.body.appendChild(span);
-        
-        // Remove the span after a short delay
-        setTimeout(() => {
-          if (span && document.body.contains(span)) {
-            document.body.removeChild(span);
+    // Function to load user data and image
+    const loadUserDataAndImage = async () => {
+      try {
+        // Load the Poppins font
+        const ensurePoppinsFont = () => {
+          // Check if the font is already added to the document
+          const existingLink = document.querySelector('link[href*="fonts.googleapis.com/css2?family=Poppins"]');
+          
+          if (!existingLink) {
+            // Create link element for Poppins font
+            const fontLink = document.createElement('link');
+            fontLink.rel = 'stylesheet';
+            fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
+            document.head.appendChild(fontLink);
+            
+            // Create a span element to trigger font loading
+            const span = document.createElement('span');
+            span.style.fontFamily = 'Poppins, sans-serif';
+            span.style.visibility = 'hidden';
+            span.textContent = 'Font loader';
+            document.body.appendChild(span);
+            
+            // Remove the span after a short delay
+            setTimeout(() => {
+              if (span && document.body.contains(span)) {
+                document.body.removeChild(span);
+              }
+            }, 500);
           }
-        }, 500);
+        };
+        
+        // Ensure Poppins font is loaded
+        ensurePoppinsFont();
+        
+        // Retrieve user data from session storage
+        const storedUserDataStr = sessionStorage.getItem('userData');
+        
+        // Check if we have user data
+        if (!storedUserDataStr) {
+          console.error('No user data found in session storage');
+          setError('No user data found. Please go back and add your details.');
+          setIsLoading(false);
+          
+          // Navigate back to upload page after a brief delay
+          setTimeout(() => {
+            navigate('/upload');
+          }, 1500);
+          
+          return;
+        }
+        
+        // Parse user data
+        const storedUserData = JSON.parse(storedUserDataStr);
+        console.log('Retrieved user data from session storage:', storedUserData);
+        setUserData(storedUserData);
+        
+        // Retrieve the processed image directly from session storage
+        const storedImageUrl = sessionStorage.getItem('processedImage');
+        
+        // Check if we have an image URL
+        if (!storedImageUrl) {
+          console.error('No processed image found in session storage');
+          setError('No image found. Please go back and upload your photo.');
+          setIsLoading(false);
+          
+          // Navigate back to upload page after a brief delay
+          setTimeout(() => {
+            navigate('/upload');
+          }, 1500);
+          
+          return;
+        }
+        
+        console.log('Retrieved image URL from session storage:', storedImageUrl);
+        
+        // Handle both blob URLs and data URLs
+        if (storedImageUrl.startsWith('blob:') || storedImageUrl.startsWith('data:')) {
+          console.log('Using blob or data URL directly');
+          setProcessedImage(storedImageUrl);
+        } else {
+          // Handle other URL formats if needed
+          console.log('Using standard URL format');
+          setProcessedImage(storedImageUrl);
+        }
+        
+        // If everything is loaded, we can generate the poster
+        setIsLoading(true);
+      } catch (error) {
+        console.error('Error loading user data or image:', error);
+        setError('There was a problem loading your data. Please try again.');
+        setIsLoading(false);
       }
     };
     
-    ensurePoppinsFont();
-    
-    try {
-      const storedUserData = sessionStorage.getItem('userData');
-      const storedImageData = sessionStorage.getItem('processedImage');
-      
-      console.log('Retrieved userData from sessionStorage:', storedUserData);
-      
-      if (storedUserData && storedImageData) {
-        const parsedUserData = JSON.parse(storedUserData);
-        console.log('Parsed userData:', parsedUserData);
-        console.log('Industry from parsed userData:', parsedUserData.industry);
-        
-        setUserData(parsedUserData);
-        setProcessedImage(storedImageData);
-      } else {
-        setError('No data found. Please upload a photo first.');
-        navigate('/upload');
-      }
-    } catch (err) {
-      console.error('Error loading data:', err);
-      setError('Failed to load your data. Please try again.');
-      navigate('/upload');
-    }
-  }, [navigate]);
+    // Load user data and image when component mounts
+    loadUserDataAndImage();
+  }, [navigate]);  // Add navigate to the dependency array
 
   useEffect(() => {
     if (processedImage && userData) {
@@ -1268,11 +1235,11 @@ const SharePoster = () => {
 
   // Better mobile scrolling implementation for SharePoster
   useEffect(() => {
-    // Only apply these fixes if we're on mobile
+    // Only apply minimal fixes if we're on mobile
     if (window.innerWidth <= 768) {
       console.log('SharePoster - Applying mobile scroll fixes');
       
-      // Make sure body and html have proper scroll settings
+      // Allow natural scrolling
       document.body.style.overflowX = 'hidden';
       document.body.style.overflowY = 'auto';
       document.body.style.height = 'auto';
@@ -1285,87 +1252,8 @@ const SharePoster = () => {
         root.style.minHeight = '100%';
         root.style.overflowY = 'visible';
       }
-      
-      // Ensure the page container allows scrolling
-      const sharePosterPage = document.querySelector('.share-poster-page');
-      if (sharePosterPage) {
-        sharePosterPage.style.overflowY = 'visible';
-        sharePosterPage.style.height = 'auto';
-        sharePosterPage.style.minHeight = '100vh';
-      }
-      
-      // Ensure CTA sections don't block scrolling
-      const ctaSections = document.querySelectorAll('.mobile-cta-section');
-      ctaSections.forEach(section => {
-        section.style.overflowY = 'visible';
-        section.style.height = 'auto';
-      });
     }
-    
-    // Check for scrolling issues after content is loaded
-    const fixScrollingAfterLoad = () => {
-      if (window.innerWidth <= 768) {
-        // Force a small delay to ensure content is rendered
-        setTimeout(() => {
-          window.scrollTo(0, 1);
-          window.scrollTo(0, 0);
-          console.log('SharePoster - Applied scroll position reset');
-        }, 300);
-      }
-    };
-    
-    window.addEventListener('load', fixScrollingAfterLoad);
-    
-    return () => {
-      window.removeEventListener('load', fixScrollingAfterLoad);
-    };
   }, [isMobile]);
-
-  // Add this right after the existing preventAutoScroll effect
-  useEffect(() => {
-    // Only for mobile view - add additional scroll protection
-    if (window.innerWidth <= 768) {
-      // Create a more aggressive scroll position lock
-      let lastScrollPosition = window.pageYOffset;
-      let scrollLock = false;
-      
-      const lockScrollPosition = () => {
-        lastScrollPosition = window.pageYOffset;
-        scrollLock = true;
-        
-        // Release lock after 400ms to allow intentional user scrolling
-        setTimeout(() => {
-          scrollLock = false;
-        }, 400);
-      };
-      
-      const checkAndRestoreScroll = () => {
-        if (scrollLock) {
-          window.scrollTo(0, lastScrollPosition);
-        }
-      };
-      
-      // Initialize scroll position
-      lockScrollPosition();
-      
-      // Add scroll event listener
-      window.addEventListener('scroll', checkAndRestoreScroll);
-      
-      // Add touch events that can trigger scroll position locking
-      const handleTouchStart = () => {
-        if (!scrollLock) {
-          lockScrollPosition();
-        }
-      };
-      
-      document.addEventListener('touchstart', handleTouchStart, { passive: true });
-      
-      return () => {
-        window.removeEventListener('scroll', checkAndRestoreScroll);
-        document.removeEventListener('touchstart', handleTouchStart);
-      };
-    }
-  }, []);
 
   return (
     <div className="share-poster-page" style={{ backgroundImage: 'url("/images/BG.png")' }}>

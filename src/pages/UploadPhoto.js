@@ -9,7 +9,7 @@ import axios from 'axios';
 import Loader from '../components/Loader';
 import * as faceapi from 'face-api.js';
 import { loadFaceDetectionModels } from '../utils/faceDetection';
-import ReactCrop from 'react-image-crop';
+import ReactCrop, { centerCrop, makeAspectCrop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
 const UploadPhoto = () => {
@@ -29,48 +29,34 @@ const UploadPhoto = () => {
   const [faceDetectionEnabled, setFaceDetectionEnabled] = useState(false);
   const [isSelfieMode, setIsSelfieMode] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  // Crop state
-  const [crop, setCrop] = useState({ 
-    unit: '%', 
-    width: 80,
-    height: 100,
-    x: 10,
-    y: 0,
-    aspect: undefined // Remove aspect ratio constraint to allow fixed height but variable width
-  });
+  
+  // Add poster aspect ratio first, before any other state references it
+  const [posterAspectRatio] = useState(0.56); // 9:16 aspect ratio (width/height)
+
+  // Add state variables for React Crop
+  const [crop, setCrop] = useState();
+  const [aspect, setAspect] = useState(posterAspectRatio); // Now posterAspectRatio is defined first
   const [completedCrop, setCompletedCrop] = useState(null);
   const [croppedImageUrl, setCroppedImageUrl] = useState(null);
-  const [cropMode, setCropMode] = useState('center'); // 'center', 'left', 'right'
-  const [cropWidth, setCropWidth] = useState('medium'); // 'narrow', 'medium', 'wide'
-  // New state variables for flexible cropping
-  const [leftCropPercentage, setLeftCropPercentage] = useState(10); // 10% from left
-  const [rightCropPercentage, setRightCropPercentage] = useState(10); // 10% from right
-  const [topCropPercentage, setTopCropPercentage] = useState(0); // 0% from top
-  const [bottomCropPercentage, setBottomCropPercentage] = useState(0); // 0% from bottom
-  const [cropWidthPercentage, setCropWidthPercentage] = useState(80); // 80% width initially
-  const [cropHeightPercentage, setCropHeightPercentage] = useState(100); // 100% height initially
-  const imgRef = useRef(null);
-  console.log('Current device width:', window.innerWidth, 'Is Mobile:', window.innerWidth <= 768);
+  const [isCropComplete, setIsCropComplete] = useState(false);
+  const [useFixedAspectRatio, setUseFixedAspectRatio] = useState(true);
+  const [originalImageDimensions, setOriginalImageDimensions] = useState({ width: 0, height: 0 });
+  const [imageOrientation, setImageOrientation] = useState('portrait'); // 'portrait' or 'landscape'
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [showFixedRatioBox] = useState(true);
+  const [cropData, setCropData] = useState(null);
 
+  // Add showCameraModal state
+  const [showCameraModal, setShowCameraModal] = useState(false);
+
+  const imgRef = useRef(null);
+  const previewCanvasRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const detectionRef = useRef(null);
-  const previewCanvasRef = useRef(null); // For cropping
   const navigate = useNavigate();
-
-  // Add a new cropData state variable to track and store crop metadata
-  const [cropData, setCropData] = useState(null);
-
-  // Add new state for the crop modal
-  const [showCropModal, setShowCropModal] = useState(false);
-  const [isCropComplete, setIsCropComplete] = useState(false);
-
-  // Add drag state variables
-  const [isDraggingLeft, setIsDraggingLeft] = useState(false);
-  const [isDraggingRight, setIsDraggingRight] = useState(false);
-  const [isDraggingTop, setIsDraggingTop] = useState(false);
-  const [isDraggingBottom, setIsDraggingBottom] = useState(false);
-  const cropContainerRef = useRef(null);
+  
+  console.log('Current device width:', window.innerWidth, 'Is Mobile:', window.innerWidth <= 768);
 
   // Initialize face detection when component mounts
   useEffect(() => {
@@ -98,59 +84,88 @@ const UploadPhoto = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Function to check if image is portrait (height > width)
-  const isPortraitImage = (imageUrl, callback) => {
+  // Function to check if image is portrait or landscape
+  const detectImageOrientation = (imageUrl, callback) => {
     const img = new Image();
     img.onload = () => {
-      const isPortrait = img.height > img.width;
-      callback(isPortrait, img.width, img.height);
+      const width = img.width;
+      const height = img.height;
+      const orientation = height > width ? 'portrait' : 'landscape';
+      setOriginalImageDimensions({ width, height });
+      setImageOrientation(orientation);
+      
+      // If it's a callback, return the data
+      if (callback) callback(orientation, width, height);
     };
     img.src = imageUrl;
   };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        const imageUrl = fileReader.result;
-        
-        // Check if image is portrait
-        isPortraitImage(imageUrl, (isPortrait, width, height) => {
-          if (!isPortrait) {
-            setError('Only portrait images (height > width) are allowed. Please upload a different image.');
-            return;
-          }
-          
-          // Clear any previous errors
-          setError(null);
-          
-          // Set file and continue with upload
-          setFile(selectedFile);
-          setPreviewUrl(imageUrl);
-          
-          // Reset crop state
-          setCompletedCrop(null);
-          setCroppedImageUrl(null);
-          setLeftCropPercentage(10);
-          setRightCropPercentage(10);
-          setTopCropPercentage(0);
-          setBottomCropPercentage(0);
-          setCropWidthPercentage(80);
-          setCropHeightPercentage(100);
-          
-          // Show crop modal
-          setShowCropModal(true);
-          setShowPreviewModal(false);
-          setIsCropComplete(false);
-        });
-      };
-      fileReader.readAsDataURL(selectedFile);
+  // Helper function for creating the initial crop based on image dimensions
+  const centerAspectCrop = (mediaWidth, mediaHeight, aspect) => {
+    // If the image is landscape and we want a portrait crop
+    if (mediaWidth > mediaHeight && aspect < 1) {
+      // Create a square crop centered on the image if image is landscape
+      return centerCrop(
+        makeAspectCrop(
+          {
+            unit: '%',
+            width: (mediaHeight / mediaWidth) * 100 * aspect, // Makes the crop width match the aspect ratio
+          },
+          aspect,
+          mediaWidth,
+          mediaHeight
+        ),
+        mediaWidth,
+        mediaHeight
+      );
     }
+    
+    // If image is portrait or square, create a centered crop
+    return centerCrop(
+      makeAspectCrop(
+        {
+          unit: '%',
+          width: 90, // Start with a crop that's 90% of the image width
+        },
+        aspect,
+        mediaWidth,
+        mediaHeight
+      ),
+      mediaWidth,
+      mediaHeight
+    );
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
+  // Handle file selection
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    
+    if (!selectedFile) {
+      return;
+    }
+    
+    if (!isValidImageFile(selectedFile)) {
+      setError('Please upload a valid image file (JPG, JPEG, PNG).');
+      return;
+    }
+    
+    setFile(selectedFile);
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageUrl = e.target.result;
+      setPreviewUrl(imageUrl);
+      
+      // Reset crop state
+      setCrop(undefined);
+      setCompletedCrop(null);
+      setCroppedImageUrl(null);
+      setIsCropComplete(false);
+      
+      // Show crop modal
+      setShowCropModal(true);
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const handleDrop = (e) => {
@@ -161,13 +176,8 @@ const UploadPhoto = () => {
       fileReader.onload = () => {
         const imageUrl = fileReader.result;
         
-        // Check if image is portrait
-        isPortraitImage(imageUrl, (isPortrait, width, height) => {
-          if (!isPortrait) {
-            setError('Only portrait images (height > width) are allowed. Please upload a different image.');
-            return;
-          }
-          
+        // Detect orientation and set up initial crop
+        detectImageOrientation(imageUrl, (orientation) => {
           // Clear any previous errors
           setError(null);
           
@@ -178,12 +188,6 @@ const UploadPhoto = () => {
           // Reset crop state
           setCompletedCrop(null);
           setCroppedImageUrl(null);
-          setLeftCropPercentage(10);
-          setRightCropPercentage(10);
-          setTopCropPercentage(0);
-          setBottomCropPercentage(0);
-          setCropWidthPercentage(80);
-          setCropHeightPercentage(100);
           
           // Show crop modal
           setShowCropModal(true);
@@ -195,449 +199,194 @@ const UploadPhoto = () => {
     }
   };
 
-  // Handle face detection in video stream
-  const detectFacesInVideo = async () => {
-    if (!videoRef.current || !videoRef.current.srcObject || !faceDetectionEnabled) {
-      return;
-    }
-
-    try {
-      // Get face detections
-      const detections = await faceapi.detectAllFaces(
-        videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.7 }) // Increased threshold for more accurate detection
-      ).withFaceLandmarks();
-
-      // Check if any faces were detected
-      if (detections && detections.length > 0) {
-        setFaceDetected(true);
-
-        // Get the most prominent face (usually the largest one)
-        const mainFace = detections.sort((a, b) =>
-          (b.detection.box.width * b.detection.box.height) -
-          (a.detection.box.width * a.detection.box.height)
-        )[0];
-
-        // Get detection confidence
-        const confidence = mainFace.detection.score;
-
-        // Get video dimensions
-        const videoWidth = videoRef.current.videoWidth;
-        const videoHeight = videoRef.current.videoHeight;
-
-        // Calculate center of the screen
-        const centerX = videoWidth / 2;
-        // Adjust centerY based on selfie mode - slightly higher center point for selfies
-        const centerY = isSelfieMode ? videoHeight / 2.5 : videoHeight / 2.2;
-
-        // Get face dimensions and position
-        const faceBox = mainFace.detection.box;
-        const faceCenterX = faceBox.x + (faceBox.width / 2);
-        const faceCenterY = faceBox.y + (faceBox.height / 2);
-
-        // Calculate percentage of displacement from center
-        const xDisplacementPercent = Math.abs(faceCenterX - centerX) / (videoWidth / 2) * 100;
-        const yDisplacementPercent = Math.abs(faceCenterY - centerY) / (videoHeight / 2) * 100;
-
-        // Log face position data for debugging
-        if (Math.random() < 0.05) { // Log only occasionally to avoid console spam
-          console.log(`Face position: x=${xDisplacementPercent.toFixed(1)}%, y=${yDisplacementPercent.toFixed(1)}%, width=${(faceBox.width / videoWidth * 100).toFixed(1)}%, confidence=${confidence.toFixed(2)}`);
-        }
-
-        // Define stricter acceptable distance from center - use percentage of screen size
-        // Smaller tolerance for selfie mode (more precise face positioning)
-        const xTolerancePercent = isSelfieMode ? 10 : 15; // % of screen width from center
-        const yTolerancePercent = isSelfieMode ? 15 : 20; // % of screen height from center
-
-        // Calculate acceptable minimum face size as percentage of screen width
-        const minFaceSizePercent = isSelfieMode ? 15 : 15; // Reduced from 25% to 15% for selfie mode to encourage taking photos from a distance
-
-        // Check if face is within acceptable position with different criteria for selfie mode
-        let inPosition = false;
-
-        if (isSelfieMode) {
-          // For selfie mode: strict positioning requirements
-          inPosition =
-            confidence > 0.8 && // High confidence required
-            xDisplacementPercent < xTolerancePercent &&
-            yDisplacementPercent < yTolerancePercent &&
-            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
-        } else {
-          // For normal photos: also strict but with different parameters
-          inPosition =
-            confidence > 0.75 && // Good confidence required
-            xDisplacementPercent < xTolerancePercent &&
-            yDisplacementPercent < yTolerancePercent &&
-            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
-        }
-
-        setFaceInPosition(inPosition);
-      } else {
-        setFaceDetected(false);
-        setFaceInPosition(false);
-      }
-    } catch (error) {
-      console.error('Face detection error:', error);
-    }
-
-    // Continue detection loop if camera is still active
-    if (videoRef.current && videoRef.current.srcObject) {
-      detectionRef.current = requestAnimationFrame(detectFacesInVideo);
-    }
-  };
-
-  // Handle camera activation
-  const activateCamera = async (selfieMode = false) => {
-    try {
-      setIsCameraActive(true);
-      setIsSelfieMode(selfieMode);
-
-      // Use the appropriate camera based on mode
-      const facingMode = selfieMode ? "user" : "environment"; // "user" for front camera, "environment" for back camera
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facingMode }
-      });
-
-      // Set the video source to the camera stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        // Wait for video to be ready
-        videoRef.current.onloadedmetadata = () => {
-          // Start face detection
-          detectionRef.current = requestAnimationFrame(detectFacesInVideo);
-        };
-      }
-    } catch (err) {
-      console.error("Error accessing camera:", err);
-      setError("Could not access camera. Please check camera permissions.");
-      setIsCameraActive(false);
-    }
-  };
-
-  // Modify takePhoto to show crop modal instead of preview modal
-  const takePhoto = () => {
-    if (!videoRef.current) return;
-
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-
-    // Set canvas dimensions to match video dimensions but maintain aspect ratio
-    // Use different aspect ratios depending on camera mode
-    const videoAspect = video.videoWidth / video.videoHeight;
-
-    let canvasWidth, canvasHeight;
-    let offsetX, offsetY;
-
-    if (isSelfieMode) {
-      // For selfie mode, use 4:5 aspect ratio focusing on the face
-      const targetAspect = 4 / 5;
-
-      if (videoAspect > targetAspect) {
-        // Video is wider than target aspect, use full height and calculated width
-        canvasHeight = video.videoHeight;
-        canvasWidth = video.videoHeight * targetAspect;
-      } else {
-        // Video is taller than target aspect, use full width and calculated height
-        canvasWidth = video.videoWidth;
-        canvasHeight = video.videoWidth / targetAspect;
-      }
-
-      // For selfies, center the face more precisely
-      offsetX = (video.videoWidth - canvasWidth) / 2;
-      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to focus on face
-    } else {
-      // For back camera (full body shots), use 4:6 aspect ratio to capture more of the image
-      // Changed from 3:5 to 4:6 for better full-body capture on mobile
-      const targetAspect = 4 / 6;
-
-      // Always use maximum available video dimensions for back camera to capture more
-      canvasWidth = video.videoWidth;
-      canvasHeight = video.videoHeight;
-      
-      // If video aspect is significantly different from target, apply minimal cropping
-      if (Math.abs(videoAspect - targetAspect) > 0.2) {
-        if (videoAspect > targetAspect) {
-          // Video is wider, adjust width while keeping full height
-          canvasWidth = video.videoHeight * targetAspect;
-        } else {
-          // Video is taller, adjust height while keeping full width
-          canvasHeight = video.videoWidth / targetAspect;
-        }
-      }
-
-      // Calculate centering offsets with preference to capture more upper body
-      offsetX = (video.videoWidth - canvasWidth) / 2;
-      // Reduce the vertical offset to include more of the body in the frame
-      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to include more body
-    }
-
-    // Force portrait mode (height > width) but with better handling for back camera
-    if (canvasWidth > canvasHeight) {
-      if (isSelfieMode) {
-        // For selfie, swap dimensions to ensure portrait orientation
-        const temp = canvasWidth;
-        canvasWidth = canvasHeight;
-        canvasHeight = temp * 1.25; // Make it a bit taller for better composition
-      } else {
-        // For back camera, use a more carefully calculated aspect ratio
-        // to preserve more of the image content
-        const temp = canvasWidth;
-        canvasWidth = canvasHeight;
-        canvasHeight = temp * 1.5; // Make it taller to capture more body height
-      }
-    }
-
-    // Set canvas dimensions
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    // Draw the current video frame to the canvas with the correct positioning
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(
-      video,
-      offsetX, offsetY, canvasWidth, canvasHeight,  // Source rectangle
-      0, 0, canvasWidth, canvasHeight               // Destination rectangle
-    );
-
-    console.log(`Captured photo with dimensions: ${canvasWidth}x${canvasHeight}, mode: ${isSelfieMode ? 'selfie' : 'normal'}`);
-
-    // Convert canvas to data URL with high quality
-    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
-
-    // Check if the captured image is portrait
-    isPortraitImage(photoDataUrl, (isPortrait, width, height) => {
-      if (!isPortrait) {
-        setError('Please hold your phone in portrait mode to take a photo.');
-        stopCamera();
-        return;
-      }
-      
-      // Clear any previous errors
-      setError(null);
-      
-      // Set the photo as the preview
-      setPreviewUrl(photoDataUrl);
-
-      // Create a file from the data URL for processing
-      const fileName = isSelfieMode ? "selfie-photo.jpg" : "camera-photo.jpg";
-
-      // Use toBlob with proper MIME type and quality
-      canvas.toBlob((blob) => {
-        // Create a proper File object with explicit type
-        const newFile = new File([blob], fileName, {
-          type: "image/jpeg",
-          lastModified: Date.now()
-        });
-
-        console.log('Created photo file:', newFile.name, 'size:', newFile.size, 'type:', newFile.type);
-
-        // Set the file for processing
-        setFile(newFile);
-
-        // Reset crop state with specific values based on camera mode
-        setCompletedCrop(null);
-        setCroppedImageUrl(null);
-        
-        if (isSelfieMode) {
-          // Standard selfie crop values
-          setLeftCropPercentage(10);
-          setRightCropPercentage(10);
-          setTopCropPercentage(0);
-          setBottomCropPercentage(0);
-          setCropWidthPercentage(80);
-          setCropHeightPercentage(100);
-        } else {
-          // Optimized back camera crop values - wider frame to capture more
-          setLeftCropPercentage(5);
-          setRightCropPercentage(5);
-          setTopCropPercentage(0);
-          setBottomCropPercentage(0);
-          setCropWidthPercentage(90); // Wider crop area
-          setCropHeightPercentage(100);
-        }
-        
-        // Show crop modal instead of preview modal
-        setShowCropModal(true);
-        setShowPreviewModal(false);
-        setIsCropComplete(false);
-      }, 'image/jpeg', 0.95); // High quality JPEG
-
-      // Stop camera stream
-      stopCamera();
-    });
-  };
-
-  // Stop camera stream and face detection
-  const stopCamera = () => {
-    // Cancel face detection loop
-    if (detectionRef.current) {
-      cancelAnimationFrame(detectionRef.current);
-      detectionRef.current = null;
-    }
-
-    // Stop all camera tracks
-    if (videoRef.current && videoRef.current.srcObject) {
-      const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-
-    setIsCameraActive(false);
-    setFaceDetected(false);
-    setFaceInPosition(false);
-  };
-
-  // Clean up resources when component unmounts
+  // Reset crop to center when the aspect ratio changes
   useEffect(() => {
-    return () => {
-      stopCamera();
-    };
-  }, []);
+    if (imgRef.current && previewUrl) {
+      const { width, height } = imgRef.current;
+      const newAspect = useFixedAspectRatio ? 9 / 16 : undefined;
+      
+      if (width && height) {
+        if (newAspect) {
+          // Create a centered crop with the new aspect ratio
+          const newCrop = centerAspectCrop(width, height, newAspect);
+          setCrop(newCrop);
+        } else {
+          // For free-form cropping, start with a reasonably sized crop
+          setCrop({
+            unit: '%',
+            width: 80,
+            height: 80,
+            x: 10,
+            y: 10
+          });
+        }
+      }
+    }
+  }, [useFixedAspectRatio, previewUrl]);
 
-  // Convert image to base64
-  const fileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // Extract the base64 string from the Data URL
-        const base64String = reader.result.split(',')[1];
-        resolve(base64String);
-      };
-      reader.onerror = (error) => reject(error);
-    });
+  // This is to initialize the crop when an image is loaded
+  const onImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    
+    // Calculate initial crop based on the aspect ratio
+    if (aspect) {
+      const crop = centerCrop(
+        makeAspectCrop(
+          {
+            unit: '%',
+            width: 80, // Start with 80% of the width
+          },
+          aspect,
+          naturalWidth,
+          naturalHeight
+        ),
+        naturalWidth,
+        naturalHeight
+      );
+      
+      setCrop(crop);
+      
+      // Generate the initial cropped image
+      setCompletedCrop(crop);
+      generateCroppedImage(crop);
+    }
   };
-  
-  // Generate cropped image function - update to work with full-size image and vertical cropping
-  const generateCroppedImage = () => {
-    if (!imgRef.current) return;
+
+  // Generate cropped image whenever crop changes
+  const generateCroppedImage = (crop) => {
+    if (!imgRef.current || !crop || !crop.width || !crop.height) return;
     
     const img = imgRef.current;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Calculate crop dimensions based on the actual image dimensions
-    const imgWidth = img.naturalWidth;
-    const imgHeight = img.naturalHeight;
+    const scaleX = img.naturalWidth / img.width;
+    const scaleY = img.naturalHeight / img.height;
     
-    // Calculate actual pixels for crop based on percentages
-    const leftOffset = Math.floor(imgWidth * (leftCropPercentage / 100));
-    const rightOffset = Math.floor(imgWidth * (rightCropPercentage / 100));
-    const topOffset = Math.floor(imgHeight * (topCropPercentage / 100));
-    const bottomOffset = Math.floor(imgHeight * (bottomCropPercentage / 100));
+    // Use the original dimensions and account for scaling
+    const pixelCrop = {
+      x: crop.x * scaleX,
+      y: crop.y * scaleY,
+      width: crop.width * scaleX,
+      height: crop.height * scaleY,
+    };
     
-    const croppedWidth = imgWidth - leftOffset - rightOffset;
-    const croppedHeight = imgHeight - topOffset - bottomOffset;
+    // Set canvas dimensions to match the cropped area
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
     
-    // Calculate the aspect ratio of the cropped area
-    const croppedAspectRatio = croppedWidth / croppedHeight;
-    
-    console.log('Generating cropped image with dimensions:', {
-      originalWidth: imgWidth,
-      originalHeight: imgHeight,
-      leftOffset,
-      rightOffset,
-      topOffset,
-      bottomOffset,
-      croppedWidth,
-      croppedHeight,
-      croppedAspectRatio,
-      posterAspectRatio,
-      percentages: {
-        left: leftCropPercentage,
-        right: rightCropPercentage,
-        top: topCropPercentage,
-        bottom: bottomCropPercentage,
-        width: cropWidthPercentage,
-        height: cropHeightPercentage
-      }
-    });
-    
-    // Set canvas dimensions to the cropped size - preserve exact dimensions
-    canvas.width = croppedWidth;
-    canvas.height = croppedHeight;
-    
-    // Draw the cropped portion to the canvas - from original image
+    // Draw the cropped portion to the canvas
     ctx.drawImage(
       img,
-      leftOffset, topOffset, croppedWidth, croppedHeight,
-      0, 0, croppedWidth, croppedHeight
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
     );
     
     // Store crop data for proper processing later
     const newCropData = {
-      leftPercentage: leftCropPercentage,
-      rightPercentage: rightCropPercentage,
-      topPercentage: topCropPercentage,
-      bottomPercentage: bottomCropPercentage,
-      widthPercentage: cropWidthPercentage,
-      heightPercentage: cropHeightPercentage,
-      originalWidth: imgWidth,
-      originalHeight: imgHeight,
-      croppedWidth: croppedWidth,
-      croppedHeight: croppedHeight,
-      sourceX: leftOffset,
-      sourceY: topOffset,
-      aspectRatio: croppedWidth / croppedHeight
+      originalWidth: img.naturalWidth,
+      originalHeight: img.naturalHeight,
+      croppedWidth: pixelCrop.width,
+      croppedHeight: pixelCrop.height,
+      sourceX: pixelCrop.x,
+      sourceY: pixelCrop.y,
+      aspectRatio: pixelCrop.width / pixelCrop.height,
+      // Add percentage values for more reliable cropping
+      widthPercentage: (pixelCrop.width / img.naturalWidth) * 100,
+      heightPercentage: (pixelCrop.height / img.naturalHeight) * 100,
+      leftPercentage: (pixelCrop.x / img.naturalWidth) * 100,
+      topPercentage: (pixelCrop.y / img.naturalHeight) * 100,
+      // Add flag to prevent automatic height scaling
+      preserveExactCrop: true,
+      // Force display mode to 'contain' to show the entire cropped area
+      objectFit: "contain",
+      // Set position to ensure image is visible and aligned
+      objectPosition: "left bottom",
+      // Add clear metadata about the crop for debugging
+      cropInfo: {
+        originalImageWidth: img.width,
+        originalImageHeight: img.height, 
+        displayCropX: crop.x,
+        displayCropY: crop.y,
+        displayCropWidth: crop.width,
+        displayCropHeight: crop.height,
+        cropUnit: crop.unit || '%',
+        // Add additional debug info
+        pixelCropX: pixelCrop.x,
+        pixelCropY: pixelCrop.y,
+        pixelCropWidth: pixelCrop.width,
+        pixelCropHeight: pixelCrop.height,
+        imageNaturalWidth: img.naturalWidth,
+        imageNaturalHeight: img.naturalHeight,
+        scaleFactorX: scaleX,
+        scaleFactorY: scaleY
+      }
     };
+    console.log('Generated crop data:', newCropData);
     setCropData(newCropData);
-    console.log('Stored crop data:', newCropData);
     
-    // Convert canvas to blob with high quality
+    // Convert to high-quality JPEG blob
     canvas.toBlob((blob) => {
       if (!blob) {
         console.error('Failed to create blob');
         return;
       }
       
-      // Create URL from blob
+      // Create URL for preview
       if (croppedImageUrl) {
-        URL.revokeObjectURL(croppedImageUrl); // Clean up previous URL
+        URL.revokeObjectURL(croppedImageUrl);
       }
       const newCroppedUrl = URL.createObjectURL(blob);
       setCroppedImageUrl(newCroppedUrl);
       
-      // Store the crop details for later use
-      setCompletedCrop({
-        x: leftOffset,
-        y: topOffset,
-        width: croppedWidth,
-        height: croppedHeight,
-        unit: 'px'
-      });
-      
-      // Create a proper File object with explicit type for better handling
+      // Create a File object for the cropped image
       const croppedFile = new File([blob], file ? file.name : 'cropped-image.jpg', {
         type: 'image/jpeg',
         lastModified: Date.now()
       });
       
-      console.log('Created cropped file:', croppedFile.name, 'size:', croppedFile.size);
-      
-      // Set the cropped file as the main file
+      // Update the file state with the cropped version
       setFile(croppedFile);
-      
       setIsCropComplete(true);
       
-    }, 'image/jpeg', 0.95); // Use high quality JPEG
+    }, 'image/jpeg', 0.95); // High quality JPEG
   };
 
-  // Update the preview modal to show the exact cropped image
+  // Handle crop changes
+  const handleCropChange = (newCrop) => {
+    setCrop(newCrop);
+    // Update preview in real-time for better visual feedback
+    if (newCrop.width && newCrop.height) {
+      generateCroppedImage(newCrop);
+    }
+  };
+
+  // Handle crop complete - when user stops dragging
+  const handleCropComplete = (crop, pixelCrop) => {
+    setCompletedCrop(pixelCrop);
+    generateCroppedImage(pixelCrop);
+  };
+
+  // Handle completing the crop and moving to preview
   const handleCompleteCrop = () => {
-    if (croppedImageUrl) {
-      // Generate a final high-quality version
-      generateCroppedImage();
+    if (completedCrop) {
+      // Make sure we have the final cropped image
+      generateCroppedImage(completedCrop);
       
-      // Close crop modal and show preview modal
+      // Close crop modal and show preview
       setTimeout(() => {
         setShowCropModal(false);
         setShowPreviewModal(true);
       }, 100);
     } else {
-      // If no cropped image yet, generate it first
-      generateCroppedImage();
+      // If no crop is completed yet, use current crop
+      generateCroppedImage(crop);
       setTimeout(() => {
         setShowCropModal(false);
         setShowPreviewModal(true);
@@ -1110,12 +859,22 @@ const UploadPhoto = () => {
       setIsLoading(true);
       setLoadingProgress(0);
 
-      // Get the cropped file for processing (or original if no crop)
-      const fileToProcess = await getCroppedFile();
-      console.log('Processing file:', fileToProcess.name, 'size:', fileToProcess.size, 
-                 'Original file size:', file.size,
-                 'Using cropped image:', fileToProcess.size !== file.size,
-                 'Crop mode used:', cropMode);
+      // Ensure we use the cropped file, not the original
+      console.log('Starting processing with cropped image');
+      
+      // Create a proper file from the cropped image URL if we have one
+      let fileToProcess = file;
+      if (croppedImageUrl) {
+        try {
+          console.log('Using cropped image URL:', croppedImageUrl);
+          const response = await fetch(croppedImageUrl);
+          const blob = await response.blob();
+          fileToProcess = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+          console.log('Created file from cropped image URL:', fileToProcess.name, 'size:', fileToProcess.size);
+        } catch (err) {
+          console.error('Failed to use cropped image URL:', err);
+        }
+      }
 
       // Simulate initial loading progress
       simulateProgressDuringProcessing(0, 10, 1000, setLoadingProgress);
@@ -1181,6 +940,21 @@ const UploadPhoto = () => {
       // Get user data from previous steps or use default values
       const industry = sessionStorage.getItem('industry') || 'other';
       
+      // Make sure cropData is set with additional positioning information for proper display
+      const currentCropData = cropData || {
+        originalWidth: imgRef.current?.naturalWidth || 0,
+        originalHeight: imgRef.current?.naturalHeight || 0,
+        croppedWidth: completedCrop?.width || 0,
+        croppedHeight: completedCrop?.height || 0,
+        aspectRatio: completedCrop ? completedCrop.width / completedCrop.height : aspect,
+        // Add positioning data to ensure image sits at the bottom of the container
+        positionFromBottom: true,
+        alignToBottom: true,
+        // Add fit settings to ensure proper rendering in the poster
+        objectFit: "cover",
+        objectPosition: "center bottom"
+      };
+      
       const userData = {
         name: sessionStorage.getItem('userName') || 'Your Name',
         companyName: sessionStorage.getItem('companyName') || 'Your Company',
@@ -1189,23 +963,26 @@ const UploadPhoto = () => {
         phoneNumber: sessionStorage.getItem('phoneNumber') || 'Your Phone',
         isNormalSelfie: isNormalSelfie, // Add the flag to indicate if this is a normal selfie
         isSelfieMode: isSelfieMode, // Add the flag to indicate if this is a selfie mode
-        cropData: cropData // Store crop data for proper image processing on poster
+        cropData: currentCropData // Store crop data for proper image processing on poster
       }
 
       // Log industry value for debugging
       console.log('Industry value being set:', industry);
       console.log('Final image type:', typeof finalImage);
-      console.log('Crop data being stored:', cropData);
+      console.log('Crop data being stored:', currentCropData);
       
       // Make sure we have the final image URL (either processed or cropped)
       const finalImageUrl = finalImage || processedImage || croppedImageUrl || previewUrl;
       console.log('Final image URL that will be stored:', finalImageUrl);
 
-      // Store data in session storage
+      // Store data in session storage using string format to ensure proper persistence
       sessionStorage.setItem('userData', JSON.stringify(userData));
+      
+      // Store the image URL directly without any conversion
       sessionStorage.setItem('processedImage', finalImageUrl);
+      
       // Store crop data separately for easier access
-      sessionStorage.setItem('cropData', JSON.stringify(cropData));
+      sessionStorage.setItem('cropData', JSON.stringify(currentCropData));
       console.log('Stored processed image and crop data in session storage');
 
       // Force scroll to top before navigation
@@ -1230,11 +1007,11 @@ const UploadPhoto = () => {
     }
   };
 
-  // Add a style tag to forcefully override logo size and add crop styles
+  // Add custom CSS to improve the ReactCrop styling
   useEffect(() => {
-    // Create style element for general styles
     const styleEl = document.createElement('style');
     styleEl.textContent = `
+      /* General UI styles */
       .forced-small-logo {
         max-width: 230px !important;
         width: 230px !important;
@@ -1244,205 +1021,152 @@ const UploadPhoto = () => {
         top: 45px !important;
       }
       
-      /* Custom crop styles */
-      .crop-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 10px;
-        width: 100%;
-        max-width: 100%;
+      /* Portrait note styling */
+      .portrait-note {
+        color: #0083B5;
+        font-size: 13px;
+        margin: 5px 0;
+        font-weight: 500;
       }
       
-      .crop-instructions {
-        background-color: rgba(0, 131, 181, 0.1);
+      .portrait-note i {
+        margin-right: 5px;
+      }
+      
+      /* Make ReactCrop more intuitive */
+      .ReactCrop {
+        position: relative;
+        max-height: 65vh;
+        max-width: 100%;
+        border: 2px solid #0083B5;
         border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 15px;
-        width: 100%;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+      
+      .ReactCrop:hover {
+        box-shadow: 0 0 15px rgba(0, 131, 181, 0.5);
+      }
+      
+      .ReactCrop__crop-selection {
+        border: 3px solid #00a0ff !important;
+        box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.7) !important;
+      }
+      
+      .ReactCrop__handle {
+        width: 24px !important;
+        height: 24px !important;
+        background-color: #00a0ff !important;
+        border: 3px solid white !important;
+        opacity: 0.95 !important;
+      }
+      
+      .ReactCrop__handle:hover {
+        transform: scale(1.2) !important;
+      }
+      
+      .ReactCrop__drag-handle {
+        width: 40px !important;
+        height: 40px !important;
+      }
+      
+      /* Improved preview layout for desktop */
+      @media (min-width: 768px) {
+        .crop-modal-content {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+        }
+        
+        .crop-area-container {
+          flex: 1;
+          max-width: 65%;
+        }
+        
+        .crop-preview-container {
+          flex: 1;
+          max-width: 35%;
+          position: sticky;
+          top: 20px;
+        }
+      }
+      
+      /* Mobile layout adjustments */
+      @media (max-width: 767px) {
+        .crop-modal-content {
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .crop-area-container {
+          width: 100%;
+          margin-bottom: 15px;
+        }
+        
+        .crop-preview-container {
+          width: 100%;
+        }
+      }
+      
+      /* More prominent preview styles */
+      .crop-preview {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
         text-align: center;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .preview-title {
+        font-size: 16px;
+        margin: 0 0 15px 0;
+        color: #0083B5;
+        font-weight: bold;
+        position: relative;
+      }
+      
+      .preview-title:after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 2px;
+        background-color: #0083B5;
+      }
+      
+      .preview-image-container {
+        max-width: 100%;
+        margin: 0 auto;
+        border: 2px solid #0083B5;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      
+      .preview-image {
+        width: 100%;
+        height: auto;
+        display: block;
       }
       
       .crop-instruction-text {
-        color: #0083B5;
-        font-weight: bold;
-      }
-      
-      /* Full-size image cropper */
-      .flexible-cropper-container {
-        position: relative;
+        background-color: rgba(0, 131, 181, 0.1);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
         width: 100%;
-        max-width: 100%;
-        margin: 0 auto;
-        overflow: hidden;
-      }
-      
-      .cropper-img-container {
-        position: relative;
-        margin: 0 auto;
-        overflow: auto; /* Allow scrolling for large images */
-        max-height: 65vh; /* Increased from 60vh for more visible area */
-        border: 1px solid #ddd;
-        touch-action: pan-y; /* Allow vertical scrolling, but handle horizontal touches */
-        display: flex;
-        justify-content: center; /* Center the image horizontally */
-      }
-      
-      .cropper-img {
-        max-width: 100%; /* Make sure image doesn't exceed container width */
-        max-height: 65vh; /* Make sure image doesn't exceed container height */
-        height: auto;
-        display: block;
-        object-fit: contain; /* Maintain aspect ratio */
-      }
-      
-      /* For portrait images */
-      @media (min-width: 768px) {
-        /* On desktop, limit width for portrait images to avoid excessive size */
-        .cropper-img-container {
-          max-width: 70%;
-          margin: 0 auto;
-        }
-      }
-      
-      /* For mobile, ensure image doesn't overflow */
-      @media (max-width: 767px) {
-        .cropper-img-container {
-          max-height: 55vh;
-        }
-        
-        .cropper-img {
-          max-height: 55vh;
-        }
-      }
-      
-      .crop-area {
-        position: absolute;
-        background-color: rgba(0, 131, 181, 0.2); /* Light blue tint for crop area */
-        border-left: 4px dashed #FFC107;
-        border-right: 4px dashed #FFC107;
-        pointer-events: none; /* Don't interfere with interactions */
-        z-index: 8;
-      }
-      
-      .crop-overlay {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better visibility */
-        pointer-events: none;
-      }
-      
-      .left-overlay {
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 10%; /* Default width */
-      }
-      
-      .right-overlay {
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 10%; /* Default width */
-      }
-      
-      .top-overlay {
-        top: 0;
-        left: 10%; /* Match left overlay width */
-        right: 10%; /* Match right overlay width */
-        height: 0%; /* Default height */
-        z-index: 7;
-      }
-      
-      .bottom-overlay {
-        bottom: 0;
-        left: 10%; /* Match left overlay width */
-        right: 10%; /* Match right overlay width */
-        height: 0%; /* Default height */
-        z-index: 7;
-      }
-      
-      .crop-line {
-        position: absolute;
-        background-color: transparent;
-        z-index: 9;
-        touch-action: none; /* Prevent default touch actions */
-      }
-      
-      .left-line, .right-line {
-        top: 0;
-        bottom: 0;
-        width: 20px; /* Wider area for touch/mouse interaction */
-        cursor: ew-resize;
-      }
-      
-      .top-line, .bottom-line {
-        left: 10%; /* Match left overlay width */
-        right: 10%; /* Match right overlay width */
-        height: 20px; /* Wider area for touch/mouse interaction */
-        cursor: ns-resize;
-        z-index: 10; /* Higher than side lines */
-      }
-      
-      .left-line {
-        left: 10%; /* Match left overlay width */
-      }
-      
-      .right-line {
-        right: 10%; /* Match right overlay width */
-      }
-      
-      .top-line {
-        top: 0%;
-        border-top: 4px dashed #FFC107;
-      }
-      
-      .bottom-line {
-        bottom: 0%;
-        border-bottom: 4px dashed #FFC107;
-      }
-      
-      .crop-dimensions-display {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: rgba(0, 131, 181, 0.9);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-weight: bold;
-        font-size: 14px;
-        z-index: 11;
         text-align: center;
+        font-weight: 500;
+        border-left: 4px solid #0083B5;
+        color: #333;
       }
       
-      /* Preview styles */
-      .cropper-preview {
-        margin-top: 20px;
-        background-color: #f8f8f8;
-        border-radius: 8px;
-        padding: 15px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .cropper-preview h3 {
-        margin-top: 0;
-        margin-bottom: 10px;
-        color: #0083B5;
-      }
-      
-      .cropper-preview img {
-        border: 2px solid #0083B5;
-        border-radius: 8px;
-        max-width: 100%;
-        max-height: 200px;
-        object-fit: contain;
-      }
-      
-      /* Fix preview modal size */
+      /* Preview modal styles */
       .preview-modal-overlay {
         position: fixed;
         top: 0;
@@ -1461,7 +1185,6 @@ const UploadPhoto = () => {
       .preview-modal {
         background-color: white;
         border-radius: 8px;
-        max-width: 600px;
         width: 90%;
         height: auto;
         max-height: 90vh;
@@ -1494,21 +1217,9 @@ const UploadPhoto = () => {
       }
       
       .preview-modal-body {
-        max-height: 60vh;
+        max-height: 70vh;
         overflow-y: auto;
         padding: 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .preview-modal-image {
-        width: 100%;
-        max-width: 100%;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
       }
       
       .preview-modal-footer {
@@ -1519,31 +1230,26 @@ const UploadPhoto = () => {
         align-items: center;
       }
       
-      .preview-question {
-        margin: 0 0 15px 0;
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-        text-align: center;
-      }
-      
       .preview-modal-buttons {
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 15px;
         width: 100%;
       }
       
       .retake-btn, .confirm-btn {
-        padding: 10px 20px;
+        padding: 12px 24px;
         border-radius: 4px;
         border: none;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 500;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+        transition: all 0.2s ease;
       }
       
       .retake-btn {
@@ -1551,9 +1257,23 @@ const UploadPhoto = () => {
         color: #333;
       }
       
+      .retake-btn:hover {
+        background-color: #e5e5e5;
+      }
+      
       .confirm-btn {
         background-color: #0083B5;
         color: white;
+      }
+      
+      .confirm-btn:hover {
+        background-color: #006d99;
+      }
+      
+      .confirm-btn:disabled {
+        background-color: #cccccc;
+        color: #666666;
+        cursor: not-allowed;
       }
       
       /* Mobile adjustments */
@@ -1565,7 +1285,7 @@ const UploadPhoto = () => {
         }
         
         .preview-modal-body {
-          max-height: 55vh;
+          max-height: 60vh;
           padding: 10px;
         }
         
@@ -1576,299 +1296,344 @@ const UploadPhoto = () => {
         
         .retake-btn, .confirm-btn {
           width: 100%;
-          justify-content: center;
         }
       }
-      
-      /* Portrait note styling */
-      .portrait-note {
-        color: #0083B5;
-        font-size: 13px;
-        margin: 5px 0;
-        font-weight: 500;
-      }
-      
-      .portrait-note i {
-        margin-right: 5px;
-      }
     `;
-    
-    // Add to document head
     document.head.appendChild(styleEl);
     
-    // Cleanup on component unmount
     return () => {
       document.head.removeChild(styleEl);
     };
   }, []);
-
-  // Define the handleMouseDown function in component scope
-  const handleMouseDown = (e, side) => {
-    e.preventDefault();
-    if (side === 'left') {
-      setIsDraggingLeft(true);
-    } else if (side === 'right') {
-      setIsDraggingRight(true);
-    } else if (side === 'top') {
-      setIsDraggingTop(true);
-    } else if (side === 'bottom') {
-      setIsDraggingBottom(true);
-    }
-  };
-
-  // Add mouse and touch event handlers for dragging crop lines
-  useEffect(() => {
-    // Mouse/touch event handlers for crop lines
-    // handleMouseDown moved to component scope
-    
-    const handleMouseMove = (e) => {
-      if (!isDraggingLeft && !isDraggingRight && !isDraggingTop && !isDraggingBottom) return;
-      if (!cropContainerRef.current) return;
-
-      const container = cropContainerRef.current;
-      const rect = container.getBoundingClientRect();
-      const containerWidth = rect.width;
-      const containerHeight = rect.height;
-      
-      // Get the image dimensions
-      const imgWidth = imgRef.current.naturalWidth;
-      const imgHeight = imgRef.current.naturalHeight;
-      const containerAspectRatio = containerWidth / containerHeight;
-      const imageAspectRatio = imgWidth / imgHeight;
-      
-      // For horizontal handles
-      if (isDraggingLeft || isDraggingRight) {
-        // Calculate the mouse position relative to the container as a percentage
-        // For touch events, use the first touch point
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        let positionX = (clientX - rect.left) / containerWidth * 100;
-        
-        // Clamp position between 0 and 100
-        positionX = Math.max(0, Math.min(100, positionX));
-        
-        if (isDraggingLeft) {
-          // Ensure we don't crop too much (keep at least 20% width)
-          if (positionX + rightCropPercentage <= 80) {
-            setLeftCropPercentage(positionX);
-            
-            // Adjust top and bottom to maintain aspect ratio
-            if (showFixedRatioBox) {
-              // Calculate new width percentage
-              const newWidthPercentage = 100 - positionX - rightCropPercentage;
-              
-              // Calculate new height required to maintain the poster aspect ratio
-              const newHeightPercentage = (newWidthPercentage / posterAspectRatio) * (imageAspectRatio);
-              
-              // Calculate how much to crop from top and bottom (evenly)
-              const totalHeightToCrop = 100 - newHeightPercentage;
-              const topBottomCrop = totalHeightToCrop / 2;
-              
-              // Update top and bottom crop percentages
-              if (topBottomCrop >= 0 && topBottomCrop <= 40) {
-                setTopCropPercentage(topBottomCrop);
-                setBottomCropPercentage(topBottomCrop);
-              }
-            }
-          }
-        } else if (isDraggingRight) {
-          // Convert to right crop percentage (from right edge)
-          const rightPos = 100 - positionX;
-          // Ensure we don't crop too much (keep at least 20% width)
-          if (leftCropPercentage + rightPos <= 80) {
-            setRightCropPercentage(rightPos);
-            
-            // Adjust top and bottom to maintain aspect ratio
-            if (showFixedRatioBox) {
-              // Calculate new width percentage
-              const newWidthPercentage = 100 - leftCropPercentage - rightPos;
-              
-              // Calculate new height required to maintain the poster aspect ratio
-              const newHeightPercentage = (newWidthPercentage / posterAspectRatio) * (imageAspectRatio);
-              
-              // Calculate how much to crop from top and bottom (evenly)
-              const totalHeightToCrop = 100 - newHeightPercentage;
-              const topBottomCrop = totalHeightToCrop / 2;
-              
-              // Update top and bottom crop percentages
-              if (topBottomCrop >= 0 && topBottomCrop <= 40) {
-                setTopCropPercentage(topBottomCrop);
-                setBottomCropPercentage(topBottomCrop);
-              }
-            }
-          }
-        }
-      }
-      
-      // For vertical handles
-      if (isDraggingTop || isDraggingBottom) {
-        // Calculate the mouse position relative to the container as a percentage
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        let positionY = (clientY - rect.top) / containerHeight * 100;
-        
-        // Clamp position between 0 and 100
-        positionY = Math.max(0, Math.min(100, positionY));
-        
-        if (isDraggingTop) {
-          // Ensure we don't crop too much (keep at least 20% height)
-          if (positionY + bottomCropPercentage <= 80) {
-            setTopCropPercentage(positionY);
-            
-            // Adjust left and right to maintain aspect ratio
-            if (showFixedRatioBox) {
-              // Calculate new height percentage
-              const newHeightPercentage = 100 - positionY - bottomCropPercentage;
-              
-              // Calculate new width required to maintain the poster aspect ratio
-              const newWidthPercentage = (newHeightPercentage * posterAspectRatio) / (imageAspectRatio);
-              
-              // Calculate how much to crop from left and right (evenly)
-              const totalWidthToCrop = 100 - newWidthPercentage;
-              const leftRightCrop = totalWidthToCrop / 2;
-              
-              // Update left and right crop percentages
-              if (leftRightCrop >= 0 && leftRightCrop <= 40) {
-                setLeftCropPercentage(leftRightCrop);
-                setRightCropPercentage(leftRightCrop);
-              }
-            }
-          }
-        } else if (isDraggingBottom) {
-          // Convert to bottom crop percentage (from bottom edge)
-          const bottomPos = 100 - positionY;
-          // Ensure we don't crop too much (keep at least 20% height)
-          if (topCropPercentage + bottomPos <= 80) {
-            setBottomCropPercentage(bottomPos);
-            
-            // Adjust left and right to maintain aspect ratio
-            if (showFixedRatioBox) {
-              // Calculate new height percentage
-              const newHeightPercentage = 100 - topCropPercentage - bottomPos;
-              
-              // Calculate new width required to maintain the poster aspect ratio
-              const newWidthPercentage = (newHeightPercentage * posterAspectRatio) / (imageAspectRatio);
-              
-              // Calculate how much to crop from left and right (evenly)
-              const totalWidthToCrop = 100 - newWidthPercentage;
-              const leftRightCrop = totalWidthToCrop / 2;
-              
-              // Update left and right crop percentages
-              if (leftRightCrop >= 0 && leftRightCrop <= 40) {
-                setLeftCropPercentage(leftRightCrop);
-                setRightCropPercentage(leftRightCrop);
-              }
-            }
-          }
-        }
-      }
-    };
-
-    const handleMouseUp = () => {
-      if (isDraggingLeft || isDraggingRight || isDraggingTop || isDraggingBottom) {
-        setIsDraggingLeft(false);
-        setIsDraggingRight(false);
-        setIsDraggingTop(false);
-        setIsDraggingBottom(false);
-        // Generate the cropped image when drag ends
-        generateCroppedImage();
-      }
-    };
-
-    // Add event listeners
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchmove', handleMouseMove, { passive: false });
-    document.addEventListener('touchend', handleMouseUp);
-    document.addEventListener('touchcancel', handleMouseUp);
-
-    return () => {
-      // Remove event listeners
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchmove', handleMouseMove);
-      document.removeEventListener('touchend', handleMouseUp);
-      document.removeEventListener('touchcancel', handleMouseUp);
-    };
-  }, [isDraggingLeft, isDraggingRight, isDraggingTop, isDraggingBottom, leftCropPercentage, rightCropPercentage, topCropPercentage, bottomCropPercentage]);
-
-  // Update crop percentages whenever crop edges change
-  useEffect(() => {
-    const newWidthPercentage = 100 - leftCropPercentage - rightCropPercentage;
-    setCropWidthPercentage(newWidthPercentage);
-    
-    const newHeightPercentage = 100 - topCropPercentage - bottomCropPercentage;
-    setCropHeightPercentage(newHeightPercentage);
-    
-    // Generate new cropped image whenever crop percentages change
-    if (imgRef.current) {
-      generateCroppedImage();
-    }
-  }, [leftCropPercentage, rightCropPercentage, topCropPercentage, bottomCropPercentage]);
-
-  // Add a function to handle initial image loading and set up
-  const handleImageLoad = () => {
-    if (!imgRef.current) return;
-    
-    const img = imgRef.current;
-    const imgWidth = img.naturalWidth;
-    const imgHeight = img.naturalHeight;
-    
-    // Calculate container dimensions
-    const container = cropContainerRef.current;
-    if (!container) return;
-    
-    const containerWidth = container.clientWidth;
-    
-    // Calculate the image's display size (how it appears in the UI)
-    const displayWidth = containerWidth; // Image width is set to 100% of container
-    const displayHeight = (imgHeight / imgWidth) * displayWidth;
-    
-    console.log('Image loaded with dimensions:', imgWidth, 'x', imgHeight, 
-               'Display size:', displayWidth, 'x', displayHeight,
-               'Aspect ratio:', imgHeight / imgWidth);
-    
-    // For portrait images, determine optimal crop sides
-    // Set initial crop to match poster aspect ratio - this ensures what you see is what you get
-    // Poster has width:height ratio of approximately 0.56 (9:16)
-    
-    // Calculate the crop percentages to match the poster's fixed dimensions
-    const targetAspectRatio = posterAspectRatio; // width/height
-    const imgAspectRatio = imgWidth / imgHeight;
-    
-    let leftRightCropPercentage = 10; // Default
-    let topBottomCropPercentage = 0; // Default
-    
-    // If image is more portrait than the poster (narrower)
-    if (imgAspectRatio < targetAspectRatio) {
-      // Need to crop from top and bottom to match poster ratio
-      const targetHeight = imgWidth / targetAspectRatio;
-      const heightDiff = imgHeight - targetHeight;
-      topBottomCropPercentage = (heightDiff / imgHeight) * 50; // Divide by 2 and convert to percentage
-      leftRightCropPercentage = 0; // No need to crop sides
-    } 
-    // If image is less portrait than the poster (wider)
-    else {
-      // Need to crop from sides to match poster ratio
-      const targetWidth = imgHeight * targetAspectRatio;
-      const widthDiff = imgWidth - targetWidth;
-      leftRightCropPercentage = (widthDiff / imgWidth) * 50; // Divide by 2 and convert to percentage
-      topBottomCropPercentage = 0; // No need to crop top/bottom
-    }
-    
-    // Set initial crop values to match poster dimensions
-    setLeftCropPercentage(leftRightCropPercentage);
-    setRightCropPercentage(leftRightCropPercentage);
-    setTopCropPercentage(topBottomCropPercentage);
-    setBottomCropPercentage(topBottomCropPercentage);
     
     // Generate initial crop
     setTimeout(() => {
       generateCroppedImage();
     }, 100);
+
+  // Add missing handleDragOver function
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
-  // Add new state to track poster aspect ratio
-  const [posterAspectRatio, setPosterAspectRatio] = useState(0.56); // 9:16 aspect ratio (width/height)
-  const [showFixedRatioBox, setShowFixedRatioBox] = useState(true);
+  // Handle camera activation
+  const activateCamera = async (selfieMode = false) => {
+    try {
+      setShowCameraModal(true);
+      setIsCameraActive(true);
+      setIsSelfieMode(selfieMode);
+
+      // Use the appropriate camera based on mode
+      const facingMode = selfieMode ? "user" : "environment"; // "user" for front camera, "environment" for back camera
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facingMode }
+      });
+
+      // Set the video source to the camera stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          // Start face detection
+          detectionRef.current = requestAnimationFrame(detectFacesInVideo);
+        };
+      }
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      setError("Could not access camera. Please check camera permissions.");
+      setIsCameraActive(false);
+      setShowCameraModal(false);
+    }
+  };
+
+  // Face detection in video stream
+  const detectFacesInVideo = async () => {
+    if (!videoRef.current || !videoRef.current.srcObject || !faceDetectionEnabled) {
+      return;
+    }
+
+    try {
+      // Get face detections
+      const detections = await faceapi.detectAllFaces(
+        videoRef.current,
+        new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.7 })
+      ).withFaceLandmarks();
+
+      // Check if any faces were detected
+      if (detections && detections.length > 0) {
+        setFaceDetected(true);
+
+        // Get the most prominent face (usually the largest one)
+        const mainFace = detections.sort((a, b) =>
+          (b.detection.box.width * b.detection.box.height) -
+          (a.detection.box.width * a.detection.box.height)
+        )[0];
+
+        // Get detection confidence
+        const confidence = mainFace.detection.score;
+
+        // Get video dimensions
+        const videoWidth = videoRef.current.videoWidth;
+        const videoHeight = videoRef.current.videoHeight;
+
+        // Calculate center of the screen
+        const centerX = videoWidth / 2;
+        const centerY = isSelfieMode ? videoHeight / 2.5 : videoHeight / 2.2;
+
+        // Get face dimensions and position
+        const faceBox = mainFace.detection.box;
+        const faceCenterX = faceBox.x + (faceBox.width / 2);
+        const faceCenterY = faceBox.y + (faceBox.height / 2);
+
+        // Calculate percentage of displacement from center
+        const xDisplacementPercent = Math.abs(faceCenterX - centerX) / (videoWidth / 2) * 100;
+        const yDisplacementPercent = Math.abs(faceCenterY - centerY) / (videoHeight / 2) * 100;
+
+        // Define tolerances for positioning
+        const xTolerancePercent = isSelfieMode ? 10 : 15;
+        const yTolerancePercent = isSelfieMode ? 15 : 20;
+        const minFaceSizePercent = isSelfieMode ? 15 : 15;
+
+        // Check if face is within acceptable position
+        let inPosition = false;
+
+        if (isSelfieMode) {
+          inPosition =
+            confidence > 0.8 &&
+            xDisplacementPercent < xTolerancePercent &&
+            yDisplacementPercent < yTolerancePercent &&
+            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
+        } else {
+          inPosition =
+            confidence > 0.75 &&
+            xDisplacementPercent < xTolerancePercent &&
+            yDisplacementPercent < yTolerancePercent &&
+            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
+        }
+
+        setFaceInPosition(inPosition);
+      } else {
+        setFaceDetected(false);
+        setFaceInPosition(false);
+      }
+    } catch (error) {
+      console.error('Face detection error:', error);
+    }
+
+    // Continue detection loop if camera is still active
+    if (videoRef.current && videoRef.current.srcObject) {
+      detectionRef.current = requestAnimationFrame(detectFacesInVideo);
+    }
+  };
+
+  // Updated takePhoto function to work with the new cropping approach
+  const takePhoto = () => {
+    if (!videoRef.current) return;
+
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+
+    // Set canvas dimensions to match video dimensions but maintain aspect ratio
+    const videoAspect = video.videoWidth / video.videoHeight;
+
+    let canvasWidth, canvasHeight;
+    let offsetX, offsetY;
+
+    if (isSelfieMode) {
+      // For selfie mode, use 4:5 aspect ratio focusing on the face
+      const targetAspect = 4 / 5;
+
+      if (videoAspect > targetAspect) {
+        // Video is wider than target aspect, use full height and calculated width
+        canvasHeight = video.videoHeight;
+        canvasWidth = video.videoHeight * targetAspect;
+      } else {
+        // Video is taller than target aspect, use full width and calculated height
+        canvasWidth = video.videoWidth;
+        canvasHeight = video.videoWidth / targetAspect;
+      }
+
+      // For selfies, center the face more precisely
+      offsetX = (video.videoWidth - canvasWidth) / 2;
+      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to focus on face
+    } else {
+      // For back camera (full body shots), use 4:6 aspect ratio
+      const targetAspect = 4 / 6;
+
+      // Always use maximum available video dimensions for back camera to capture more
+      canvasWidth = video.videoWidth;
+      canvasHeight = video.videoHeight;
+      
+      // Apply minimal cropping if needed
+      if (Math.abs(videoAspect - targetAspect) > 0.2) {
+        if (videoAspect > targetAspect) {
+          // Video is wider, adjust width while keeping full height
+          canvasWidth = video.videoHeight * targetAspect;
+        } else {
+          // Video is taller, adjust height while keeping full width
+          canvasHeight = video.videoWidth / targetAspect;
+        }
+      }
+
+      // Calculate centering offsets
+      offsetX = (video.videoWidth - canvasWidth) / 2;
+      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to include more body
+    }
+
+    // Set canvas dimensions
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    // Draw the current video frame to the canvas with the correct positioning
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(
+      video,
+      offsetX, offsetY, canvasWidth, canvasHeight,
+      0, 0, canvasWidth, canvasHeight
+    );
+
+    // Convert canvas to data URL with high quality
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    
+    // Store image dimensions and orientation
+    detectImageOrientation(photoDataUrl, (orientation) => {
+      // Clear any previous errors
+      setError(null);
+      
+      // Set the photo as the preview
+      setPreviewUrl(photoDataUrl);
+
+      // Create a file from the data URL for processing
+      const fileName = isSelfieMode ? "selfie-photo.jpg" : "camera-photo.jpg";
+
+      // Use toBlob with proper MIME type and quality
+      canvas.toBlob((blob) => {
+        // Create a proper File object with explicit type
+        const newFile = new File([blob], fileName, {
+          type: "image/jpeg",
+          lastModified: Date.now()
+        });
+
+        // Set the file for processing
+        setFile(newFile);
+        
+        // Reset crop state and show crop modal
+        setCompletedCrop(null);
+        setCroppedImageUrl(null);
+        
+        // Show crop modal
+        setShowCropModal(true);
+        setShowPreviewModal(false);
+        setIsCropComplete(false);
+      }, 'image/jpeg', 0.95);
+
+      // Stop camera stream
+      stopCamera();
+    });
+  };
+
+  // Stop camera stream and face detection
+  const stopCamera = () => {
+    // Cancel face detection loop
+    if (detectionRef.current) {
+      cancelAnimationFrame(detectionRef.current);
+      detectionRef.current = null;
+    }
+
+    // Stop all camera tracks
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+
+    setIsCameraActive(false);
+    setFaceDetected(false);
+    setFaceInPosition(false);
+    setShowCameraModal(false);
+  };
+
+  // Clean up resources when component unmounts
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
+  // Convert image to base64
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // Extract the base64 string from the Data URL
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Handle applying the crop
+  const handleApplyCrop = () => {
+    if (!croppedImageUrl) return;
+    
+    // Store crop data in session storage for use in the poster generation
+    if (cropData) {
+      sessionStorage.setItem('cropData', JSON.stringify(cropData));
+      console.log('Crop data saved to session storage:', cropData);
+    }
+    
+    // Close crop modal and show preview modal
+    setShowCropModal(false);
+    setShowPreviewModal(true);
+  };
+
+  // Handle choosing another image
+  const handleChooseAnotherImage = () => {
+    setShowCropModal(false);
+    setImageSrc(null);
+    setFile(null);
+    setCroppedImageUrl(null);
+    setCropData(null);
+    setIsCropComplete(false);
+    setCrop(undefined);
+    setCompletedCrop(null);
+    
+    // Clear the file input to allow selecting the same file again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Add missing refs and state variables
+  const fileInputRef = useRef(null);
+  const [imageSrc, setImageSrc] = useState(null);
+
+  // Check if file is a valid image
+  const isValidImageFile = (file) => {
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    return validTypes.includes(file.type);
+  };
+
+  // Process uploaded file (simplified version to transition to new implementation)
+  const processUploadedFile = (fileToProcess) => {
+    // For the new implementation, we're directly using the cropped image
+    // This is just a fallback in case cropping fails
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageUrl = e.target.result;
+      
+      // Store the original image URL in session storage
+      sessionStorage.setItem('processedImage', imageUrl);
+      
+      // Call handleContinue with the image URL
+      handleContinue(imageUrl);
+    };
+    reader.readAsDataURL(fileToProcess);
+  };
 
   return (
     <div className="upload-page">
@@ -1974,84 +1739,41 @@ const UploadPhoto = () => {
               {/* Title after stepper indicator */}
               <h2 className="form-title">Upload Your Photo</h2>
               
-              {isCameraActive ? (
-                /* Camera preview for mobile */
-                <div className="mobile-camera-container">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    className="camera-video"
-                  ></video>
-                  <div className={`person-outline-overlay ${isSelfieMode ? 'selfie-mode' : ''} ${faceInPosition ? 'face-in-position' : faceDetected ? 'face-detected' : ''}`}>
-                    <img
-                      src="/images/face-outline.svg"
-                      alt="Face outline"
-                      className="outline-image"
-                    />
-                    <div className="positioning-guide">
-                      {faceInPosition ?
-                        "Perfect! Hold still and take the photo." :
-                        faceDetected ?
-                          "Move closer and center your face in the outline" :
-                          isSelfieMode ?
-                            "Position your face within the outline and look at the camera" :
-                            "Position your face in the outline, hold camera at eye level"
-                      }
-                    </div>
-                  </div>
-                  <div className="camera-controls">
-                    <button
-                      className={`camera-btn ${faceInPosition ? 'active' : 'disabled'}`}
-                      onClick={takePhoto}
-                      disabled={!faceInPosition}
-                    >
-                      <i className="fas fa-camera"></i>
-                    </button>
-                    <button className="camera-btn cancel" onClick={stopCamera}>
-                      <i className="fas fa-times"></i>
-                    </button>
-                  </div>
-                  <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+              {/* Camera moved to modal, only showing the regular upload interface */}
+              <div className="upload-area" onDragOver={handleDragOver} onDrop={handleDrop}>
+                <p>Drag your file to start uploading</p>
+                <div className="upload-divider"><span>or</span></div>
+
+                <div className="upload-buttons">
+                  <button
+                    className="upload-btn blue-btn"
+                    onClick={() => activateCamera(false)}
+                  >
+                    <i className="fa fa-camera"></i> Take a photo
+                  </button>
+
+                  <button
+                    className="upload-btn orange-btn"
+                    onClick={() => activateCamera(true)}
+                  >
+                    <i className="fa fa-user"></i> Take a selfie
+                  </button>
+
+                  <button
+                    className="browse-button"
+                    onClick={() => document.getElementById('file-input').click()}
+                  >
+                    <i className="fa fa-folder-open"></i> Browse for photo
+                  </button>
+                  <input
+                    type="file"
+                    id="file-input"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
                 </div>
-              ) : (
-                /* Normal upload area */
-                <div className="upload-area" onDragOver={handleDragOver} onDrop={handleDrop}>
-                  <p>Drag your file to start uploading</p>
-                  <p className="portrait-note"><i className="fas fa-info-circle"></i> Only portrait images (taller than wide) are accepted</p>
-                  <div className="upload-divider"><span>or</span></div>
-
-                  <div className="upload-buttons">
-                    <button
-                      className="upload-btn blue-btn"
-                      onClick={() => activateCamera(false)}
-                    >
-                      <i className="fa fa-camera"></i> Take a photo
-                    </button>
-
-                    <button
-                      className="upload-btn orange-btn"
-                      onClick={() => activateCamera(true)}
-                    >
-                      <i className="fa fa-user"></i> Take a selfie
-                    </button>
-
-                    <button
-                      className="browse-button"
-                      onClick={() => document.getElementById('file-input').click()}
-                    >
-                      <i className="fa fa-folder-open"></i> Browse for photo
-                    </button>
-                    <input
-                      type="file"
-                      id="file-input"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      style={{ display: 'none' }}
-                    />
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
 
             {/* DOS2 image now after form container */}
@@ -2105,112 +1827,81 @@ const UploadPhoto = () => {
               {error && <div className="error-message">{error}</div>}
 
               <div className="upload-area-container">
-                {isCameraActive ? (
-                  <div className="camera-container">
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      className="camera-video"
-                    ></video>
-                    <div className={`person-outline-overlay ${isSelfieMode ? 'selfie-mode' : ''} ${faceInPosition ? 'face-in-position' : faceDetected ? 'face-detected' : ''}`}>
-                      <img
-                        src="/images/face-outline.svg"
-                        alt="Face outline"
-                        className="outline-image"
+                {/* Camera moved to modal, only showing the regular upload interface */}
+                <div
+                  className="upload-area"
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                >
+                  {isLoading && !showProcessingModal ? (
+                    <div className="loading-container">
+                      <Loader />
+                    </div>
+                  ) : previewUrl && !showPreviewModal ? (
+                    <div className="preview-container">
+                      <img 
+                        src={croppedImageUrl} 
+                        alt="Preview" 
+                        className="preview-image"
+                        style={{ 
+                          width: "100%", 
+                          height: "100%",
+                          objectFit: "contain",
+                          objectPosition: "center center"
+                        }} 
                       />
-                      <div className="positioning-guide">
-                        {faceInPosition ?
-                          "Perfect! Hold still and take the photo." :
-                          faceDetected ?
-                            "Move closer and center your face in the outline" :
-                            isSelfieMode ?
-                              "Position your face within the outline and look at the camera" :
-                              "Position your face in the outline, hold camera at eye level"
-                        }
-                      </div>
-                    </div>
-                    <div className="camera-controls">
                       <button
-                        className={`camera-btn ${faceInPosition ? 'active' : 'disabled'}`}
-                        onClick={takePhoto}
-                        disabled={!faceInPosition}
+                        className="remove-image-btn"
+                        onClick={() => {
+                          setFile(null);
+                          setPreviewUrl(null);
+                        }}
                       >
-                        <i className="fas fa-camera"></i>
-                      </button>
-                      <button className="camera-btn cancel" onClick={stopCamera}>
-                        <i className="fas fa-times"></i>
+                        Remove
                       </button>
                     </div>
-                    <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
-                  </div>
-                ) : (
-                  <div
-                    className="upload-area"
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                  >
-                    {isLoading && !showProcessingModal ? (
-                      <div className="loading-container">
-                        <Loader />
+                  ) : (
+                    <>
+                      <p className="drag-text">Drag your file to start uploading</p>
+                      <div className="upload-divider">
+                        <span>or</span>
                       </div>
-                    ) : previewUrl && !showPreviewModal ? (
-                      <div className="preview-container">
-                        <img src={previewUrl} alt="Preview" className="preview-image" />
+                      <div className="upload-options">
                         <button
-                          className="remove-image-btn"
+                          className="take-photo-btn"
                           onClick={() => {
-                            setFile(null);
-                            setPreviewUrl(null);
+                            setIsNormalSelfie(true);
+                            activateCamera(false); // Use back camera
                           }}
                         >
-                          Remove
+                          <i className="fas fa-camera"></i> Take a photo
                         </button>
+                        <button
+                          className="take-photo-btn selfie-btn"
+                          onClick={() => {
+                            setIsNormalSelfie(true);
+                            activateCamera(true); // Use front camera (selfie mode)
+                          }}
+                        >
+                          <i className="fas fa-user"></i> Take a selfie
+                        </button>
+                        <label htmlFor="normal-file-upload" className="browse-btn">
+                          <i className="fas fa-folder-open"></i> Browse for photo
+                        </label>
+                        <input
+                          id="normal-file-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            setIsNormalSelfie(true);
+                            handleFileChange(e);
+                          }}
+                          style={{ display: 'none' }}
+                        />
                       </div>
-                    ) : (
-                      <>
-                        <p className="drag-text">Drag your file to start uploading</p>
-                        <p className="portrait-note"><i className="fas fa-info-circle"></i> Only portrait images (taller than wide) are accepted</p>
-                        <div className="upload-divider">
-                          <span>or</span>
-                        </div>
-                        <div className="upload-options">
-                          <button
-                            className="take-photo-btn"
-                            onClick={() => {
-                              setIsNormalSelfie(true);
-                              activateCamera(false); // Use back camera
-                            }}
-                          >
-                            <i className="fas fa-camera"></i> Take a photo
-                          </button>
-                          <button
-                            className="take-photo-btn selfie-btn"
-                            onClick={() => {
-                              setIsNormalSelfie(true);
-                              activateCamera(true); // Use front camera (selfie mode)
-                            }}
-                          >
-                            <i className="fas fa-user"></i> Take a selfie
-                          </button>
-                          <label htmlFor="normal-file-upload" className="browse-btn">
-                            <i className="fas fa-folder-open"></i> Browse for photo
-                          </label>
-                          <input
-                            id="normal-file-upload"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              setIsNormalSelfie(true);
-                              handleFileChange(e);
-                            }}
-                            style={{ display: 'none' }}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -2219,185 +1910,127 @@ const UploadPhoto = () => {
 
       {/* Cropping Modal */}
       {showCropModal && (
-        <div className="preview-modal-overlay">
-          <div className="preview-modal">
-            <div className="preview-modal-header">
+        <div className="modal-overlay">
+          <div className="crop-modal">
+            <div className="crop-modal-header">
               <h2>Crop Your Image</h2>
-              <div className="fixed-ratio-toggle">
-                <label className="switch">
-                  <input 
-                    type="checkbox" 
-                    checked={showFixedRatioBox}
-                    onChange={() => setShowFixedRatioBox(!showFixedRatioBox)}
-                  />
-                  <span className="slider round"></span>
+              <div className="crop-options">
+                <label className="toggle-container">
+                  <span>Keep poster ratio</span>
+                  <div className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={aspect !== null}
+                      onChange={() => setAspect(aspect ? null : posterAspectRatio)}
+                    />
+                    <span className="toggle-slider"></span>
+                  </div>
                 </label>
-                <span className="toggle-label">Lock poster proportions</span>
               </div>
-              <button
-                className="modal-close-btn"
-                onClick={() => {
-                  setShowCropModal(false);
-                }}
-              >
-                <i className="fas fa-times"></i>
-              </button>
             </div>
-
-            {/* Flexible cropping UI with draggable lines */}
-            <div className="preview-modal-body">
-              <div className="preview-modal-image crop-container">
-                <div className="crop-instructions">
-                  <div className="crop-instruction-text">
-                    <i className="fas fa-crop-alt"></i> Drag the dotted lines to adjust the crop area
+            
+            <div className="crop-modal-content">
+              <div className="crop-instructions-container">
+                <p className="crop-instructions">
+                  <i className="fas fa-crop-alt"></i> {isMobile ? 
+                    "Drag the corner handles to adjust your crop. Pinch to zoom if needed." : 
+                    "Drag to adjust the crop area. Using poster aspect ratio."}
+                </p>
+              </div>
+              
+              <div className="flexible-cropper-layout">
+                <div className="reactcrop-container">
+                  <div className="reactcrop-wrapper">
+                    <ReactCrop
+                      crop={crop}
+                      aspect={useFixedAspectRatio ? aspect : undefined}
+                      onChange={(newCrop) => setCrop(newCrop)}
+                      onComplete={(c) => {
+                        setCompletedCrop(c);
+                        generateCroppedImage(c);
+                      }}
+                      ruleOfThirds={true}
+                      circularCrop={false}
+                      minWidth={50}
+                      minHeight={50}
+                      keepSelection={true}
+                    >
+                      <img
+                        ref={imgRef}
+                        src={previewUrl}
+                        onLoad={onImageLoad}
+                        style={{ maxHeight: "70vh", maxWidth: "100%" }}
+                        alt="Upload"
+                      />
+                    </ReactCrop>
                   </div>
                 </div>
                 
-                <div className="flexible-cropper-container">
-                  <div 
-                    className="cropper-img-container"
-                    ref={cropContainerRef}
-                  >
-                    <img 
-                      ref={imgRef}
-                      src={previewUrl} 
-                      alt="Upload preview" 
-                      className="cropper-img"
-                      onLoad={handleImageLoad}
-                    />
-                    
-                    {/* Left dark overlay */}
-                    <div 
-                      className="crop-overlay left-overlay" 
-                      style={{width: `${leftCropPercentage}%`}}
-                    ></div>
-                    
-                    {/* Right dark overlay */}
-                    <div 
-                      className="crop-overlay right-overlay" 
-                      style={{width: `${rightCropPercentage}%`}}
-                    ></div>
-                    
-                    {/* Top dark overlay */}
-                    <div 
-                      className="crop-overlay top-overlay" 
-                      style={{
-                        height: `${topCropPercentage}%`, 
-                        left: `${leftCropPercentage}%`, 
-                        right: `${rightCropPercentage}%`,
-                        top: 0
-                      }}
-                    ></div>
-                    
-                    {/* Bottom dark overlay */}
-                    <div 
-                      className="crop-overlay bottom-overlay" 
-                      style={{
-                        height: `${bottomCropPercentage}%`, 
-                        left: `${leftCropPercentage}%`, 
-                        right: `${rightCropPercentage}%`,
-                        bottom: 0
-                      }}
-                    ></div>
-                    
-                    {/* Highlighted crop area */}
-                    <div 
-                      className="crop-area"
-                      style={{
-                        left: `${leftCropPercentage}%`,
-                        right: `${rightCropPercentage}%`,
-                        top: `${topCropPercentage}%`,
-                        bottom: `${bottomCropPercentage}%`
-                      }}
-                    ></div>
-                    
-                    {/* Poster frame guide overlay - shows the exact dimensions that will be used in final poster */}
-                    {showFixedRatioBox && (
-                      <div 
-                        className="poster-frame-guide"
-                        style={{
-                          left: `${leftCropPercentage}%`,
-                          right: `${rightCropPercentage}%`,
-                          top: `${topCropPercentage}%`,
-                          bottom: `${bottomCropPercentage}%`
-                        }}
-                      >
-                        <div className="poster-frame-label">
-                          <i className="fas fa-info-circle"></i> This is how your image will appear in the poster
-                        </div>
+                <div className="preview-container">
+                  <h3 className="preview-header">Preview</h3>
+                  <div className="preview-image-container">
+                    {croppedImageUrl ? (
+                      <img 
+                        src={croppedImageUrl} 
+                        alt="Preview" 
+                        className="preview-image"
+                        style={{ 
+                          width: "100%", 
+                          height: "100%",
+                          objectFit: "contain",
+                          objectPosition: "center center"
+                        }} 
+                      />
+                    ) : (
+                      <div className="preview-placeholder">
+                        <p>This is how your image will appear in the poster</p>
                       </div>
                     )}
-
-                    {/* Left draggable line */}
-                    <div 
-                      className="crop-line left-line"
-                      style={{left: `${leftCropPercentage}%`}}
-                      onMouseDown={(e) => handleMouseDown(e, 'left')}
-                      onTouchStart={(e) => handleMouseDown(e, 'left')}
-                    ></div>
-                    
-                    {/* Right draggable line */}
-                    <div 
-                      className="crop-line right-line"
-                      style={{right: `${rightCropPercentage}%`}}
-                      onMouseDown={(e) => handleMouseDown(e, 'right')}
-                      onTouchStart={(e) => handleMouseDown(e, 'right')}
-                    ></div>
-                    
-                    {/* Top draggable line */}
-                    <div 
-                      className="crop-line top-line"
-                      style={{
-                        top: `${topCropPercentage}%`,
-                        left: `${leftCropPercentage}%`,
-                        right: `${rightCropPercentage}%`
-                      }}
-                      onMouseDown={(e) => handleMouseDown(e, 'top')}
-                      onTouchStart={(e) => handleMouseDown(e, 'top')}
-                    ></div>
-                    
-                    {/* Bottom draggable line */}
-                    <div 
-                      className="crop-line bottom-line"
-                      style={{
-                        bottom: `${bottomCropPercentage}%`,
-                        left: `${leftCropPercentage}%`,
-                        right: `${rightCropPercentage}%`
-                      }}
-                      onMouseDown={(e) => handleMouseDown(e, 'bottom')}
-                      onTouchStart={(e) => handleMouseDown(e, 'bottom')}
-                    ></div>
-                    
-                    {/* Dimensions display */}
-                    <div className="crop-dimensions-display">
-                      <div>Width: {cropWidthPercentage.toFixed(1)}%</div>
-                      <div>Height: {cropHeightPercentage.toFixed(1)}%</div>
-                    </div>
+                  </div>
+                  <div className="preview-note">
+                    <i className="fas fa-info-circle"></i> This is how your image will appear in the poster
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="preview-modal-footer">
-              <div className="preview-modal-buttons">
-                <button
-                  className="retake-btn"
-                  onClick={() => {
-                    setShowCropModal(false);
-                    setPreviewUrl(null);
-                    setFile(null);
-                    setCroppedImageUrl(null);
-                  }}
-                >
-                  <i className="fas fa-redo-alt"></i> Choose another
-                </button>
-                <button
-                  className="confirm-btn"
-                  onClick={handleCompleteCrop}
-                >
-                  <i className="fas fa-check"></i> Apply Crop
-                </button>
-              </div>
+            
+            <div className="crop-modal-footer">
+              <button className="secondary-btn" onClick={() => {
+                setShowCropModal(false);
+                setImageSrc(null);
+                setFile(null);
+                setCroppedImageUrl(null);
+                setCropData(null);
+                setIsCropComplete(false);
+                setCrop(undefined);
+                setCompletedCrop(null);
+                
+                // Clear the file input to allow selecting the same file again
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = '';
+                }
+              }}>
+                <i className="fas fa-redo-alt"></i> Choose another
+              </button>
+              <button 
+                className="primary-btn" 
+                onClick={() => {
+                  if (!croppedImageUrl) return;
+                  
+                  // Store crop data in session storage for use in the poster generation
+                  if (cropData) {
+                    sessionStorage.setItem('cropData', JSON.stringify(cropData));
+                    console.log('Crop data saved to session storage:', cropData);
+                  }
+                  
+                  // Close crop modal and show preview modal
+                  setShowCropModal(false);
+                  setShowPreviewModal(true);
+                }}
+                disabled={!isCropComplete}
+              >
+                <i className="fas fa-check"></i> Apply Crop
+              </button>
             </div>
           </div>
         </div>
@@ -2405,10 +2038,10 @@ const UploadPhoto = () => {
 
       {/* Image Preview Modal */}
       {showPreviewModal && (
-        <div className="preview-modal-overlay">
+        <div className="modal-overlay">
           <div className="preview-modal">
             <div className="preview-modal-header">
-              <h2>Image Preview</h2>
+              <h2>Preview Your Photo</h2>
               <button
                 className="modal-close-btn"
                 onClick={() => {
@@ -2418,47 +2051,21 @@ const UploadPhoto = () => {
                 <i className="fas fa-times"></i>
               </button>
             </div>
-
             <div className="preview-modal-body">
-              <div className="preview-modal-image">
-                <div style={{maxWidth: '500px', margin: '0 auto', textAlign: 'center'}}>
-                  {/* Display the cropped image preview with exact width preservation */}
-                  <img 
-                    src={croppedImageUrl || previewUrl} 
-                    alt="Preview" 
-                    style={{
-                      width: 'auto',
-                      height: 'auto',
-                      maxWidth: '100%',
-                      maxHeight: '500px', 
-                      border: '2px solid #0083B5',
-                      borderRadius: '4px',
-                      margin: '10px 0',
-                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                      objectFit: 'contain'
-                    }}
-                  />
-                  
-                  <div style={{
-                    backgroundColor: 'rgba(0, 131, 181, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px',
-                    marginTop: '15px',
-                    marginBottom: '10px'
-                  }}>
-                    <p style={{color: '#0083B5', margin: '0 0 5px 0', fontWeight: 'bold', fontSize: '14px'}}>
-                      <i className="fas fa-info-circle"></i> Width: {cropWidthPercentage.toFixed(1)}% of original image
-                    </p>
-                    <p style={{color: '#0083B5', margin: '0', fontWeight: 'bold', fontSize: '14px'}}>
-                      <i className="fas fa-info-circle"></i> Height: {cropHeightPercentage.toFixed(1)}% of original image
-                    </p>
+              <p className="preview-description">
+                <i className="fas fa-info-circle"></i> This is how your image will appear in the poster
+              </p>
+              <div className="preview-image-frame">
+                {croppedImageUrl ? (
+                  <img src={croppedImageUrl} alt="Preview" className="final-preview-image" />
+                ) : (
+                  <div className="preview-placeholder">
+                    <p>Image not available</p>
                   </div>
-                </div>
+                )}
               </div>
             </div>
-
             <div className="preview-modal-footer">
-              <p className="preview-question">Use this image for your poster?</p>
               <div className="preview-modal-buttons">
                 <button
                   className="retake-btn"
@@ -2467,13 +2074,13 @@ const UploadPhoto = () => {
                     setShowCropModal(true);
                   }}
                 >
-                  <i className="fas fa-crop-alt"></i> Adjust Crop
+                  <i className="fas fa-crop-alt"></i> Edit Crop
                 </button>
                 <button
                   className="confirm-btn"
                   onClick={startProcessing}
                 >
-                  <i className="fas fa-check"></i> Continue
+                  <i className="fas fa-arrow-right"></i> Continue
                 </button>
               </div>
             </div>
@@ -2492,6 +2099,60 @@ const UploadPhoto = () => {
                   className="progress-fill"
                   style={{ width: `${loadingProgress}%` }}
                 ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Camera Modal */}
+      {showCameraModal && (
+        <div className="modal-overlay">
+          <div className="camera-modal">
+            <div className="camera-modal-header">
+              <h2>{isSelfieMode ? "Take a Selfie" : "Take a Photo"}</h2>
+              <button className="modal-close-btn" onClick={stopCamera}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="camera-modal-body">
+              <div className="camera-container modal-camera">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="camera-video"
+                ></video>
+                <div className={`person-outline-overlay ${isSelfieMode ? 'selfie-mode' : ''} ${faceInPosition ? 'face-in-position' : faceDetected ? 'face-detected' : ''}`}>
+                  <img
+                    src="/images/face-outline.svg"
+                    alt="Face outline"
+                    className="outline-image"
+                  />
+                  <div className="positioning-guide">
+                    {faceInPosition ?
+                      "Perfect! Hold still and take the photo." :
+                      faceDetected ?
+                        "Move closer and center your face in the outline" :
+                        isSelfieMode ?
+                          "Position your face within the outline and look at the camera" :
+                          "Position your face in the outline, hold camera at eye level"
+                    }
+                  </div>
+                </div>
+                <div className="camera-controls">
+                  <button
+                    className={`camera-btn ${faceInPosition ? 'active' : 'disabled'}`}
+                    onClick={takePhoto}
+                    disabled={!faceInPosition}
+                  >
+                    <i className="fas fa-camera"></i>
+                  </button>
+                  <button className="camera-btn cancel" onClick={stopCamera}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+                <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
               </div>
             </div>
           </div>

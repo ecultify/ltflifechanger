@@ -741,12 +741,11 @@ CRITICAL INSTRUCTION: You MUST include ALL of these keywords in the tagline: ${k
 IMPORTANT: Make sure to include ALL of these ${keywords.length} keywords in your tagline: ${keywords.join(", ")}. Don't skip any. Highlight each one with asterisks.`,
           },
         ],
-        temperature: isRegeneration ? temperature : 0.7, // Lower temperature for first generation to ensure keyword inclusion
-        max_tokens: 150, // Increased token count to allow for verification
-        // Add presence_penalty when regenerating to encourage different word choices
-        // Increased penalties for regeneration to force more variety
+        temperature: isRegeneration ? temperature : 0.7, 
+        max_tokens: 150, 
+        
         presence_penalty: isRegeneration ? 0.8 : 0.2,
-        // Add frequency penalty when regenerating to discourage repeating phrase patterns
+       
         frequency_penalty: isRegeneration ? 0.9 : 0.3,
       };
 
@@ -760,12 +759,12 @@ IMPORTANT: Make sure to include ALL of these ${keywords.length} keywords in your
 
       console.log("API response received:", response);
 
-      // Extract the generated tagline from the response
+      
       let generatedTagline = response.data.choices[0].message.content.trim();
       
-      // Check if all keywords are included in the tagline
+      
       const missingKeywords = keywords.filter(keyword => {
-        // Create a regex pattern to find the keyword with asterisks
+       
         const keywordPattern = new RegExp(`\\*${keyword}\\*|\\*${keyword}s\\*|\\*${keyword.slice(0, -1)}\\*`, 'i');
         return !keywordPattern.test(generatedTagline);
       });
@@ -773,11 +772,10 @@ IMPORTANT: Make sure to include ALL of these ${keywords.length} keywords in your
       // Log the check results
       console.log("Missing keywords:", missingKeywords);
       
-      // If not all keywords are included, make another attempt with a more forceful approach
       if (missingKeywords.length > 0) {
         console.warn(`Not all keywords included in the tagline. Missing: ${missingKeywords.join(", ")}`);
         
-        // Try again with a more explicit second-attempt prompt
+       
         const secondAttemptData = {
           model: "gpt-4o",
           messages: [
@@ -1317,7 +1315,8 @@ These keywords were missing from your previous attempt: ${missingKeywords.join("
               zIndex: 10,
               minHeight: isMobile ? "auto" : "700px", /* Reduced from 800px to 700px */
               height: isMobile ? "auto" : "auto", /* Allow expansion beyond minimum on desktop if needed */
-              overflow: isMobile ? "visible" : "visible"
+              overflow: "visible",
+              overflowY: "visible"
             }}
           >
             {" "}
@@ -1582,9 +1581,9 @@ These keywords were missing from your previous attempt: ${missingKeywords.join("
                         readOnly={true}
                         style={{
                           ...inputStyle,
-                          height: "auto",
+                          height: "60px", // Fixed height, not auto
                           minHeight: "60px",
-                          maxHeight: "80px", /* Reduced to show ~3 lines max */
+                          maxHeight: "60px", // Fixed max height equal to height
                           padding: "10px 12px",
                           overflow: "auto", /* Show scrollbar if text exceeds max height */
                           whiteSpace: "normal",

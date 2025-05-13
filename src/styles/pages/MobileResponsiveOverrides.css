@@ -1255,3 +1255,37 @@
         }
     }
 }
+
+/* Improved mobile keywords chip container with fixed height */
+.mobile-view .keywords-input-container,
+.mobile-view .selected-keywords {
+    min-height: 64px !important; /* Increased by 2px */
+    max-height: 90px !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    padding: 5px !important;
+    border-radius: 6px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Improved mobile tagline display container with fixed height */
+.mobile-view .tagline-display-area {
+    min-height: 70px !important;
+    max-height: 70px !important;
+    height: 70px !important;
+    overflow: hidden !important; /* Hide overflow content */
+    margin-top: 10px !important;
+    margin-bottom: 15px !important;
+}
+
+/* Improved mobile tagline display with fixed height */
+.mobile-view .tagline-display {
+    min-height: 60px !important;
+    max-height: 60px !important;
+    height: 60px !important;
+    overflow-y: auto !important;
+    padding: 8px !important;
+    border-radius: 6px !important;
+    word-break: break-word !important;
+    white-space: pre-wrap !important;
+}

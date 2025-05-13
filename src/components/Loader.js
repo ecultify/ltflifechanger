@@ -3,7 +3,7 @@ import '../styles/components/Loader.css';
 
 const Loader = ({ fullScreen = true, message = "Loading..." }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const logoPath = process.env.PUBLIC_URL + '/images/landtfinancelogo.png';
+  const logoPath = process.env.PUBLIC_URL + '/images/landtfinancelogo.svg';
   
   useEffect(() => {
     // Set loader as loaded after a short delay to trigger animations

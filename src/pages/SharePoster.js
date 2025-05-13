@@ -19,8 +19,10 @@ const SharePoster = () => {
   const [generatedPoster, setGeneratedPoster] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [loadingStatus, setLoadingStatus] = useState('Generating your poster...');
-  const [templatePath, setTemplatePath] = useState(null); // Store the selected template path
+  const [loadingStatus, setLoadingStatus] = useState('Preparing your template...');
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [templatePath, setTemplatePath] = useState(null);
+  const [templateLoaded, setTemplateLoaded] = useState(false); // Flag to track template loading
   const canvasRef = useRef(null);
   const preloadedTemplateRef = useRef(null); // Ref to store preloaded image
   
@@ -60,7 +62,9 @@ const SharePoster = () => {
       }
 
       try {
+        setLoadingStatus('Preparing your template...');
         console.log('Selecting template for industry:', userData.industry);
+        
         // Get template path based on industry
         const selectedTemplatePath = await getRandomTemplateForIndustry(userData.industry);
         setTemplatePath(selectedTemplatePath);
@@ -73,28 +77,31 @@ const SharePoster = () => {
         img.onload = () => {
           console.log(`Template image preloaded successfully from: ${selectedTemplatePath}`);
           preloadedTemplateRef.current = img;
+          setTemplateLoaded(true); // Mark template as loaded
+          setLoadingStatus('Generating your poster...'); // Update loading status after template is loaded
         };
         
         img.onerror = (err) => {
           console.warn(`Failed to preload template image from: ${selectedTemplatePath}`, err);
-          // Fall back to mage.jpg if the template fails to load
+          // Fall back to Manufacturing template if the template fails to load
           const fallbackImage = new Image();
           fallbackImage.crossOrigin = 'anonymous';
-          fallbackImage.src = '/images/mage.jpg';
+          fallbackImage.src = '/images/templates/Manufacturing/Frame 15164.png';
           
           fallbackImage.onload = () => {
             console.log('Fallback template image preloaded successfully');
             preloadedTemplateRef.current = fallbackImage;
-          };
-          
-          fallbackImage.onerror = (fallbackErr) => {
-            console.error('Even fallback template failed to load:', fallbackErr);
+            setTemplateLoaded(true); // Mark template as loaded even with fallback
+            setLoadingStatus('Generating your poster...'); // Update loading status after template is loaded
           };
         };
         
         img.src = selectedTemplatePath;
       } catch (error) {
         console.error('Error preloading template image:', error);
+        // Ensure the process continues even with error
+        setTemplateLoaded(true);
+        setLoadingStatus('Generating your poster...');
       }
     };
     
@@ -116,6 +123,7 @@ const SharePoster = () => {
       if (isProcessing) {
         console.log('Poster generation timeout - completing with available data');
         setGeneratedPoster('/images/fallback-poster.png');
+        setLoadingProgress(100);
         setIsLoading(false);
         isProcessing = false;
       }
@@ -123,6 +131,8 @@ const SharePoster = () => {
     
     try {
       setLoadingStatus('Generating your poster...');
+      setLoadingProgress(20); // Start at 20%
+      
       // Create a canvas to combine the template and user's image
       const canvas = canvasRef.current;
       if (!canvas) {
@@ -133,6 +143,9 @@ const SharePoster = () => {
         isProcessing = false;
         return;
       }
+      
+      // Progress to 40% after canvas is created
+      setTimeout(() => setLoadingProgress(40), 500);
       
       const ctx = canvas.getContext('2d');
       
@@ -149,6 +162,9 @@ const SharePoster = () => {
       canvas.width = 900;
       canvas.height = 1200;
       
+      // Progress to 60% after canvas setup
+      setTimeout(() => setLoadingProgress(60), 1000);
+      
       try {
         // Load user's image
         setLoadingStatus('Generating your poster...');
@@ -157,6 +173,9 @@ const SharePoster = () => {
         userImg.src = processedImage;
         
         console.log('Loading user processed image from URL:', processedImage);
+        
+        // Progress to 80% after starting image loading
+        setTimeout(() => setLoadingProgress(80), 1500);
         
         // Add a logging function to track the image loading process
         const trackImageLoading = async (img, description) => {
@@ -183,8 +202,8 @@ const SharePoster = () => {
         await trackImageLoading(userImg, 'User image');
         
         // Load the template image based on user's industry
-        // Use the selected template path if available, otherwise fall back to the default
-        const templateSrc = templatePath || `${window.location.origin}/images/mage.jpg`;
+        // Use the selected template path if available, otherwise fall back to Manufacturing template
+        const templateSrc = templatePath || `${window.location.origin}/images/templates/Manufacturing/Frame 15164.png`;
           
         console.log(`Using template: ${templateSrc} for industry: ${userData.industry || 'unknown'}`);
         
@@ -213,13 +232,7 @@ const SharePoster = () => {
             // If that also fails, try a relative path
             templateImg.onerror = () => {
               console.error('Still failed to load template image, using default fallback');
-              templateImg.src = '/images/mage.jpg';
-              
-              // If that still fails, try the backup template file
-              templateImg.onerror = () => {
-                console.error('Default fallback failed, trying final fallback');
-                templateImg.src = 'images/template.jpg';
-              };
+              templateImg.src = '/images/templates/Manufacturing/Frame 15164.png';
             };
           };
         }
@@ -277,12 +290,12 @@ const SharePoster = () => {
                 // Ensure the full image is visible without cutoffs
                 
                 // Position image to cover left side of poster (side by side with template model)
-                const containerWidth = canvas.width * 0.55; // Slightly increased width from 0.53 to 0.55
-                const containerHeight = canvas.height * 0.70; // Further increased height from 0.67 to 0.70
+                const containerWidth = canvas.width * 0.57; // Increased from 0.56 to 0.57
+                const containerHeight = canvas.height * 0.72; // Increased from 0.71 to 0.72
                 
                 // Position at bottom left corner for perfect alignment
-                const userX = -16; // Keep the same X position
-                const userY = canvas.height - containerHeight + 50; // Keep the same offset
+                const userX = -27; // Moved further left from -22 to -27 (5px more to the left)
+                const userY = canvas.height - containerHeight + 39; // Moved up by 5px from 44 to 39
                 
                 // Set up the offscreen canvas with these dimensions
                 const offscreenCanvas = document.createElement('canvas');
@@ -348,7 +361,7 @@ const SharePoster = () => {
                   }
                   
                   // Apply 10% margin by scaling down
-                  const scaleFactor = 0.9;
+                  const scaleFactor = 0.97; // Increased from 0.95 to 0.97 (even less margin)
                   drawWidth *= scaleFactor;
                   drawHeight *= scaleFactor;
                   
@@ -439,7 +452,7 @@ const SharePoster = () => {
               // Create a new image object and try again
               const retryImg = new Image();
               retryImg.crossOrigin = 'anonymous';
-              retryImg.src = 'images/mage.jpg'; // Try the simple relative path
+              retryImg.src = '/images/templates/Manufacturing/Frame 15164.png'; // Use Manufacturing template
               
               // Wait briefly for the image to load
               await new Promise((resolve) => {
@@ -563,7 +576,7 @@ const SharePoster = () => {
           
           // Tagline styling - using Poppins font and increased font size by 3.5
           ctx.fillStyle = 'white'; // Always use white color for tagline text
-          ctx.font = 'bold 45.5px Poppins, sans-serif'; // Increased from 42px to 45.5px (42 + 3.5)
+          ctx.font = 'bold 44px Poppins, sans-serif'; // Reduced from 45.5px to 44px
           ctx.textAlign = 'left';
           
           // Calculate vertical spacing for taglines - adjusted for better positioning
@@ -654,7 +667,7 @@ const SharePoster = () => {
               
               // Set appropriate font weight and style for better differentiation
               if (isKeyword) {
-                ctx.font = 'bold 46px Poppins, sans-serif'; // Slightly larger for bold words
+                ctx.font = 'bold 44.5px Poppins, sans-serif'; // Slightly larger for bold words
                 ctx.fillStyle = '#FFFFFF'; // Pure white for bold words
                 // Add text shadow for extra emphasis on keywords
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
@@ -662,7 +675,7 @@ const SharePoster = () => {
                 ctx.shadowOffsetX = 1;
                 ctx.shadowOffsetY = 1;
               } else {
-                ctx.font = '45px Poppins, sans-serif';
+                ctx.font = '43.5px Poppins, sans-serif';
                 ctx.fillStyle = '#F0F0F0'; // Slightly less bright for non-bold words
                 // Reset shadow for non-bold words
                 ctx.shadowColor = 'transparent';
@@ -683,7 +696,7 @@ const SharePoster = () => {
           
           // Split the tagline into multiple lines if needed
           let taglineLines = [];
-          const maxLineLength = 34; // Reduced from 38 to 36 to decrease tagline width from the right by 10px
+          const maxLineLength = 32; // Reduced from 34 to 32 to decrease tagline width
           
           if (tagline.length > maxLineLength) {
             // Break into multiple lines
@@ -738,7 +751,7 @@ const SharePoster = () => {
           
           // Draw each line with keywords bolded - moved right by 3px and reduced width from right by 3px
           taglineLines.forEach((line, index) => {
-            drawTextWithBoldedWords(line, 63, taglineStartY + (index * taglineLineHeight), selectedKeywords);
+            drawTextWithBoldedWords(line, 68, taglineStartY + (index * taglineLineHeight), selectedKeywords);
           });
           
           // Position for company info circles - pushed further up to match logo alignment
@@ -757,7 +770,7 @@ const SharePoster = () => {
           
           // Draw person icon in the first circle - moved 3px to the right
           ctx.fillStyle = 'black'; // Set icon color to black
-          ctx.font = 'bold 24px Arial';
+          ctx.font = 'bold 24px Poppins, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText('👤', 83, circleY + 8); // Centered the icon
           
@@ -811,7 +824,7 @@ const SharePoster = () => {
           
           // Draw company info text - properly aligned vertically with icons
           ctx.fillStyle = 'white';
-          ctx.font = 'bold 28px Arial';
+          ctx.font = 'bold 28px Poppins, sans-serif';
           ctx.textAlign = 'left';
           
           // Get user name
@@ -861,7 +874,7 @@ const SharePoster = () => {
           }
           
           // Phone number display - moved 3px to the right
-          ctx.font = 'bold 28px Arial';
+          ctx.font = 'bold 28px Poppins, sans-serif';
           ctx.fillText(phoneNumber, 133, circleY + 93); // Moved 3px to the right
           
           // Add vertical white line - moved up by 2px
@@ -912,7 +925,7 @@ const SharePoster = () => {
           
           // Add URL text to the strip
           ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
-          ctx.font = 'bold 30px Arial'; // Significantly increased font size for better visibility
+          ctx.font = 'bold 30px Poppins, sans-serif'; // Significantly increased font size for better visibility
           ctx.textAlign = 'center';
           ctx.fillText('Visit – LTFGAMECHANGERS.IN', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
           
@@ -923,6 +936,9 @@ const SharePoster = () => {
         
         // Convert canvas to image
         setLoadingStatus('Generating your poster...');
+        // Progress to 90% and stay there while generating the image
+        setTimeout(() => setLoadingProgress(90), 2000);
+        
         try {
           const posterUrl = canvas.toDataURL('image/png');
           if (posterUrl) {
@@ -947,11 +963,11 @@ const SharePoster = () => {
           
           // Add text details
           ctx.fillStyle = 'white';
-          ctx.font = 'bold 36px Arial';
+          ctx.font = 'bold 36px Poppins, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(userData.companyName || 'Your Company Name', canvas.width / 2, 200);
           
-          ctx.font = '24px Arial';
+          ctx.font = '24px Poppins, sans-serif';
           ctx.fillText(userData.industry || 'Your Industry', canvas.width / 2, 250);
           
           // Format phone number to remove +91 if present
@@ -961,7 +977,7 @@ const SharePoster = () => {
           }
           
           // Draw phone number with icon
-          ctx.font = '24px Arial';
+          ctx.font = '24px Poppins, sans-serif';
           
           // Set up position for phone icon and text
           const iconX = canvas.width / 2 - ctx.measureText(phoneNumber).width / 2 - 30;
@@ -1012,7 +1028,7 @@ const SharePoster = () => {
           ctx.fillText(line, canvas.width / 2, y);
           
           // Add L&T branding
-          ctx.font = 'bold 36px Arial';
+          ctx.font = 'bold 36px Poppins, sans-serif';
           ctx.fillText('L&T Finance', canvas.width / 2, canvas.height - 100);
           
           // Add yellow strip at the bottom with URL
@@ -1045,7 +1061,7 @@ const SharePoster = () => {
             
             // Add URL text to the strip
             ctx.fillStyle = '#000000'; // Black text (changed from white for better contrast on yellow)
-            ctx.font = 'bold 40px Arial'; // Further increased font size for better visibility
+            ctx.font = 'bold 40px Poppins, sans-serif'; // Further increased font size for better visibility
             ctx.textAlign = 'center';
             ctx.fillText('LTFGAMECHANGERS.IN', canvas.width / 2, canvas.height - stripHeight/2 + 8); // Centered vertically in the strip
           } catch (stripError) {
@@ -1069,7 +1085,11 @@ const SharePoster = () => {
       
       clearTimeout(timeoutId);
       isProcessing = false;
-      setIsLoading(false);
+      // Progress to 100% before completing
+      setLoadingProgress(100);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 800); // Small delay after reaching 100% before hiding the loader
     } catch (err) {
       console.error('Error in poster generation main process:', err);
       setError('Failed to generate poster. Please try again.');
@@ -1079,111 +1099,113 @@ const SharePoster = () => {
     }
   }, [processedImage, userData, templatePath]);
 
+  // Modified to wait for template loading - moved AFTER generatePoster definition
   useEffect(() => {
-    // Function to load user data and image
-    const loadUserDataAndImage = async () => {
-      try {
-        // Load the Poppins font
-        const ensurePoppinsFont = () => {
-          // Check if the font is already added to the document
-          const existingLink = document.querySelector('link[href*="fonts.googleapis.com/css2?family=Poppins"]');
+    if (processedImage && userData && templateLoaded) {
+      // Only proceed with poster generation after template is loaded
+      generatePoster();
+    }
+  }, [processedImage, userData, templateLoaded, generatePoster]);
+
+  // Function to load user data and image
+  const loadUserDataAndImage = async () => {
+    try {
+      // Load the Poppins font
+      const ensurePoppinsFont = () => {
+        // Check if the font is already added to the document
+        const existingLink = document.querySelector('link[href*="fonts.googleapis.com/css2?family=Poppins"]');
+        
+        if (!existingLink) {
+          // Create link element for Poppins font
+          const fontLink = document.createElement('link');
+          fontLink.rel = 'stylesheet';
+          fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
+          document.head.appendChild(fontLink);
           
-          if (!existingLink) {
-            // Create link element for Poppins font
-            const fontLink = document.createElement('link');
-            fontLink.rel = 'stylesheet';
-            fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
-            document.head.appendChild(fontLink);
-            
-            // Create a span element to trigger font loading
-            const span = document.createElement('span');
-            span.style.fontFamily = 'Poppins, sans-serif';
-            span.style.visibility = 'hidden';
-            span.textContent = 'Font loader';
-            document.body.appendChild(span);
-            
-            // Remove the span after a short delay
-            setTimeout(() => {
-              if (span && document.body.contains(span)) {
-                document.body.removeChild(span);
-              }
-            }, 500);
-          }
-        };
-        
-        // Ensure Poppins font is loaded
-        ensurePoppinsFont();
-        
-        // Retrieve user data from session storage
-        const storedUserDataStr = sessionStorage.getItem('userData');
-        
-        // Check if we have user data
-        if (!storedUserDataStr) {
-          console.error('No user data found in session storage');
-          setError('No user data found. Please go back and add your details.');
-          setIsLoading(false);
+          // Create a span element to trigger font loading
+          const span = document.createElement('span');
+          span.style.fontFamily = 'Poppins, sans-serif';
+          span.style.visibility = 'hidden';
+          span.textContent = 'Font loader';
+          document.body.appendChild(span);
           
-          // Navigate back to upload page after a brief delay
+          // Remove the span after a short delay
           setTimeout(() => {
-            navigate('/upload');
-          }, 1500);
-          
-          return;
+            if (span && document.body.contains(span)) {
+              document.body.removeChild(span);
+            }
+          }, 500);
         }
-        
-        // Parse user data
-        const storedUserData = JSON.parse(storedUserDataStr);
-        console.log('Retrieved user data from session storage:', storedUserData);
-        setUserData(storedUserData);
-        
-        // Retrieve the processed image directly from session storage
-        const storedImageUrl = sessionStorage.getItem('processedImage');
-        
-        // Check if we have an image URL
-        if (!storedImageUrl) {
-          console.error('No processed image found in session storage');
-          setError('No image found. Please go back and upload your photo.');
-          setIsLoading(false);
-          
-          // Navigate back to upload page after a brief delay
-          setTimeout(() => {
-            navigate('/upload');
-          }, 1500);
-          
-          return;
-        }
-        
-        console.log('Retrieved image URL from session storage:', storedImageUrl);
-        
-        // Handle both blob URLs and data URLs
-        if (storedImageUrl.startsWith('blob:') || storedImageUrl.startsWith('data:')) {
-          console.log('Using blob or data URL directly');
-          setProcessedImage(storedImageUrl);
-        } else {
-          // Handle other URL formats if needed
-          console.log('Using standard URL format');
-          setProcessedImage(storedImageUrl);
-        }
-        
-        // If everything is loaded, we can generate the poster
-        setIsLoading(true);
-      } catch (error) {
-        console.error('Error loading user data or image:', error);
-        setError('There was a problem loading your data. Please try again.');
+      };
+      
+      // Ensure Poppins font is loaded
+      ensurePoppinsFont();
+      
+      // Retrieve user data from session storage
+      const storedUserDataStr = sessionStorage.getItem('userData');
+      
+      // Check if we have user data
+      if (!storedUserDataStr) {
+        console.error('No user data found in session storage');
+        setError('No user data found. Please go back and add your details.');
         setIsLoading(false);
+        
+        // Navigate back to upload page after a brief delay
+        setTimeout(() => {
+          navigate('/upload');
+        }, 1500);
+        
+        return;
       }
-    };
-    
-    // Load user data and image when component mounts
+      
+      // Parse user data
+      const storedUserData = JSON.parse(storedUserDataStr);
+      console.log('Retrieved user data from session storage:', storedUserData);
+      setUserData(storedUserData);
+      
+      // Start template loading early - triggered by setting userData
+      // No need to wait for the image to start template selection
+      
+      // Retrieve the processed image directly from session storage
+      const storedImageUrl = sessionStorage.getItem('processedImage');
+      
+      // Check if we have an image URL
+      if (!storedImageUrl) {
+        console.error('No processed image found in session storage');
+        setError('No image found. Please go back and upload your photo.');
+        setIsLoading(false);
+        
+        // Navigate back to upload page after a brief delay
+        setTimeout(() => {
+          navigate('/upload');
+        }, 1500);
+        
+        return;
+      }
+      
+      console.log('Retrieved image URL from session storage:', storedImageUrl);
+      
+      // Handle both blob URLs and data URLs
+      if (storedImageUrl.startsWith('blob:') || storedImageUrl.startsWith('data:')) {
+        console.log('Using blob or data URL directly');
+        setProcessedImage(storedImageUrl);
+      } else {
+        // Handle other URL formats if needed
+        console.log('Using standard URL format');
+        setProcessedImage(storedImageUrl);
+      }
+    } catch (error) {
+      console.error('Error loading user data or image:', error);
+      setError('There was a problem loading your data. Please try again.');
+      setIsLoading(false);
+    }
+  };
+  
+  // Load user data and image when component mounts
+  useEffect(() => {
     loadUserDataAndImage();
   }, [navigate]);  // Add navigate to the dependency array
 
-  useEffect(() => {
-    if (processedImage && userData) {
-      generatePoster();
-    }
-  }, [processedImage, userData, generatePoster]);
-  
   // Load CTA banner images
   useEffect(() => {
     // Set the actual banners from the CTA folder
@@ -1267,6 +1289,9 @@ const SharePoster = () => {
       {isLoading ? (
         <div className="loading-overlay">
           <Loader message={loadingStatus} />
+          <div className="progress-bar" style={{ width: '80%', margin: '20px auto 0', height: '6px', backgroundColor: 'rgba(0, 0, 0, 0.1)', borderRadius: '3px', overflow: 'hidden', border: '1px solid #000' }}>
+            <div className="progress-fill" style={{ width: `${loadingProgress}%`, height: '100%', backgroundColor: '#000', borderRadius: '3px', transition: 'width 0.5s ease-in-out' }}></div>
+          </div>
         </div>
       ) : error ? (
         <div className="error-container">

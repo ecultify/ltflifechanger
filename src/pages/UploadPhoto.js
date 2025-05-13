@@ -1442,14 +1442,27 @@ const UploadPhoto = () => {
     setShowCameraModal(true);
     
     try {
+      // Stop any existing stream first
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+      }
+      
       // Request camera access with front or back camera based on mode
       const constraints = {
         video: {
           facingMode: selfieMode ? 'user' : 'environment',
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          height: { ideal: 1080 },
+          // Add advanced constraints for better quality
+          advanced: [
+            { exposureMode: 'auto' },
+            { focusMode: 'continuous' }
+          ]
         }
       };
+      
+      console.log(`Activating camera in ${selfieMode ? 'selfie' : 'regular'} mode`);
       
       // Get media stream
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -1457,11 +1470,17 @@ const UploadPhoto = () => {
       // Attach to video element
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        setIsCameraActive(true);
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().catch(err => {
+            console.error('Error playing video:', err);
+          });
+          setIsCameraActive(true);
+          console.log('Camera activated successfully');
+        };
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
-      setError('Camera access denied or not available.');
+      setError(`Camera access error: ${err.message || 'Permission denied or camera not available'}`);
       setShowCameraModal(false);
     }
   };
@@ -1530,6 +1549,36 @@ const UploadPhoto = () => {
       0, 0, canvasWidth, canvasHeight
     );
     
+    // Add a flash effect
+    const flashElement = document.createElement('div');
+    flashElement.style.position = 'fixed';
+    flashElement.style.top = '0';
+    flashElement.style.left = '0';
+    flashElement.style.width = '100%';
+    flashElement.style.height = '100%';
+    flashElement.style.backgroundColor = 'white';
+    flashElement.style.opacity = '0.6';
+    flashElement.style.zIndex = '10000';
+    flashElement.style.pointerEvents = 'none';
+    flashElement.style.transition = 'opacity 0.3s ease-out';
+    document.body.appendChild(flashElement);
+    
+    // Play camera sound if available
+    try {
+      const shutterSound = new Audio('/sounds/camera-shutter.mp3');
+      shutterSound.play().catch(e => console.log('Could not play shutter sound'));
+    } catch (e) {
+      console.log('Could not create shutter sound');
+    }
+    
+    // Fade out flash effect
+    setTimeout(() => {
+      flashElement.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(flashElement);
+      }, 300);
+    }, 50);
+    
     // Convert canvas to data URL
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Higher quality for better details
     
@@ -1559,14 +1608,16 @@ const UploadPhoto = () => {
         setCompletedCrop(null);
         setCroppedImageUrl(null);
         
-        // Show crop modal
-        setShowCropModal(true);
-        setShowPreviewModal(false);
-        setIsCropComplete(false);
+        // Close camera modal
+        stopCamera();
+        
+        // Show crop modal with slight delay to ensure smooth transition
+        setTimeout(() => {
+          setShowCropModal(true);
+          setShowPreviewModal(false);
+          setIsCropComplete(false);
+        }, 300);
       }, 'image/jpeg', 0.95);
-
-      // Stop camera stream
-      stopCamera();
     });
   };
 
@@ -2160,35 +2211,32 @@ const UploadPhoto = () => {
                 }}
               ></video>
               
+              {/* Add back the person outline overlay with improved guidance */}
               <div className="person-outline-overlay">
-                <img
-                  src="/images/face-outline.svg"
-                  alt="Person silhouette guide"
-                  className="face-outline"
-                />
-                <p className="camera-instructions">
-                  {isSelfieMode ? 
-                    "Position yourself in the outline from face to waist" : 
-                    "Capture your subject from face to waist within the guide"
-                  }
-                </p>
+                <img src="/images/face-outline.svg" alt="Position guide" className="face-outline" />
+                <div className="camera-instructions">
+                  Position yourself from face to waist
+                </div>
               </div>
               
-              <button
-                onClick={takePhoto}
-                className="camera-btn active"
-                title="Take Photo"
-              >
-                <i className="fas fa-camera"></i>
-              </button>
-              
-              <button className="camera-mode-btn" onClick={() => {
-                stopCamera();
-                setTimeout(() => activateCamera(!isSelfieMode), 300);
-              }}>
-                <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
-                {isSelfieMode ? 'Switch to Back Camera' : 'Switch to Selfie Mode'}
-              </button>
+              {/* Improved camera controls */}
+              <div className="camera-controls">
+                <button
+                  onClick={takePhoto}
+                  className="camera-btn active"
+                  title="Take Photo"
+                >
+                  <i className="fas fa-camera"></i>
+                </button>
+                
+                <button className="camera-mode-btn" onClick={() => {
+                  stopCamera();
+                  setTimeout(() => activateCamera(!isSelfieMode), 300);
+                }}>
+                  <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
+                  {isSelfieMode ? 'Back Camera' : 'Selfie Mode'}
+                </button>
+              </div>
               
               <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
             </div>

@@ -3,43 +3,32 @@
   <!-- Background shape with low opacity -->
   <rect width="300" height="500" fill="black" opacity="0.05" />
   
-  <!-- Full silhouette - face to waist -->
-  <g fill="none" stroke="white" stroke-width="4" stroke-dasharray="10,8" opacity="0.85">
-    <!-- Head outline -->
-    <ellipse cx="150" cy="90" rx="60" ry="75" />
-    
-    <!-- Neck -->
-    <path d="M120,160 C120,180 180,180 180,160" />
-    
-    <!-- Shoulders -->
-    <path d="M120,160 C110,170 90,180 60,190" />
-    <path d="M180,160 C190,170 210,180 240,190" />
-    
-    <!-- Torso outline -->
-    <path d="M60,190 C80,270 100,320 150,400" />
-    <path d="M240,190 C220,270 200,320 150,400" />
-    
-    <!-- Guideline at waist level -->
-    <line x1="80" y1="370" x2="220" y2="370" stroke-dasharray="15,5" />
-  </g>
+  <!-- Face oval outline -->
+  <ellipse cx="150" cy="90" rx="60" ry="75" fill="none" stroke="white" stroke-width="3" stroke-dasharray="10,5" opacity="0.9" />
   
-  <!-- Center alignment guide (vertical line) -->
-  <line x1="150" y1="40" x2="150" y2="420" 
-        stroke="white" 
-        stroke-width="2" 
-        stroke-dasharray="5,10" 
-        opacity="0.4"/>
+  <!-- Body outline - drawn to show face to waist guidance -->
+  <path d="M90,160 C90,160 50,300 70,400 C90,440 150,440 150,440 C150,440 210,440 230,400 C250,300 210,160 210,160" 
+        fill="none" stroke="white" stroke-width="3" stroke-dasharray="10,5" opacity="0.9" />
+  
+  <!-- Neck connection -->
+  <path d="M110,160 C130,180 170,180 190,160" 
+        fill="none" stroke="white" stroke-width="3" stroke-dasharray="10,5" opacity="0.9" />
+  
+  <!-- Center alignment guide -->
+  <line x1="150" y1="20" x2="150" y2="420" 
+        stroke="white" stroke-width="2" stroke-dasharray="5,10" opacity="0.7" />
+  
+  <!-- Horizontal guideline at waist level -->
+  <line x1="70" y1="400" x2="230" y2="400" 
+        stroke="white" stroke-width="2" stroke-dasharray="5,10" opacity="0.7" />
 
   <!-- Guide text -->
   <g font-family="Arial, sans-serif" fill="white" text-anchor="middle">
     <text x="150" y="30" font-size="16" font-weight="bold" opacity="0.9">
       Position yourself in the outline
     </text>
-    <text x="150" y="440" font-size="14" opacity="0.8">
+    <text x="150" y="460" font-size="14" opacity="0.8">
       Show from face to waist
-    </text>
-    <text x="150" y="465" font-size="14" opacity="0.8">
-      Keep your head centered
     </text>
   </g>
 </svg> 

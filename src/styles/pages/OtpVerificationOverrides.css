@@ -85,6 +85,80 @@
   .consent-container div[style*="checkbox"] {
     border-color: #666 !important;
   }
+  
+  /* More balanced spacing for form container on mobile */
+  .form-container {
+    min-height: auto !important;
+    height: auto !important;
+    padding-bottom: 15px !important;
+    max-height: none !important;
+    margin-bottom: 10px !important;
+    overflow: visible !important;
+    margin-top: -45px !important; /* Create 5px overlap with Bumrah image */
+    background-color: white !important;
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+    padding-top: 20px !important;
+    box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1) !important; /* Add shadow for depth */
+  }
+  
+  /* Bumrah image container sizing and positioning */
+  .bumrah-container {
+    margin-bottom: 0px !important; /* Ensure no bottom margin */
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: -18px !important;
+  }
+  
+  /* Reduce Bumrah image size */
+  .bumrah-image {
+    max-width: 270px !important; /* Smaller size */
+    height: auto !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Balanced spacing for form content */
+  .right-content {
+    min-height: auto !important;
+    height: auto !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 10px !important;
+    overflow: visible !important;
+  }
+  
+  /* Proper spacing for verify button container */
+  .verify-btn-container, 
+  .verify-btn {
+    margin-bottom: 10px !important;
+    margin-top: 15px !important;
+  }
+  
+  /* Fix spacing for OTP inputs */
+  .otp-container {
+    margin-bottom: 15px !important;
+  }
+  
+  /* Make the form elements more comfortably spaced */
+  .right-content > * {
+    margin-bottom: 15px !important;
+  }
+  
+  /* Tighten up the form group spacing */
+  .form-group {
+    margin-bottom: 15px !important;
+  }
+  
+  /* Fix height of right section to prevent extra space */
+  .right-section.mobile-view {
+    min-height: auto !important;
+    height: auto !important;
+  }
+  
+  /* Ensure last child has some breathing room */
+  .form-container > *:last-child {
+    margin-bottom: 5px !important;
+    padding-bottom: 5px !important;
+  }
 }
 
 /* General improvements for both layouts */

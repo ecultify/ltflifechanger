@@ -165,6 +165,8 @@ html, body, #root, .app {
     padding: 15px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
     order: 1 !important; /* Explicitly order the form container first */
+    min-height: auto !important; /* Fix the extra space at the bottom */
+    padding-bottom: 15px !important; /* Ensure enough padding at bottom */
   }
   
   /* SWAPPED: DOS2 image positioning - 20px below form container */
@@ -241,6 +243,7 @@ html, body, #root, .app {
     border: 2px dashed #ccc !important;
     min-height: 180px !important;
     padding: 15px !important;
+    margin-bottom: 10px !important; /* Reduce bottom margin */
   }
   
   /* Adjust button styles for better visibility on the new background */
@@ -250,15 +253,20 @@ html, body, #root, .app {
     font-weight: 600 !important; /* Make text more visible */
   }
   
-  /* Remove the right section entirely in mobile view */
-  .right-section {
-    display: none !important;
+  /* Fix the extra space in the right content */
+  .right-content {
+    min-height: auto !important;
+    padding-bottom: 0 !important;
   }
   
-  /* Override any other styles that might cause extra space at bottom */
-  .processing-modal-overlay,
-  .preview-modal-overlay {
-    bottom: 0 !important;
+  /* Ensure the upload options have proper spacing */
+  .upload-options {
+    margin-bottom: 10px !important;
+  }
+  
+  /* Adjust the photo guidelines to reduce extra space */
+  .photo-guidelines {
+    margin-bottom: 10px !important;
   }
 }
 

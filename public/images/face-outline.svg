@@ -1,40 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-  <!-- Face outline - oval shape -->
-  <ellipse cx="150" cy="100" rx="65" ry="80" 
-           fill="none" 
-           stroke="white" 
-           stroke-width="6" 
-           stroke-dasharray="15,10"
-           opacity="0.8"/>
+<svg width="300" height="500" viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background shape with low opacity -->
+  <rect width="300" height="500" fill="black" opacity="0.05" />
   
-  <!-- Optional markers for eyes position (subtle guides) -->
-  <circle cx="130" cy="90" r="4" 
-          fill="none" 
-          stroke="white" 
-          stroke-width="2" 
-          opacity="0.4"/>
+  <!-- Full silhouette - face to waist -->
+  <g fill="none" stroke="white" stroke-width="4" stroke-dasharray="10,8" opacity="0.85">
+    <!-- Head outline -->
+    <ellipse cx="150" cy="90" rx="60" ry="75" />
+    
+    <!-- Neck -->
+    <path d="M120,160 C120,180 180,180 180,160" />
+    
+    <!-- Shoulders -->
+    <path d="M120,160 C110,170 90,180 60,190" />
+    <path d="M180,160 C190,170 210,180 240,190" />
+    
+    <!-- Torso outline -->
+    <path d="M60,190 C80,270 100,320 150,400" />
+    <path d="M240,190 C220,270 200,320 150,400" />
+    
+    <!-- Guideline at waist level -->
+    <line x1="80" y1="370" x2="220" y2="370" stroke-dasharray="15,5" />
+  </g>
   
-  <circle cx="170" cy="90" r="4" 
-          fill="none" 
-          stroke="white" 
-          stroke-width="2" 
-          opacity="0.4"/>
-  
-  <!-- Optional marker for nose/mouth alignment -->
-  <line x1="150" y1="90" x2="150" y2="125" 
+  <!-- Center alignment guide (vertical line) -->
+  <line x1="150" y1="40" x2="150" y2="420" 
         stroke="white" 
         stroke-width="2" 
-        stroke-dasharray="5,5" 
+        stroke-dasharray="5,10" 
         opacity="0.4"/>
-        
-  <!-- Caption text for body positioning -->
-  <text x="150" y="200" 
-        font-family="Arial, sans-serif" 
-        font-size="14" 
-        fill="white" 
-        text-anchor="middle"
-        opacity="0.8">
-    Position face in oval, body visible below
-  </text>
+
+  <!-- Guide text -->
+  <g font-family="Arial, sans-serif" fill="white" text-anchor="middle">
+    <text x="150" y="30" font-size="16" font-weight="bold" opacity="0.9">
+      Position yourself in the outline
+    </text>
+    <text x="150" y="440" font-size="14" opacity="0.8">
+      Show from face to waist
+    </text>
+    <text x="150" y="465" font-size="14" opacity="0.8">
+      Keep your head centered
+    </text>
+  </g>
 </svg> 

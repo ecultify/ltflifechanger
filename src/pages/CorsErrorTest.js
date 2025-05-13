@@ -169,7 +169,7 @@ const CorsErrorTest = () => {
                     {detectedOtp ? (
                       <small className="form-hint">Detected OTP: {detectedOtp}</small>
                     ) : (
-                      <small className="form-hint">For testing, you can use 123456</small>
+                    <small className="form-hint">For testing, you can use 123456</small>
                     )}
                   </div>
                   

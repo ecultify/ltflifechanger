@@ -11,6 +11,7 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    min-height: auto !important; /* Override any min-height that might cause extra space */
   }
 
   /* Completely reset the stepper container styles */
@@ -126,5 +127,25 @@
     margin-bottom: 15px !important;
     text-align: center !important;
     width: 100% !important;
+  }
+  
+  /* Fix any content overflows that might cause extra space */
+  .upload-page .form-container > * {
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  /* Ensure upload area fits properly within the container */
+  .upload-page .form-container .upload-area,
+  .left-section .form-container .upload-area {
+    margin-bottom: 15px !important;
+  }
+  
+  /* Fix bottom spacing in the form */
+  .upload-page .form-container .upload-options,
+  .left-section .form-container .upload-options,
+  .upload-page .form-container .photo-guidelines,
+  .left-section .form-container .photo-guidelines {
+    margin-bottom: 10px !important;
   }
 }

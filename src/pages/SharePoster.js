@@ -4,13 +4,7 @@ import '../styles/pages/SharePoster.css';
 import '../styles/overrides/LogoPositionFix.css'; // Import logo positioning overrides
 import Loader from '../components/Loader';
 import CTABannerCarousel from '../components/CTABannerCarousel';
-import { loadFaceDetectionModels, getOptimalImagePlacement } from '../utils/faceDetection';
 import { getRandomTemplateForIndustry } from '../utils/templateSelector'; // Import template selector
-
-// Try to load face detection models early
-loadFaceDetectionModels().catch(err => {
-  console.warn('Face detection models could not be preloaded in SharePoster:', err);
-});
 
 const SharePoster = () => {
   const navigate = useNavigate();
@@ -19,7 +13,7 @@ const SharePoster = () => {
   const [generatedPoster, setGeneratedPoster] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [loadingStatus, setLoadingStatus] = useState('Preparing your template...');
+  const [loadingStatus, setLoadingStatus] = useState('Preparing your Poster...');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [templatePath, setTemplatePath] = useState(null);
   const [templateLoaded, setTemplateLoaded] = useState(false); // Flag to track template loading
@@ -62,7 +56,7 @@ const SharePoster = () => {
       }
 
       try {
-        setLoadingStatus('Preparing your template...');
+        setLoadingStatus('Preparing your Poster...');
         console.log('Selecting template for industry:', userData.industry);
         
         // Get template path based on industry
@@ -306,8 +300,8 @@ const SharePoster = () => {
                 const containerHeight = canvas.height * 0.64; // Increased from 0.61 to 0.64
                 
                 // Position at bottom left corner for perfect alignment
-                const userX = -33; // Moved right by 4px from -37 to -33
-                const userY = canvas.height - containerHeight + 29; // Keep same vertical position
+                const userX = -22; // Moved right from -37 to -22 (15px closer to the center)
+                const userY = canvas.height - containerHeight + 29; // Keep the same vertical position
                 
                 // Set up the offscreen canvas with these dimensions
                 const offscreenCanvas = document.createElement('canvas');
@@ -568,7 +562,7 @@ const SharePoster = () => {
               // Position on the right side of the canvas
               const rightImageWidth = canvas.width * 0.46; // Keep same width
               const rightImageHeight = canvas.height * 0.63; // Keep same height
-              const rightImageX = canvas.width - rightImageWidth - 29; // Moved 4px to the right (from -25 to -29)
+              const rightImageX = canvas.width - rightImageWidth - 40; // Move 15px more to the left (from -25 to -40)
               const rightImageY = canvas.height - rightImageHeight + 50; // Keep same Y position
               
               console.log('Drawing Group 30a image at final position:', {

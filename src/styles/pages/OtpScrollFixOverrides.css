@@ -27,7 +27,7 @@ body, html {
     position: relative !important;
     height: auto !important;
     overflow-y: visible !important;
-    min-height: 100vh !important;
+    min-height: auto !important; /* Changed from 100vh to auto to prevent extra space */
     touch-action: pan-y !important;
     -webkit-overflow-scrolling: touch !important;
   }
@@ -39,6 +39,10 @@ body, html {
     touch-action: pan-y !important;
     -webkit-overflow-scrolling: touch !important;
     will-change: transform; /* Hardware acceleration */
+    height: auto !important; /* Ensure height is based on content */
+    min-height: auto !important; /* Override any minimum height */
+    max-height: none !important; /* Ensure no maximum height constraint */
+    padding-bottom: 15px !important; /* Increased from 5px to 15px to add a bit more space */
   }
   
   /* Ensure the mobile elements don't cause overflow issues */
@@ -51,6 +55,8 @@ body, html {
   .right-content {
     overflow: visible !important;
     touch-action: pan-y !important;
+    height: auto !important; /* Base height on content */
+    min-height: auto !important; /* Override any minimum height */
   }
   
   /* Consent modal z-index fix */
@@ -77,5 +83,41 @@ body, html {
   /* Ensure OTP inputs are properly sized for mobile */
   .otp-input {
     touch-action: manipulation !important;
+  }
+  
+  /* Fix spacing between form groups */
+  .form-group {
+    margin-bottom: 15px !important; /* Increased from 10px to 15px */
+  }
+  
+  /* Add some space to the verification button */
+  .verify-btn {
+    margin-bottom: 10px !important; /* Changed from 0px to 10px */
+    margin-top: 10px !important;
+  }
+  
+  /* Ensure the content fits snugly */
+  .form-container > * {
+    max-width: 100% !important;
+  }
+  
+  /* Add a little space to the last element in the form */
+  .form-container > *:last-child {
+    margin-bottom: 5px !important; /* Changed from 0px to 5px */
+  }
+  
+  /* Fix any potential flex issues that might cause extra space */
+  .form-container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+  }
+  
+  /* Ensure the form content takes exactly the space needed */
+  .right-content {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    flex: 0 0 auto !important; /* Don't allow flex growth */
   }
 }

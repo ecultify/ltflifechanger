@@ -383,7 +383,7 @@ html, body {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    margin-top: -20px !important; /* Pushed up by 25px from the original value */
+    margin-top: -13px !important; /* Changed from -20px to -13px to push it down by 7px */
     position: relative !important;
     width: 100% !important;
     min-height: 180px !important;
@@ -392,13 +392,8 @@ html, body {
   }
   
   .bumrah-image {
-    max-width: 100% !important;
-    width: 300px !important;
-    height: auto !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    object-fit: contain !important;
+    max-width: 300px !important; /* Maintained existing size */
+    width: 100% !important;
   }
   
   .logo {
@@ -1156,12 +1151,12 @@ h2.form-subtitle {
   }
   
   .bumrah-container {
-    margin-top: -20px !important; /* Adjust to push it up by 25px */
+    margin-top: -13px !important; /* Changed from -20px to -13px to push it down by 7px */
     min-height: 180px !important;
   }
   
   .bumrah-image {
-    max-width: 300px !important; /* Reduced size */
+    max-width: 300px !important; /* Maintained existing size */
     width: 100% !important;
   }
   

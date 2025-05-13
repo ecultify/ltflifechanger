@@ -313,9 +313,8 @@ const OtpVerification = () => {
                 minHeight: "180px",
                 display: "flex",
                 justifyContent: "center",
-                marginBottom: "10px",
-                marginTop: "-25px",
-                /* Pushed up by 25px */
+                marginBottom: "0px",
+                marginTop: "-18px",
                 width: "100%",
                 maxWidth: "450px",
               }}
@@ -325,14 +324,13 @@ const OtpVerification = () => {
                 alt="Bumrah"
                 className="bumrah-image"
                 style={{
-                  maxWidth: "290px",
-                  /* Adjusted from 320px */
+                  maxWidth: "270px",
                   margin: "0 auto",
                   display: "block",
                   height: "auto",
                   position: "relative",
-                  left: "0", /* Centered properly */
-                  right: "0", /* Reset any right offset */
+                  left: "0",
+                  right: "0",
                   marginLeft: "auto",
                   marginRight: "auto"
                 }}
@@ -343,9 +341,13 @@ const OtpVerification = () => {
               style={{
                 width: "100%",
                 maxWidth: "450px",
-                marginTop: "-20px",
+                marginTop: "-45px",
                 zIndex: 10,
                 position: "relative",
+                backgroundColor: "white",
+                borderTopLeftRadius: "15px",
+                borderTopRightRadius: "15px",
+                paddingTop: "20px",
               }}
             >
               {" "}

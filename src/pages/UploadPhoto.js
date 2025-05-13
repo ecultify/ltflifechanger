@@ -7,8 +7,6 @@ import '../styles/pages/UploadPhotoOverrides.css';
 import '../styles/pages/UploadStepperFix.css'; // Added for stepper alignment on mobile
 import axios from 'axios';
 import Loader from '../components/Loader';
-import * as faceapi from 'face-api.js';
-import { loadFaceDetectionModels } from '../utils/faceDetection';
 import ReactCrop, { centerCrop, makeAspectCrop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
@@ -24,9 +22,6 @@ const UploadPhoto = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
   const [isNormalSelfie, setIsNormalSelfie] = useState(false);
-  const [faceDetected, setFaceDetected] = useState(false);
-  const [faceInPosition, setFaceInPosition] = useState(false);
-  const [faceDetectionEnabled, setFaceDetectionEnabled] = useState(false);
   const [isSelfieMode, setIsSelfieMode] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   
@@ -57,20 +52,6 @@ const UploadPhoto = () => {
   const navigate = useNavigate();
   
   console.log('Current device width:', window.innerWidth, 'Is Mobile:', window.innerWidth <= 768);
-
-  // Initialize face detection when component mounts
-  useEffect(() => {
-    // Load face detection models
-    loadFaceDetectionModels()
-      .then(() => {
-        console.log('Face detection models loaded successfully');
-        setFaceDetectionEnabled(true);
-      })
-      .catch(err => {
-        console.error('Failed to load face detection models:', err);
-        setFaceDetectionEnabled(false);
-      });
-  }, []);
 
   // Add resize listener to update mobile state
   useEffect(() => {
@@ -1276,26 +1257,165 @@ const UploadPhoto = () => {
         cursor: not-allowed;
       }
       
-      /* Mobile adjustments */
-      @media (max-width: 768px) {
-        .preview-modal {
-          width: 95%;
-          height: auto;
-          max-height: 95vh;
-        }
-        
-        .preview-modal-body {
-          max-height: 60vh;
-          padding: 10px;
-        }
-        
-        .preview-modal-buttons {
-          flex-direction: column;
+      /* Silhouette guide styles */
+      .person-outline-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+        z-index: 10;
+      }
+      
+      .face-outline {
+        width: 90%;
+        max-width: 300px;
+        height: auto;
+        max-height: 80vh; /* Ensure it fits within the viewport height */
+        opacity: 0.9;
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+        object-fit: contain; /* Maintain aspect ratio */
+        margin-top: -5vh; /* Move slightly upward to better center in the camera view */
+      }
+      
+      .camera-instructions {
+        color: white;
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.6);
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 8px 12px;
+        border-radius: 20px;
+        margin-top: 10px;
+        max-width: 80%;
+      }
+      
+      /* Camera modal adjustments for the new silhouette */
+      .camera-modal {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+      
+      .camera-content {
+        background-color: rgba(0, 0, 0, 0.85);
+        color: white;
+        width: 95%;
+        max-width: 500px;
+        height: 90vh;
+        max-height: 800px;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .camera-container {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        width: 100%;
+        height: calc(100% - 60px);
+        background-color: #000;
+      }
+      
+      .camera-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .camera-btn {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 3px solid white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 20;
+      }
+      
+      .camera-btn i {
+        font-size: 30px;
+        color: #0083B5;
+      }
+      
+      .camera-btn:hover {
+        background-color: #0083B5;
+      }
+      
+      .camera-btn:hover i {
+        color: white;
+      }
+      
+      .camera-mode-btn {
+        position: absolute;
+        bottom: 30px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        z-index: 20;
+      }
+      
+      .camera-mode-btn:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+      
+      /* Mobile layout adjustments */
+      @media (max-width: 767px) {
+        .camera-content {
           width: 100%;
+          height: 100vh;
+          border-radius: 0;
         }
         
-        .retake-btn, .confirm-btn {
-          width: 100%;
+        .face-outline {
+          width: 85%;
+          max-width: 250px;
+        }
+        
+        .camera-instructions {
+          font-size: 14px;
+          padding: 6px 10px;
+        }
+        
+        .camera-btn {
+          bottom: 20px;
+          width: 60px;
+          height: 60px;
+        }
+        
+        .camera-btn i {
+          font-size: 24px;
+        }
+        
+        .camera-mode-btn {
+          bottom: 20px;
+          font-size: 12px;
+          padding: 6px 10px;
         }
       }
     `;
@@ -1316,186 +1436,102 @@ const UploadPhoto = () => {
     e.preventDefault();
   };
 
-  // Handle camera activation
-  const activateCamera = async (selfieMode = false) => {
+  // Activate camera for photo capture
+  const activateCamera = async (selfieMode) => {
+    setIsSelfieMode(selfieMode);
+    setShowCameraModal(true);
+    
     try {
-      setShowCameraModal(true);
-      setIsCameraActive(true);
-      setIsSelfieMode(selfieMode);
-
-      // Use the appropriate camera based on mode
-      const facingMode = selfieMode ? "user" : "environment"; // "user" for front camera, "environment" for back camera
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facingMode }
-      });
-
-      // Set the video source to the camera stream
+      // Request camera access with front or back camera based on mode
+      const constraints = {
+        video: {
+          facingMode: selfieMode ? 'user' : 'environment',
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      };
+      
+      // Get media stream
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Attach to video element
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-
-        // Wait for video to be ready
-        videoRef.current.onloadedmetadata = () => {
-          // Start face detection
-          detectionRef.current = requestAnimationFrame(detectFacesInVideo);
-        };
+        setIsCameraActive(true);
       }
     } catch (err) {
-      console.error("Error accessing camera:", err);
-      setError("Could not access camera. Please check camera permissions.");
-      setIsCameraActive(false);
+      console.error('Error accessing camera:', err);
+      setError('Camera access denied or not available.');
       setShowCameraModal(false);
     }
   };
 
-  // Face detection in video stream
-  const detectFacesInVideo = async () => {
-    if (!videoRef.current || !videoRef.current.srcObject || !faceDetectionEnabled) {
+  // Take photo from the camera
+  const takePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) {
+      console.error('Video or canvas ref not found');
       return;
     }
-
-    try {
-      // Get face detections
-      const detections = await faceapi.detectAllFaces(
-        videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.7 })
-      ).withFaceLandmarks();
-
-      // Check if any faces were detected
-      if (detections && detections.length > 0) {
-        setFaceDetected(true);
-
-        // Get the most prominent face (usually the largest one)
-        const mainFace = detections.sort((a, b) =>
-          (b.detection.box.width * b.detection.box.height) -
-          (a.detection.box.width * a.detection.box.height)
-        )[0];
-
-        // Get detection confidence
-        const confidence = mainFace.detection.score;
-
-        // Get video dimensions
-        const videoWidth = videoRef.current.videoWidth;
-        const videoHeight = videoRef.current.videoHeight;
-
-        // Calculate center of the screen
-        const centerX = videoWidth / 2;
-        const centerY = isSelfieMode ? videoHeight / 2.5 : videoHeight / 2.2;
-
-        // Get face dimensions and position
-        const faceBox = mainFace.detection.box;
-        const faceCenterX = faceBox.x + (faceBox.width / 2);
-        const faceCenterY = faceBox.y + (faceBox.height / 2);
-
-        // Calculate percentage of displacement from center
-        const xDisplacementPercent = Math.abs(faceCenterX - centerX) / (videoWidth / 2) * 100;
-        const yDisplacementPercent = Math.abs(faceCenterY - centerY) / (videoHeight / 2) * 100;
-
-        // Define tolerances for positioning
-        const xTolerancePercent = isSelfieMode ? 10 : 15;
-        const yTolerancePercent = isSelfieMode ? 15 : 20;
-        const minFaceSizePercent = isSelfieMode ? 15 : 15;
-
-        // Check if face is within acceptable position
-        let inPosition = false;
-
-        if (isSelfieMode) {
-          inPosition =
-            confidence > 0.8 &&
-            xDisplacementPercent < xTolerancePercent &&
-            yDisplacementPercent < yTolerancePercent &&
-            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
-        } else {
-          inPosition =
-            confidence > 0.75 &&
-            xDisplacementPercent < xTolerancePercent &&
-            yDisplacementPercent < yTolerancePercent &&
-            (faceBox.width / videoWidth) * 100 > minFaceSizePercent;
-        }
-
-        setFaceInPosition(inPosition);
-      } else {
-        setFaceDetected(false);
-        setFaceInPosition(false);
-      }
-    } catch (error) {
-      console.error('Face detection error:', error);
-    }
-
-    // Continue detection loop if camera is still active
-    if (videoRef.current && videoRef.current.srcObject) {
-      detectionRef.current = requestAnimationFrame(detectFacesInVideo);
-    }
-  };
-
-  // Updated takePhoto function to work with the new cropping approach
-  const takePhoto = () => {
-    if (!videoRef.current) return;
-
-    const canvas = canvasRef.current;
+    
     const video = videoRef.current;
-
-    // Set canvas dimensions to match video dimensions but maintain aspect ratio
-    const videoAspect = video.videoWidth / video.videoHeight;
-
+    const canvas = canvasRef.current;
+    
+    // Set canvas dimensions to match video aspect ratio
     let canvasWidth, canvasHeight;
-    let offsetX, offsetY;
-
+    
     if (isSelfieMode) {
-      // For selfie mode, use 4:5 aspect ratio focusing on the face
-      const targetAspect = 4 / 5;
-
-      if (videoAspect > targetAspect) {
-        // Video is wider than target aspect, use full height and calculated width
-        canvasHeight = video.videoHeight;
-        canvasWidth = video.videoHeight * targetAspect;
-      } else {
-        // Video is taller than target aspect, use full width and calculated height
-        canvasWidth = video.videoWidth;
-        canvasHeight = video.videoWidth / targetAspect;
-      }
-
-      // For selfies, center the face more precisely
-      offsetX = (video.videoWidth - canvasWidth) / 2;
-      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to focus on face
-    } else {
-      // For back camera (full body shots), use 4:6 aspect ratio
-      const targetAspect = 4 / 6;
-
-      // Always use maximum available video dimensions for back camera to capture more
-      canvasWidth = video.videoWidth;
+      // For selfie mode, use portrait ratio to capture face to waist
       canvasHeight = video.videoHeight;
+      canvasWidth = canvasHeight * 0.75; // 3:4 aspect ratio for better waist inclusion
+    } else {
+      // For regular photos, maintain video aspect ratio but ensure portrait orientation
+      canvasHeight = video.videoHeight;
+      canvasWidth = video.videoWidth;
       
-      // Apply minimal cropping if needed
-      if (Math.abs(videoAspect - targetAspect) > 0.2) {
-        if (videoAspect > targetAspect) {
-          // Video is wider, adjust width while keeping full height
-          canvasWidth = video.videoHeight * targetAspect;
-        } else {
-          // Video is taller, adjust height while keeping full width
-          canvasHeight = video.videoWidth / targetAspect;
-        }
+      // If wider than 3:4, crop width to match 3:4 (portrait orientation)
+      const aspectRatio = 3/4; // portrait aspect ratio
+      const idealWidth = canvasHeight * aspectRatio;
+      if (canvasWidth > idealWidth) {
+        canvasWidth = idealWidth;
       }
-
-      // Calculate centering offsets
-      offsetX = (video.videoWidth - canvasWidth) / 2;
-      offsetY = (video.videoHeight - canvasHeight) / 4; // Position higher to include more body
     }
-
+    
     // Set canvas dimensions
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-
-    // Draw the current video frame to the canvas with the correct positioning
+    
+    // Get canvas context
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    
+    // Clear previous contents
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Calculate offset for centered crop
+    let offsetX = 0;
+    let offsetY = 0;
+    
+    if (isSelfieMode) {
+      // For selfies, center horizontally
+      offsetX = (video.videoWidth - canvasWidth) / 2;
+      // Position to capture from face to waist - higher positioning to include face with more body
+      offsetY = video.videoHeight * 0.1; // Start from higher up (top 10%) to include head and more body
+    } else {
+      // Center crop for regular photos, biased toward the top to focus on face to waist
+      offsetX = (video.videoWidth - canvasWidth) / 2;
+      offsetY = video.videoHeight * 0.1; // Start from higher up to ensure proper waist inclusion
+    }
+    
+    // Draw the image with the calculated crop
     ctx.drawImage(
       video,
       offsetX, offsetY, canvasWidth, canvasHeight,
       0, 0, canvasWidth, canvasHeight
     );
-
-    // Convert canvas to data URL with high quality
-    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    
+    // Convert canvas to data URL
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Higher quality for better details
     
     // Store image dimensions and orientation
     detectImageOrientation(photoDataUrl, (orientation) => {
@@ -1534,9 +1570,9 @@ const UploadPhoto = () => {
     });
   };
 
-  // Stop camera stream and face detection
+  // Stop camera stream
   const stopCamera = () => {
-    // Cancel face detection loop
+    // Cancel any pending animation frames
     if (detectionRef.current) {
       cancelAnimationFrame(detectionRef.current);
       detectionRef.current = null;
@@ -1550,8 +1586,6 @@ const UploadPhoto = () => {
     }
 
     setIsCameraActive(false);
-    setFaceDetected(false);
-    setFaceInPosition(false);
     setShowCameraModal(false);
   };
 
@@ -2107,53 +2141,56 @@ const UploadPhoto = () => {
 
       {/* Camera Modal */}
       {showCameraModal && (
-        <div className="modal-overlay">
-          <div className="camera-modal">
-            <div className="camera-modal-header">
-              <h2>{isSelfieMode ? "Take a Selfie" : "Take a Photo"}</h2>
-              <button className="modal-close-btn" onClick={stopCamera}>
-                <i className="fas fa-times"></i>
+        <div className="modal camera-modal">
+          <div className="modal-content camera-content">
+            <div className="modal-header">
+              <h3>{isSelfieMode ? 'Take a Selfie' : 'Take a Photo'}</h3>
+              <button className="close-btn" onClick={stopCamera}>
+                &times;
               </button>
             </div>
-            <div className="camera-modal-body">
-              <div className="camera-container modal-camera">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="camera-video"
-                ></video>
-                <div className={`person-outline-overlay ${isSelfieMode ? 'selfie-mode' : ''} ${faceInPosition ? 'face-in-position' : faceDetected ? 'face-detected' : ''}`}>
-                  <img
-                    src="/images/face-outline.svg"
-                    alt="Face outline"
-                    className="outline-image"
-                  />
-                  <div className="positioning-guide">
-                    {faceInPosition ?
-                      "Perfect! Hold still and take the photo." :
-                      faceDetected ?
-                        "Move closer and center your face in the outline" :
-                        isSelfieMode ?
-                          "Position your face within the outline and look at the camera" :
-                          "Position your face in the outline, hold camera at eye level"
-                    }
-                  </div>
-                </div>
-                <div className="camera-controls">
-                  <button
-                    className={`camera-btn ${faceInPosition ? 'active' : 'disabled'}`}
-                    onClick={takePhoto}
-                    disabled={!faceInPosition}
-                  >
-                    <i className="fas fa-camera"></i>
-                  </button>
-                  <button className="camera-btn cancel" onClick={stopCamera}>
-                    <i className="fas fa-times"></i>
-                  </button>
-                </div>
-                <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+            <div className="camera-container">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="camera-video"
+                onLoadedMetadata={() => {
+                  console.log('Video loaded, ready for capture');
+                }}
+              ></video>
+              
+              <div className="person-outline-overlay">
+                <img
+                  src="/images/face-outline.svg"
+                  alt="Person silhouette guide"
+                  className="face-outline"
+                />
+                <p className="camera-instructions">
+                  {isSelfieMode ? 
+                    "Position yourself in the outline from face to waist" : 
+                    "Capture your subject from face to waist within the guide"
+                  }
+                </p>
               </div>
+              
+              <button
+                onClick={takePhoto}
+                className="camera-btn active"
+                title="Take Photo"
+              >
+                <i className="fas fa-camera"></i>
+              </button>
+              
+              <button className="camera-mode-btn" onClick={() => {
+                stopCamera();
+                setTimeout(() => activateCamera(!isSelfieMode), 300);
+              }}>
+                <i className={`fas ${isSelfieMode ? 'fa-camera' : 'fa-user'}`}></i>
+                {isSelfieMode ? 'Switch to Back Camera' : 'Switch to Selfie Mode'}
+              </button>
+              
+              <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
             </div>
           </div>
         </div>

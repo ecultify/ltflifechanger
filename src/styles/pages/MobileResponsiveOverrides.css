@@ -544,13 +544,12 @@
             margin-top: 20px !important;
             /* Reduced from 30px to 20px */
         }
-        /* Bumrah image - pulled up correctly */
+        /* Bumrah image - adjusted position */
         .otp-page .bumrah-container {
             position: relative !important;
             text-align: center !important;
             margin-bottom: -10px !important;
-            margin-top: -65px !important;
-            /* Changed from -40px to -65px to pull up by 25px more */
+            margin-top: -51px !important; /* Changed from -58px to -51px to push down by 7px */
             z-index: 2 !important;
             height: auto !important;
             min-height: 415px !important;
@@ -678,6 +677,66 @@
             font-weight: normal !important;
             color: #333 !important;
             display: inline-block !important;
+        }
+        /* Fix for OTP Verification page form spacing on mobile */
+        .otp-page .form-container {
+            min-height: auto !important;
+            height: auto !important;
+            max-height: none !important;
+            padding-bottom: 15px !important; /* Increased from 0px to 15px */
+            margin-bottom: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+        }
+        
+        /* Add a little space to the last element in the form */
+        .otp-page .form-container > *:last-child {
+            margin-bottom: 5px !important; /* Changed from 0px to 5px */
+            padding-bottom: 0 !important;
+        }
+        
+        /* Button spacing adjustment */
+        .otp-page .form-container .verify-btn {
+            margin-bottom: 10px !important; /* Changed from 0px to 10px */
+            margin-top: 15px !important; /* Increased from 10px to 15px */
+        }
+        
+        /* Form group spacing */
+        .otp-page .form-container .phone-input-group {
+            margin-bottom: 15px !important; /* Increased from 10px to 15px */
+        }
+        
+        /* Form input spacing */
+        .otp-page .form-container .simple-otp-container {
+            margin-bottom: 15px !important; /* Increased from 10px to 15px */
+        }
+        
+        /* OTP input area spacing */
+        .otp-page .form-container .otp-container {
+            margin-bottom: 15px !important; /* Increased from 10px to 15px */
+        }
+        
+        /* Keep the same Bumrah image constraints */
+        .otp-page .bumrah-container {
+            margin-bottom: 20px !important;
+            height: auto !important;
+            max-height: 300px !important;
+            overflow: hidden !important;
+        }
+        
+        /* Container sizing */
+        .otp-page .right-content,
+        .otp-page .right-section.mobile-view {
+            min-height: auto !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+        
+        /* Maintain content width constraints */
+        .otp-page .right-content > * {
+            max-width: 100% !important;
+            overflow: hidden !important;
         }
     }
     /* AddDetails page mobile improvements */

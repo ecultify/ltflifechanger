@@ -38,22 +38,22 @@ MODEL_FILES.forEach(file => {
   }
 
   // Download the file
-  https.get(url, (response) => {
-    if (response.statusCode !== 200) {
+    https.get(url, (response) => {
+      if (response.statusCode !== 200) {
       console.error(`Failed to download ${url}: ${response.statusCode}`);
-      return;
-    }
-
+        return;
+      }
+      
     const fileStream = fs.createWriteStream(outputPath);
     response.pipe(fileStream);
 
     fileStream.on('finish', () => {
       fileStream.close();
       console.log(`Downloaded ${file} to ${outputPath}`);
-    });
-  }).on('error', (err) => {
+      });
+    }).on('error', (err) => {
     console.error(`Error downloading ${url}:`, err.message);
+    });
   });
-});
 
 console.log('Setup script executed. The model files will be downloaded to the public/models directory.');
